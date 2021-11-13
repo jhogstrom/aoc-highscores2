@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
-using Microsoft.VisualBasic;
 using NSubstitute;
-using NSubstitute.Extensions;
 using NUnit.Framework;
 
 namespace RegenAoc.Tests
@@ -11,7 +9,7 @@ namespace RegenAoc.Tests
     internal class AocRefresherTest
     {
         private AocRefresher _sut = null!;
-        private ListConfig _listConfig = null!;
+        private BoardConfig _boardConfig = null!;
 
         [SetUp]
         public void Setup()
@@ -22,14 +20,14 @@ namespace RegenAoc.Tests
                 Do(c=>
                     Console.WriteLine(c.Args()[0]));
 
-            _listConfig = ListConfigHelper.LoadFromFile();
-            _sut = new AocRefresher(logger, Constants.InternalBucket);
+            _boardConfig = BoardConfigHelper.LoadFromFile();
+            _sut = new AocRefresher(logger, AwsHelpers.InternalBucket);
         }
 
         [Test]
         public async Task TestRefresh2020()
         {
-            await _sut.EnsureFresh(_listConfig, 2020);
+            await _sut.EnsureFresh(_boardConfig, 2020);
         }
     }
 

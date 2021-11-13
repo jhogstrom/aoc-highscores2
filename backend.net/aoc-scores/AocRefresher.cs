@@ -22,30 +22,30 @@ namespace RegenAoc
             S3BucketName = bucketName;
         }
 
-        public async Task EnsureFresh(ListConfig listConfig, int year)
+        public async Task EnsureFresh(BoardConfig boardConfig, int year)
         {
             using (var client = new AmazonS3Client(RegionEndpoint.USEast2))
             {
-                var key = $"{listConfig.AocId}/{year}.json";
+                var key = AwsHelpers.InternalBucketKey(year, boardConfig.AocId);
                 var l = await client.ListObjectsAsync(S3BucketName, key);
                 if (l.S3Objects.Any())
                 {
                     var metadata = await client.GetObjectMetadataAsync(S3BucketName, key);
-                    if (DateTime.UtcNow- metadata.LastModified < TimeSpan.FromMinutes(20))
+                    if (DateTime.UtcNow - metadata.LastModified < TimeSpan.FromMinutes(20))
                     {
                         _logger.LogLine("S3 object is almost new");
                         return;
                     }
                 }
-                await DownloadLatestAocData(listConfig, year, client, key);
+                await DownloadLatestAocData(boardConfig, year, client, key);
             }
         }
 
-        private async Task<bool> DownloadLatestAocData(ListConfig listConfig, int year, AmazonS3Client client, string key)
+        private async Task<bool> DownloadLatestAocData(BoardConfig boardConfig, int year, AmazonS3Client client, string key)
         {
-            var aocData = DownloadAocData(listConfig, year);
+            var aocData = DownloadAocData(boardConfig, year);
             // compare aocData with stored data in S3, abort if identical?
-            if (string.IsNullOrEmpty(aocData)) 
+            if (string.IsNullOrEmpty(aocData))
                 return false;
             var putObjectRequest = new PutObjectRequest
             {
@@ -57,14 +57,14 @@ namespace RegenAoc
             return true;
         }
 
-        private string DownloadAocData(ListConfig listConfig, int year)
+        private string DownloadAocData(BoardConfig boardConfig, int year)
         {
-            _logger.LogLine($"Downloading new data for {listConfig.ListName}/{year} ({listConfig.AocId})");
-            // Create Target
-            var url = $"https://adventofcode.com/{year}/leaderboard/private/view/{listConfig.AocId}.json";
+            _logger.LogLine($"Downloading new data for {boardConfig.Name}/{year} ({boardConfig.AocId})");
+
+            var url = $"https://adventofcode.com/{year}/leaderboard/private/view/{boardConfig.AocId}.json";
             try
             {
-                var s = DownloadFromURL(url, listConfig.SessionCookie);
+                var s = DownloadFromURL(url, boardConfig.SessionCookie);
                 if (string.IsNullOrEmpty(s))
                     _logger.LogLine("No data from AOC, Session cookie expired???");
                 File.WriteAllText("aoc.json", s);
@@ -100,6 +100,4 @@ namespace RegenAoc
             }
         }
     }
-}
-
 }

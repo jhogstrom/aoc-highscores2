@@ -1,9 +1,9 @@
 ﻿{
-
   "Guid": "7d3e8718-f15c-41ed-a561-fbba4f3fa37c",
   "AocId": "139489",
-  "ListName": "Jonnes lista",
+  "Name": "Jonnes lista",
   "Years": [ 2019, 2020, 2021 ],
   "SessionCookie": "53616c7465645f5fbf0ed3eddcb149bcc807331009c24665d47ab04260d77f6d08082578c636b79973912f7af9ffd38d",
-  "SessionCookieExpiration": "20211204" 
+  "SessionCookieExpiration": "2021-12-31T00:00:00",
+  "ExcludedDays": [ 6 ]
 }

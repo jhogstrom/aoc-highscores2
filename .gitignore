@@ -134,3 +134,4 @@ dmypy.json
 /backend.net/RegenAoc.Tests/bin/Debug/net6.0
 /backend.net/RegenAoc.Tests/obj
 *.user
+/backend.net/aoc-scores/boardconfig.json
