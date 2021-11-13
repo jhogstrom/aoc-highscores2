@@ -131,3 +131,6 @@ dmypy.json
 /backend.net/.vs
 /backend.net/aoc-scores/bin
 /backend.net/aoc-scores/obj
+/backend.net/RegenAoc.Tests/bin/Debug/net6.0
+/backend.net/RegenAoc.Tests/obj
+*.user

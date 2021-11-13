@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Amazon.Internal;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 using Newtonsoft.Json;
@@ -60,7 +61,7 @@ namespace RegenAoc
         /// <returns></returns>
         public async Task ReceiveEvent(SQSEvent evnt, ILambdaContext context)
         {
-            foreach(var message in evnt.Records)
+            foreach (var message in evnt.Records)
             {
                 await ProcessMessageAsync(message, context);
             }
@@ -69,11 +70,27 @@ namespace RegenAoc
         private async Task ProcessMessageAsync(SQSEvent.SQSMessage message, ILambdaContext context)
         {
             context.Logger.LogLine($"Processing message {message.Body}");
-            var msg = JsonConvert.DeserializeObject<RegenQueueBody> (message.Body);
+            var msg = JsonConvert.DeserializeObject<RegenQueueBody>(message.Body);
             context.Logger.LogLine($"List ID: {msg.ListGuid} - year {msg.Year}");
-
-            await Task.CompletedTask;
+            var refresher = new AocRefresher(context.Logger, Constants.InternalBucket);
+            var listConfig = GetListConfig(msg.ListGuid);
+            await refresher.EnsureFresh(listConfig, msg.Year);
         }
+
+        private ListConfig GetListConfig(string guid)
+        {
+            return ListConfigHelper.LoadFromFile();
+        }
+    }
+
+    public class ListConfig
+    {
+        public string Guid { get; set; }
+        public string AocId { get; set; }
+        public int[] Years { get; set; }
+        public string SessionCookie { get; set; }
+        public DateTime SessionCookieExpiration { get; set; }
+        public string ListName { get; set; }
     }
 
     internal class RegenQueueBody

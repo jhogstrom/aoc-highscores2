@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RegenAoc", "aoc-scores\RegenAoc.csproj", "{7452A8B9-AD8E-4A70-8FBD-60C4646B1637}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegenAoc.Tests", "RegenAoc.Tests\RegenAoc.Tests.csproj", "{D4B9599F-98BD-49F8-9B79-A79387094B01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{7452A8B9-AD8E-4A70-8FBD-60C4646B1637}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7452A8B9-AD8E-4A70-8FBD-60C4646B1637}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7452A8B9-AD8E-4A70-8FBD-60C4646B1637}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4B9599F-98BD-49F8-9B79-A79387094B01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4B9599F-98BD-49F8-9B79-A79387094B01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4B9599F-98BD-49F8-9B79-A79387094B01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4B9599F-98BD-49F8-9B79-A79387094B01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
