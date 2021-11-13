@@ -52,7 +52,11 @@ class AoCHSStack(cdk.Stack):
             website_index_document="index.html",
             website_error_document="error.html",
             block_public_access=None,
-            public_read_access=True)
+            public_read_access=True,
+            cors=[aws_s3.CorsRule(
+                allowed_methods=[aws_s3.HttpMethods.GET],
+                allowed_headers=["*"],
+                allowed_origins=["*"])])
         website.grant_public_access()
         website.grant_read_write(regenerator)
 
