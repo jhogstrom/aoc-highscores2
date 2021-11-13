@@ -1,0 +1,5 @@
+-e .
+-r awsreqs.txt
+-r backend/api_requirements.txt
+flake8
+rope
