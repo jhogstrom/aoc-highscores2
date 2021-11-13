@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Amazon.Internal;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 using Newtonsoft.Json;
@@ -19,7 +20,7 @@ using Newtonsoft.Json;
     {
       "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
       "receiptHandle": "MessageReceiptHandle",
-      "body": "{\"ListGuid\": \"abc\", \"Year\": 2021}",
+      "body": "{\"BoardGuid\": \"abc\", \"Year\": 2021}",
       "attributes": {
         "ApproximateReceiveCount": "1",
         "SentTimestamp": "1523232000000",
@@ -60,7 +61,7 @@ namespace RegenAoc
         /// <returns></returns>
         public async Task ReceiveEvent(SQSEvent evnt, ILambdaContext context)
         {
-            foreach(var message in evnt.Records)
+            foreach (var message in evnt.Records)
             {
                 await ProcessMessageAsync(message, context);
             }
@@ -69,16 +70,43 @@ namespace RegenAoc
         private async Task ProcessMessageAsync(SQSEvent.SQSMessage message, ILambdaContext context)
         {
             context.Logger.LogLine($"Processing message {message.Body}");
-            var msg = JsonConvert.DeserializeObject<RegenQueueBody> (message.Body);
-            context.Logger.LogLine($"List ID: {msg.ListGuid} - year {msg.Year}");
-
-            await Task.CompletedTask;
+            var msg = JsonConvert.DeserializeObject<RegenQueueBody>(message.Body);
+            context.Logger.LogLine($"List ID: {msg.BoardGuid} - year {msg.Year}");
+            var refresher = new AocRefresher(context.Logger, AwsHelpers.InternalBucket);
+            var listConfig = GetBoardConfig(msg.BoardGuid);
+            await refresher.EnsureFresh(listConfig, msg.Year);
+            var gen = new AocGenerator();
+            await gen.Generate(listConfig, msg.Year);
         }
+
+        private BoardConfig GetBoardConfig(string guid)
+        {
+            return BoardConfigHelper.LoadFromFile();
+        }
+    }
+
+    public class BoardConfig
+    {
+        public BoardConfig()
+        {
+            ExcludeDays = Array.Empty<int>();
+        }
+
+        public string Guid { get; set; }
+        public string AocId { get; set; }
+        public int[] Years { get; set; }
+        public string SessionCookie { get; set; }
+        public DateTime SessionCookieExpiration { get; set; }
+        public string Name { get; set; }
+        public int[] ExcludeDays { get; set; }
     }
 
     internal class RegenQueueBody
     {
-        public string ListGuid { get; set; }
+        [JsonProperty("boardguid")]
+        public string BoardGuid { get; set; }
+
+        [JsonProperty("year")]
         public int Year { get; set; }
     }
 }
