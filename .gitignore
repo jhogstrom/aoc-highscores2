@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+/backend.net/.vs
+/backend.net/aoc-scores/bin
+/backend.net/aoc-scores/obj
