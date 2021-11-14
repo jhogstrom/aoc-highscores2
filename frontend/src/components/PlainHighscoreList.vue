@@ -2,20 +2,22 @@
   <div>
       <div v-for="player in players" :key="player.id">
           <p>{{player.Name}} - {{player.LocalScore}}</p>
-          XXX
       </div>
 
   </div>
 </template>
 
 <script>
+var _ = require('lodash');
 export default {
-    props: {
-        players: []
-    },
-    mounted() {
-        console.log("XX", this.players)
-    }
+    computed: {
+        data() {
+            return this.$store.getters.data
+        },
+        players() {
+            return _.sortBy(this.data.Players, ["LocalScore"]).slice().reverse()
+        }
+      }
 }
 </script>
 

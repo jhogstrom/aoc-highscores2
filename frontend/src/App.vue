@@ -8,9 +8,11 @@
 
 <script>
 import MainTable from './components/MainTable.vue'
+import store from './store/index'
 
 const tobiilist = "fbc7a3d8-c6f4-410f-9fff-a1b42993c1c1"
 // const smalllist = "7d3e8718-f15c-41ed-a561-fbba4f3fa37c"
+const ROOTURL="https://aochsstack-website.s3.us-east-2.amazonaws.com"
 
 export default {
   name: 'App',
@@ -23,6 +25,7 @@ export default {
   }},
   created() {
     this.handleParams()
+    this.fetchData(this.year, this.guid)
   },
   methods: {
     handleParams() {
@@ -36,6 +39,23 @@ export default {
       this.year = params.get("year") || defaultYear
       this.guid = params.get("guid") || params.get("uuid") || tobiilist;
       console.log("params:", this.year, this.guid);
+    },
+    makeUrl(year, guid) {
+      return `${ROOTURL}/${year}/${guid}.json`
+    },
+    async fetchData(year, guid) {
+      console.log("loading data for ", guid, year);
+
+      const url = this.makeUrl(year, guid);
+      return fetch(url)
+        .then(response => {
+          // this.loadedOk = response.status == 200
+          return response.json()
+        })
+        .then(data => {
+          this.data = data
+          store.dispatch('setData', data)
+        })
     }
 
   }
