@@ -8,24 +8,30 @@ using NUnit.Framework;
 
 namespace RegenAoc.Tests
 {
-    internal class AocGeneratorTests
+    internal class AocGeneratorTests : TestBase
     {
+        private static AocGenerator _sut = null!;
+
+        [SetUp]
+        public void Setup()
+        {
+            _sut = new AocGenerator(Logger);
+        }
+
         [Test]
         public void TestDeserialization()
         {
-            var sut = new AocGenerator();
             var json = File.ReadAllText("sampleaoc.json");
-            var list = sut.DeserializeAocJson(json);
+            var list = _sut.DeserializeAocJson(json);
         }
+
 
         [Test]
         public async Task TestGenerate()
         {
-            var sut = new AocGenerator();
-
             var config = await BoardConfigHelper.LoadFromDynamo(TestData.Guid1, 2020);
 
-            await sut.Generate(config, 2020);
+            await _sut.Generate(config, 2020);
         }
     }
 }

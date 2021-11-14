@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Newtonsoft.Json;
@@ -11,12 +12,22 @@ namespace RegenAoc
 {
     public class AocGenerator
     {
+        private readonly ILambdaLogger _logger;
+
+        public AocGenerator(ILambdaLogger logger)
+        {
+            _logger = logger;
+        }
+
         public async Task Generate(BoardConfig boardConfig, int year)
         {
+            _logger.LogLine("Loading AoC data from S3");
             var list = await GetAocDataFromS3(boardConfig, year);
             var aocList = DeserializeAocJson(list);
+            _logger.LogLine("Computing AoC Stats");
             var leaderBoard = ConvertList(aocList);
             DeriveMoreStats(leaderBoard, year, boardConfig, true);
+            _logger.LogLine("Uploading results to public S3 bucket");
             await SaveToS3(leaderBoard, boardConfig, year);
         }
 

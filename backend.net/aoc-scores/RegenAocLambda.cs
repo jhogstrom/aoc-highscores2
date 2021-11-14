@@ -72,7 +72,7 @@ namespace RegenAoc
             var refresher = new AocRefresher(context.Logger, AwsHelpers.InternalBucket);
             var listConfig = await GetBoardConfig(msg.BoardGuid, msg.Year);
             await refresher.EnsureFresh(listConfig, msg.Year);
-            var gen = new AocGenerator();
+            var gen = new AocGenerator(context.Logger);
             await gen.Generate(listConfig, msg.Year);
         }
 

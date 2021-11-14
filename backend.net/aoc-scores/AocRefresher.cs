@@ -15,6 +15,7 @@ namespace RegenAoc
     {
         private readonly ILambdaLogger _logger;
         private string S3BucketName;
+        private TimeSpan _throttlingTime = TimeSpan.FromSeconds(20);
 
         public AocRefresher(ILambdaLogger logger, string bucketName)
         {
@@ -22,7 +23,7 @@ namespace RegenAoc
             S3BucketName = bucketName;
         }
 
-        public async Task EnsureFresh(BoardConfig boardConfig, int year)
+        public async Task<bool> EnsureFresh(BoardConfig boardConfig, int year)
         {
             using (var client = new AmazonS3Client(AwsHelpers.S3Region))
             {
@@ -31,13 +32,16 @@ namespace RegenAoc
                 if (l.S3Objects.Any())
                 {
                     var metadata = await client.GetObjectMetadataAsync(S3BucketName, key);
-                    if (DateTime.UtcNow - metadata.LastModified < TimeSpan.FromMinutes(20))
+
+                    var age = DateTime.UtcNow - metadata.LastModified;
+                    if (age < _throttlingTime)
                     {
-                        _logger.LogLine("S3 object is almost new");
-                        return;
+                        _logger.LogLine($"S3 object is only {age.Minutes} min, {age.Seconds} s old, skipped download from AoC");
+                        return false;
                     }
                 }
                 await DownloadLatestAocData(boardConfig, year, client, key);
+                return true;
             }
         }
 
@@ -67,7 +71,6 @@ namespace RegenAoc
                 var s = DownloadFromURL(url, boardConfig.SessionCookie);
                 if (string.IsNullOrEmpty(s))
                     _logger.LogLine("No data from AOC, Session cookie expired???");
-                File.WriteAllText("aoc.json", s);
                 return s;
             }
             catch (Exception e)
