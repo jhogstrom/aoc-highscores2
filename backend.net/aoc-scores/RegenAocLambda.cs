@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Amazon.Internal;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 using Newtonsoft.Json;
@@ -73,32 +70,38 @@ namespace RegenAoc
             var msg = JsonConvert.DeserializeObject<RegenQueueBody>(message.Body);
             context.Logger.LogLine($"List ID: {msg.BoardGuid} - year {msg.Year}");
             var refresher = new AocRefresher(context.Logger, AwsHelpers.InternalBucket);
-            var listConfig = GetBoardConfig(msg.BoardGuid);
+            var listConfig = await GetBoardConfig(msg.BoardGuid, msg.Year);
             await refresher.EnsureFresh(listConfig, msg.Year);
             var gen = new AocGenerator();
             await gen.Generate(listConfig, msg.Year);
         }
 
-        private BoardConfig GetBoardConfig(string guid)
+        private async Task<BoardConfig> GetBoardConfig(string guid, int year)
         {
-            return BoardConfigHelper.LoadFromFile();
+            return await BoardConfigHelper.LoadFromDynamo(guid, year);
+            //            return BoardConfigHelper.LoadFromFile();
         }
+
+
     }
 
     public class BoardConfig
     {
         public BoardConfig()
         {
-            ExcludeDays = Array.Empty<int>();
+            ExcludeDays = new List<int>();
+            Years = new List<int>();
+            NameMap = new Dictionary<int, string>();
         }
 
         public string Guid { get; set; }
         public string AocId { get; set; }
-        public int[] Years { get; set; }
+        public List<int> Years { get; set; }
         public string SessionCookie { get; set; }
         public DateTime SessionCookieExpiration { get; set; }
         public string Name { get; set; }
-        public int[] ExcludeDays { get; set; }
+        public List<int> ExcludeDays { get; set; }
+        public Dictionary<int, string> NameMap { get; set; }
     }
 
     internal class RegenQueueBody
