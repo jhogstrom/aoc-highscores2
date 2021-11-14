@@ -20,13 +20,13 @@ namespace RegenAoc.Tests
                 Do(c=>
                     Console.WriteLine(c.Args()[0]));
 
-            _boardConfig = BoardConfigHelper.LoadFromFile();
             _sut = new AocRefresher(logger, AwsHelpers.InternalBucket);
         }
 
         [Test]
         public async Task TestRefresh2020()
         {
+            _boardConfig = await BoardConfigHelper.LoadFromDynamo("7d3e8718-f15c-41ed-a561-fbba4f3fa37c", 2020);
             await _sut.EnsureFresh(_boardConfig, 2020);
         }
     }

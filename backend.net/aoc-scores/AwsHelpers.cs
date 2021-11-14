@@ -4,6 +4,7 @@
     {
         public const string InternalBucket = "aochsstack-cache";
         public const string PublicBucket = "aochsstack-website";
+        public static string ConfigTableName = "AoCHSStack-boardsconfig";
 
         public static string InternalBucketKey(int year, string aocId)
         {
