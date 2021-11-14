@@ -16,6 +16,7 @@ Documentation of the fields in the final json file:
 Players are by default sorted on local score as the primary sort criteria. To solve ties, the timestamp of the most recent star is used.
 
 | Field | Example | Description |
+| ----- | ------- | ----------- |
 | Name | "Jonas Högström" | Name of participant |
 | Id | 139489| AoC id|
 | LastStar | 1608873428 | unix timestamp of the most recently acquired star. Used to disambiguate order |
