@@ -1,12 +1,16 @@
 <template>
+<v-app>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
     <main-table :guid="guid" :year="year"/>
   </div>
+</v-app>
 </template>
 
 <script>
 import MainTable from './components/MainTable.vue'
+
+const tobiilist = "fbc7a3d8-c6f4-410f-9fff-a1b42993c1c1"
+// const smalllist = "7d3e8718-f15c-41ed-a561-fbba4f3fa37c"
 
 export default {
   name: 'App',
@@ -30,7 +34,7 @@ export default {
       }
 
       this.year = params.get("year") || defaultYear
-      this.guid = params.get("uuid") || "7d3e8718-f15c-41ed-a561-fbba4f3fa37c";
+      this.guid = params.get("guid") || params.get("uuid") || tobiilist;
       console.log("params:", this.year, this.guid);
     }
 
@@ -46,5 +50,10 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+body {
+  width: 98%;
+  padding-left: 1%;
 }
 </style>
