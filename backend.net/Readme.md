@@ -22,11 +22,11 @@ Players are by default sorted on local score as the primary sort criteria. To so
 | LastStar | 1608873428 | unix timestamp of the most recently acquired star. Used to disambiguate order |
 | Stars | 50 | Total number of stars solved this year|
 | LocalScore | 1433 | AoC style calculation of local score. Should always match what the AoC website says. Higher score is better|
+| TobiiScore | 55 | This is the total number of TobiiScore (tm) points that the player has. Lower score is better |
 | GlobalScore | 0 | Total number of Global points for the person. Non-zero score indicates super human coding skills |
 | CurrentPosition | 1 | This is the position of the player in the sorted list (see above) |
-| PendingPoints | 0 | This is the number of local points that the player could get if all unsolved, published stars were solved before anyone else|
-| AccumulatedTobiiScoreTotal | 55 | This is the total number of TobiiScore (tm) points that the player has. Lower score is better |
-| unixCompletionTime |  | The unix time for each day/star if the star has been solved, -1 for unsolved stars|
+| PendingLocalPoints | 0 | This is the number of local points that the player could get if all unsolved, published stars were solved before anyone else|
+| UnixCompletionTime |  | The unix time for each day/star if the star has been solved, -1 for unsolved stars|
 | GlobalScoreForDay |  | Currently not supported |
 | PositionForStar |  | This is the order in which the star was solved. Ties will have the same position|
 | AccumulatedTobiiScore | [] | This is the accumulated TobiiScore (tm). Lower scores are better |

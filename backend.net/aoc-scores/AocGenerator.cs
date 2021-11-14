@@ -74,7 +74,7 @@ namespace RegenAoc
                     var dayInfo = member.completion_day_level[dayNumber];
                     foreach (var star in dayInfo.Keys)
                     {
-                        player.unixCompletionTime[dayNumber - 1][star - 1] = dayInfo[star].get_star_ts;
+                        player.UnixCompletionTime[dayNumber - 1][star - 1] = dayInfo[star].get_star_ts;
                     }
                 }
 
@@ -106,7 +106,7 @@ namespace RegenAoc
                 {
                     for (int star = 0; star < 2; star++)
                     {
-                        var unixStarTime = player.unixCompletionTime[day][star];
+                        var unixStarTime = player.UnixCompletionTime[day][star];
                         if (unixStarTime != -1)
                         {
                             var starTime = DateTimeOffset.FromUnixTimeSeconds(unixStarTime).DateTime;
@@ -120,7 +120,7 @@ namespace RegenAoc
                                 bestTime[day][star] = timeSpan;
                         }
                         else
-                            player.PendingPoints += playerCount - leaderboard.StarsAwarded[day][star];
+                            player.PendingLocalPoints += playerCount - leaderboard.StarsAwarded[day][star];
                     }
 
                     player.TimeToCompleteStar2[day] = player.TimeToComplete[day][1] - player.TimeToComplete[day][0];
@@ -130,15 +130,15 @@ namespace RegenAoc
 
                 for (int star = 0; star < 2; star++)
                 {
-                    var orderedPlayers = leaderboard.Players.Where(p => p.unixCompletionTime[day][star] != -1)
-                        .OrderBy(p => p.unixCompletionTime[day][star]).ThenBy(p => lastStar[p]).ToList();
-                    foreach (var player in leaderboard.Players.OrderBy(p => p.unixCompletionTime[day][star]).ThenBy(p => lastStar[p]))
+                    var orderedPlayers = leaderboard.Players.Where(p => p.UnixCompletionTime[day][star] != -1)
+                        .OrderBy(p => p.UnixCompletionTime[day][star]).ThenBy(p => lastStar[p]).ToList();
+                    foreach (var player in leaderboard.Players.OrderBy(p => p.UnixCompletionTime[day][star]).ThenBy(p => lastStar[p]))
                     {
-                        if (player.unixCompletionTime[day][star] != -1)
+                        if (player.UnixCompletionTime[day][star] != -1)
                         {
                             var index = orderedPlayers.IndexOf(player);
                             // handle ties
-                            if (index > 0 && player.unixCompletionTime[day][star] == orderedPlayers[index - 1].unixCompletionTime[day][star])
+                            if (index > 0 && player.UnixCompletionTime[day][star] == orderedPlayers[index - 1].UnixCompletionTime[day][star])
                                 player.PositionForStar[day][star] = orderedPlayers[index - 1].PositionForStar[day][star];
                             else
                                 player.PositionForStar[day][star] = index;
@@ -146,17 +146,17 @@ namespace RegenAoc
                             if (!boardConfig.ExcludeDays.Contains(day))
                             {
                                 player.LocalScore += playerCount - player.PositionForStar[day][star];
-                                player.AccumulatedTobiiScoreTotal += player.PositionForStar[day][star];
+                                player.TobiiScore += player.PositionForStar[day][star];
                             }
                             player.OffsetFromWinner[day][star] = player.TimeToComplete[day][star] - bestTime[day][star];
-                            lastStar[player] = player.unixCompletionTime[day][star];
+                            lastStar[player] = player.UnixCompletionTime[day][star];
                         }
 
                         player.AccumulatedLocalScore[day][star] = player.LocalScore;
                         if (player.LocalScore > leaderboard.TopScorePerDay[day][star])
                             leaderboard.TopScorePerDay[day][star] = player.LocalScore;
 
-                        player.AccumulatedTobiiScore[day][star] = player.AccumulatedTobiiScoreTotal;
+                        player.AccumulatedTobiiScore[day][star] = player.TobiiScore;
                     }
                 }
 

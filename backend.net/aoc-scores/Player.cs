@@ -7,7 +7,7 @@ public class Player
     public Player()
     {
         const int dayCount = 25;
-        unixCompletionTime = InitArray(dayCount, -1L);
+        UnixCompletionTime = InitArray(dayCount, -1L);
         TimeToComplete = InitArray<TimeSpan?>(dayCount, null); 
         AccumulatedTimeToComplete = InitArray<TimeSpan?>(dayCount, null); 
         OffsetFromWinner = InitArray<TimeSpan?>(dayCount, null);
@@ -44,13 +44,13 @@ public class Player
 //    public int LocalScore { get; set; }
     public int GlobalScore { get; set; }
     public int LocalScore { get; set; }
+    public int TobiiScore { get; set; }
     public int CurrentPosition { get; set; }
-    public int PendingPoints { get; set; }
-    public int AccumulatedTobiiScoreTotal { get; set; }
+    public int PendingLocalPoints { get; set; }
 
     public string Props { get; set; }
 
-    public long[][] unixCompletionTime { get; }
+    public long[][] UnixCompletionTime { get; }
     public int?[][] GlobalScoreForDay { get; set; }
     public int[][] PositionForStar { get; set; }
     public int[][] AccumulatedTobiiScore { get; set; }

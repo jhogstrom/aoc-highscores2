@@ -16,7 +16,7 @@ public class LeaderBoard
             foreach (var p in players)
             {
                 for (int star = 0; star < 2; star++)
-                    if (p.unixCompletionTime[day][star] != -1)
+                    if (p.UnixCompletionTime[day][star] != -1)
                         StarsAwarded[day][star]++;
             }
         }
