@@ -23,8 +23,7 @@ namespace RegenAoc.Tests
         {
             var sut = new AocGenerator();
 
-            var config = BoardConfigHelper.LoadFromFile();
-            BoardConfigHelper.SaveFile(config);
+            var config = await BoardConfigHelper.LoadFromDynamo(TestData.Guid1, 2020);
 
             await sut.Generate(config, 2020);
         }

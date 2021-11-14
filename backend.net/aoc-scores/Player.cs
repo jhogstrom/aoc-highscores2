@@ -7,54 +7,59 @@ public class Player
     public Player()
     {
         const int dayCount = 25;
-        unixCompletionTime = new long[dayCount][];
-        TimeToComplete = new TimeSpan?[dayCount][];
-        AccumulatedTimeToComplete = new TimeSpan?[dayCount][];
-        OffsetFromWinner = new TimeSpan?[dayCount][];
+        unixCompletionTime = InitArray(dayCount, -1L);
+        TimeToComplete = InitArray<TimeSpan?>(dayCount, null); 
+        AccumulatedTimeToComplete = InitArray<TimeSpan?>(dayCount, null); 
+        OffsetFromWinner = InitArray<TimeSpan?>(dayCount, null);
+        PositionForStar = InitArray(dayCount, -1);
+        AccumulatedTobiiScore = InitArray(dayCount, -1);
+        AccumulatedLocalScore = InitArray(dayCount, -1);
+        AccumulatedPosition = InitArray(dayCount, -1);
+        GlobalScoreForDay = InitArray<int?>(dayCount, null);
+
         TimeToCompleteStar2 = new TimeSpan?[dayCount];
-        PositionForStar = new int[dayCount][];
-        AccumulatedTobiiScore = new int[dayCount][];
-        AccumulatedScore = new int[dayCount][];
-        AccumulatedPosition = new int[dayCount][];
-        GlobalScoreForDay = new int?[dayCount][];
+
         for (int i = 0; i < dayCount; i++)
         {
-            unixCompletionTime[i] = new long[] { -1, -1 };
-            PositionForStar[i] = new[] { -1, -1 };
-            AccumulatedScore[i] = new[] { -1, -1 };
-            AccumulatedTobiiScore[i] = new[] { -1, -1 };
-            AccumulatedPosition[i] = new[] { -1, -1 };
-            GlobalScoreForDay[i] = new int?[] { null, null };
-            TimeToComplete[i] = new TimeSpan?[2];
-            AccumulatedTimeToComplete[i] = new TimeSpan?[2];
+
             TimeToCompleteStar2[i] = null;
-            OffsetFromWinner[i] = new TimeSpan?[2];
         }
     }
 
-    public int?[][] GlobalScoreForDay { get; set; }
+    private T[][] InitArray<T>(int size, T def)
+    {
+        var res = new T[size][];
+        for (int i = 0; i < size; i++)
+        {
+            res[i] = new T[] { def, def };
+        }
 
-    public int TotalScore { get; set; }
-    public int[][] PositionForStar { get; set; }
-    public int[][] AccumulatedTobiiScore { get; set; }
-    public int[][] AccumulatedScore { get; set; }
-    public int[][] AccumulatedPosition { get; set; }
+        return res;
+    }
 
     public string Name { get; set; }
+    public int Id { get; set; }
     public long LastStar { get; set; }
     public int Stars { get; set; }
-    public int LocalScore { get; set; }
+//    public int LocalScore { get; set; }
     public int GlobalScore { get; set; }
-    public int Id { get; set; }
+    public int LocalScore { get; set; }
+    public int CurrentPosition { get; set; }
+    public int PendingPoints { get; set; }
+    public int AccumulatedTobiiScoreTotal { get; set; }
+
+    public string Props { get; set; }
+
     public long[][] unixCompletionTime { get; }
+    public int?[][] GlobalScoreForDay { get; set; }
+    public int[][] PositionForStar { get; set; }
+    public int[][] AccumulatedTobiiScore { get; set; }
+    public int[][] AccumulatedLocalScore { get; set; }
+    public int[][] AccumulatedPosition { get; set; }
     public TimeSpan?[][] TimeToComplete { get; set; }
     public TimeSpan?[][] AccumulatedTimeToComplete { get; set; }
     public TimeSpan?[][] OffsetFromWinner { get; set; }
     public TimeSpan?[] TimeToCompleteStar2 { get; set; }
-    public string Props { get; set; }
-    public int CurrentPosition { get; set; }
-    public int PendingPoints { get; set; }
-    public int AccumulatedTobiiScoreTotal { get; set; }
 
     public string Flyoverhint(int day)
     {

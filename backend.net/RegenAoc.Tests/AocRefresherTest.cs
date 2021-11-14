@@ -10,6 +10,8 @@ namespace RegenAoc.Tests
     {
         private AocRefresher _sut = null!;
         private BoardConfig _boardConfig = null!;
+    
+
 
         [SetUp]
         public void Setup()
@@ -26,9 +28,8 @@ namespace RegenAoc.Tests
         [Test]
         public async Task TestRefresh2020()
         {
-            _boardConfig = await BoardConfigHelper.LoadFromDynamo("7d3e8718-f15c-41ed-a561-fbba4f3fa37c", 2020);
+            _boardConfig = await BoardConfigHelper.LoadFromDynamo(TestData.Guid1, 2020);
             await _sut.EnsureFresh(_boardConfig, 2020);
         }
     }
-
 }

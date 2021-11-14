@@ -24,7 +24,7 @@ namespace RegenAoc
 
         public async Task EnsureFresh(BoardConfig boardConfig, int year)
         {
-            using (var client = new AmazonS3Client(RegionEndpoint.USEast2))
+            using (var client = new AmazonS3Client(AwsHelpers.S3Region))
             {
                 var key = AwsHelpers.InternalBucketKey(year, boardConfig.AocId);
                 var l = await client.ListObjectsAsync(S3BucketName, key);

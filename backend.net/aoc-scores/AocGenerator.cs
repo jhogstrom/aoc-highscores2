@@ -25,20 +25,23 @@ namespace RegenAoc
             using (var client = new AmazonS3Client())
             {
                 var json = JsonConvert.SerializeObject(leaderboard);
-                File.WriteAllText("leaderboard.json", json);
 
-
-                PutObjectRequest req = new PutObjectRequest()
+                using (var stream = new MemoryStream(StreamHelper.Zip(json)))
                 {
-                    BucketName = AwsHelpers.PublicBucket,
-                    Key = AwsHelpers.PublicBucketKey(year, boardConfig.Guid),
-                    ContentBody = json
-                };
-                var obj = await client.PutObjectAsync(req);
+                    var req = new PutObjectRequest()
+                    {
+                        BucketName = AwsHelpers.PublicBucket,
+                        Key = AwsHelpers.PublicBucketKey(year, boardConfig.Guid),
+                        InputStream = stream,
+                        ContentType = "text/json"
+                    };
+                    req.Headers.ContentEncoding = "gzip";
+                    await client.PutObjectAsync(req);
+                }
             }
         }
 
-        private LeaderBoard ConvertList(AocList aocList)
+        private LeaderBoard ConvertList(AocGenerator.AocList aocList)
         {
             var highestDay = 0;
             var players = new List<Player>();
@@ -131,33 +134,30 @@ namespace RegenAoc
 
                             if (!boardConfig.ExcludeDays.Contains(day))
                             {
-                                player.TotalScore += playerCount - player.PositionForStar[day][star];
+                                player.LocalScore += playerCount - player.PositionForStar[day][star];
                                 player.AccumulatedTobiiScoreTotal += player.PositionForStar[day][star];
                             }
                             player.OffsetFromWinner[day][star] = player.TimeToComplete[day][star] - bestTime[day][star];
                             lastStar[player] = player.unixCompletionTime[day][star];
                         }
 
-                        player.AccumulatedScore[day][star] = player.TotalScore;
-                        if (player.TotalScore > leaderboard.TopScorePerDay[day][star])
-                            leaderboard.TopScorePerDay[day][star] = player.TotalScore;
+                        player.AccumulatedLocalScore[day][star] = player.LocalScore;
+                        if (player.LocalScore > leaderboard.TopScorePerDay[day][star])
+                            leaderboard.TopScorePerDay[day][star] = player.LocalScore;
 
                         player.AccumulatedTobiiScore[day][star] = player.AccumulatedTobiiScoreTotal;
-
-                        player.LocalScore = player.TotalScore;
-
                     }
                 }
 
                 for (int star = 0; star < 2; star++)
                 {
-                    var orderedPlayers = leaderboard.Players.Where(p => p.AccumulatedScore[day][star] != 0)
-                        .OrderByDescending(p => p.AccumulatedScore[day][star]).ToList();
+                    var orderedPlayers = leaderboard.Players.Where(p => p.AccumulatedLocalScore[day][star] != 0)
+                        .OrderByDescending(p => p.AccumulatedLocalScore[day][star]).ToList();
                     foreach (var player in leaderboard.Players)
                     {
                         var index = orderedPlayers.IndexOf(player);
                         // handle ties
-                        if (index > 0 && player.AccumulatedScore[day][star] == orderedPlayers[index - 1].AccumulatedScore[day][star])
+                        if (index > 0 && player.AccumulatedLocalScore[day][star] == orderedPlayers[index - 1].AccumulatedLocalScore[day][star])
                             player.AccumulatedPosition[day][star] = orderedPlayers[index - 1].AccumulatedPosition[day][star];
                         else
                             player.AccumulatedPosition[day][star] = index;
@@ -171,10 +171,10 @@ namespace RegenAoc
             }
         }
 
-        public AocList DeserializeAocJson(string list)
+        public AocGenerator.AocList DeserializeAocJson(string list)
         {
             var x = JsonConvert.DeserializeObject(list);
-            return JsonConvert.DeserializeObject<AocList>(list);
+            return JsonConvert.DeserializeObject<AocGenerator.AocList>(list);
         }
 
         private async Task<string> GetAocDataFromS3(BoardConfig boardConfig, int year)
@@ -193,7 +193,7 @@ namespace RegenAoc
         public class AocList
         {
             [JsonProperty("members")]
-            public Dictionary<int, AocMember> Members { get; set; }
+            public Dictionary<int, AocGenerator.AocMember> Members { get; set; }
 
             [JsonProperty("event")]
             public string Event;
@@ -210,7 +210,7 @@ namespace RegenAoc
             public string name;
             public int local_score;
             public int id;
-            public Dictionary<int, Dictionary<int, AocStarInfo>> completion_day_level { get; set; }
+            public Dictionary<int, Dictionary<int, AocGenerator.AocStarInfo>> completion_day_level { get; set; }
         }
 
         public class AocStarInfo
@@ -227,12 +227,12 @@ namespace RegenAoc
             if (ReferenceEquals(null, y)) return 1;
             if (ReferenceEquals(null, x)) return -1;
 
-            var comp = x.LocalScore.CompareTo(y.LocalScore);
+            var comp = - x.LocalScore.CompareTo(y.LocalScore);
             if (comp != 0) return comp;
 
             comp = x.LastStar.CompareTo(y.LastStar);
-            if (comp != 0) return comp;    
-            
+            if (comp != 0) return comp;
+
             return x.Id.CompareTo(y.Id);
         }
     }

@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
@@ -38,7 +40,7 @@ namespace RegenAoc
             var conf = new BoardConfig();
             conf.Guid = guid;
 
-            using (var client = new AmazonDynamoDBClient())
+            using (var client = new AmazonDynamoDBClient(AwsHelpers.DynamoRegion))
             {
                 // sk keys: 
                 // BOARDINFO|<aoc-boardid> owner, name
@@ -46,9 +48,9 @@ namespace RegenAoc
                 // YEAR|<year>
                 // SESSION|<sessioncookie>
 
-                var scanResponse = await client.ScanAsync(AwsHelpers.ConfigTableName, new List<string>());
-
-                ProcessConf(conf, scanResponse.Items);
+                // var scanResponse = await client.ScanAsync(AwsHelpers.ConfigTableName, new List<string>());
+                //
+                // ProcessConf(conf, scanResponse.Items.Where(i=>i["id"].S == guid));
 
                 var request = CreatePKQueryRequest(guid);
 
@@ -61,26 +63,31 @@ namespace RegenAoc
                 resp = await client.QueryAsync(request);
                 foreach (var r in resp.Items)
                 {
-                    if (int.TryParse(r["sk"].S, out var day))
-                        conf.ExcludeDays.Add(day);
+                    var parts = r["sk"].S.Split('|');
+                    switch (parts[0])
+                    {
+                        case "EXCLUDEDAY":
+                            if (int.TryParse(parts[1], out var day))
+                                conf.ExcludeDays.Add(day);
+                            break;
+                    }
                 }
             }
             return conf;
         }
 
-        private static void ProcessConf(BoardConfig conf, List<Dictionary<string, AttributeValue>> items)
+        private static void ProcessConf(BoardConfig conf, IEnumerable<Dictionary<string, AttributeValue>> items)
         {
             foreach (var r in items)
             {
-                if (r["id"].S != conf.Guid)
-                    continue;
-
                 var sk = r["sk"].S;
                 var parts = sk.Split('|');
                 switch (parts[0])
                 {
                     case "BOARDINFO":
                         conf.AocId = parts[1];
+                        if (r.ContainsKey("name"))
+                            conf.Name = r["name"].S;
                         break;
                     case "SESSION":
                         conf.SessionCookie = parts[1];
