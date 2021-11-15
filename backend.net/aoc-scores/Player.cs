@@ -38,11 +38,13 @@ public class Player
     }
 
     public string Name { get; set; }
+    public string AoCName { get; set; }
     public int Id { get; set; }
     public long LastStar { get; set; }
     public int Stars { get; set; }
 //    public int LocalScore { get; set; }
     public int GlobalScore { get; set; }
+    public int AoCLocalScore { get; set; }
     public int LocalScore { get; set; }
     public int TobiiScore { get; set; }
     public int CurrentPosition { get; set; }

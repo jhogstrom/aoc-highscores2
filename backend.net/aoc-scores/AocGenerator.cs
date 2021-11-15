@@ -26,9 +26,23 @@ namespace RegenAoc
             var aocList = DeserializeAocJson(list);
             _logger.LogLine("Computing AoC Stats");
             var leaderBoard = ConvertList(aocList);
+            HandlePlayerRenames(leaderBoard, boardConfig);
             DeriveMoreStats(leaderBoard, year, boardConfig, true);
             _logger.LogLine("Uploading results to public S3 bucket");
             await SaveToS3(leaderBoard, boardConfig, year);
+        }
+
+        private void HandlePlayerRenames(LeaderBoard leaderBoard, BoardConfig boardConfig)
+        {
+            foreach (var p in leaderBoard.Players)
+            {
+                if (boardConfig.NameMap.TryGetValue(p.Id, out var name))
+                    p.Name = name;
+                else
+                {
+                    p.Name = p.AoCName;
+                }
+            }
         }
 
         private async Task SaveToS3(LeaderBoard leaderboard, BoardConfig boardConfig, int year)
@@ -62,10 +76,10 @@ namespace RegenAoc
                 {
                     Id = member.id,
                     GlobalScore = member.global_score,
-                    LocalScore = member.local_score,
+                    AoCLocalScore = member.local_score,
                     Stars = member.stars,
                     LastStar = member.last_star_ts,
-                    Name = member.name
+                    AoCName = member.name
                 };
 
                 foreach (var dayNumber in member.completion_day_level.Keys)

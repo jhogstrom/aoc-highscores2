@@ -33,7 +33,7 @@ namespace RegenAoc.Tests
         {
             var sqsEvent = new SQSEvent() { Records = new List<SQSEvent.SQSMessage>(){new SQSEvent.SQSMessage()
             {
-                Body = "{\"boardguid\": \"abc\", \"year\": 2021}"
+                Body = $"{{\"boardguid\": \"{TestData.Guid1}\", \"year\": 2021}}"
             }} };
             await _sut.ReceiveEvent(sqsEvent, _context);
         }
