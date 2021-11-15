@@ -23,7 +23,7 @@
             {{ item.LocalScoreAll.Score }}
         </template>
         <template v-slot:item.Stars="{ item }">
-            {{ starString(item.UnixCompletionTime) }}
+            <star-line :times="item.UnixCompletionTime"></star-line>
         </template>
         <template v-slot:no-data>
             No data available
@@ -35,9 +35,11 @@
 </template>
 
 <script>
-// var _ = require('lodash')
+import StarLine from './StarLine.vue'
+
 
 export default {
+    components: { StarLine },
     data () { return {
         headers: [
             { text: 'Pos.', value: 'Position', width: 30 },
@@ -51,33 +53,17 @@ export default {
             return this.$store.getters.filteredPlayers
         },
     },
-    methods: {
-        starString(unixCompletionTime) {
-            var text="";
-            
-            for (let i = 0; i < unixCompletionTime.length; i++) {
-                if (unixCompletionTime[i][0] == -1) {
-                    text += " ";
-                } else if (unixCompletionTime[i][1] == -1) {
-                    text += "+"; // should be a silver star
-                } else {
-                    text += "*"; // should be a gold star
-                }
-            }
-            return text;
-
-        }
-    }
 }
 </script>
 
 <style scoped>
 >>>td.text-start {
-    background-color: black;
-    color: yellow;
-    font-family: 'Courier New', Courier, monospace;
+    background-color: rgb(5, 7, 39);
+    color: lightgray;
+    /* font-family: 'Courier New', Courier, monospace; */
+    font: 16px 'Courier New', Courier, monospace;
     /* border: 2px black; */
-    font-size: 18px;
+    /* font-size: 32px; */
 
 }
 
