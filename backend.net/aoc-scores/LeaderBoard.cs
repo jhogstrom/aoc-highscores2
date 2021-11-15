@@ -1,9 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 public class LeaderBoard
 {
-    public LeaderBoard(List<Player> players, int highestDay, List<int> excludeDays, List<string> excludedPlayers)
+    public LeaderBoard(
+        List<Player> players, 
+        int highestDay, 
+        List<int> excludeDays, 
+        List<string> excludedPlayers,
+        DateTime aocLastModified)
     {
         Players = players;
         HighestDay = highestDay;
@@ -22,14 +28,17 @@ public class LeaderBoard
             }
         }
 
+        RetrievedFromAoC = aocLastModified;
         ExcludedDays = new List<int>(excludeDays);
         ExcludedPlayers = new List<string>(excludedPlayers);
+
     }
 
     public int HighestDay { get; }
     public List<int> ExcludedDays { get; }
     public List<string> ExcludedPlayers { get; }
     public List<Player> Players { get; }
+    public DateTime RetrievedFromAoC { get; set; }
 
     // public int[][] TopLocalScore { get; }
     // public int[][] TopActiveLocalScore { get; }
