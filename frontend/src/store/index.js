@@ -17,8 +17,8 @@ export default new Vuex.Store({
         data: state => state.data,
         includeZeroes: state => state.includeZeroes,
         isLoaded: state => (state.data) ? true : false,
-        players: state => _.sortBy(state.data.Players, ["LocalScore"]).slice().reverse(),
-        filteredPlayers: state => state.data.Players.filter(_ => state.includeZeroes || _.LocalScore > 0).slice().reverse()
+        players: state => _.sortBy(state.data.Players, ["Position"]).slice(),
+        filteredPlayers: state => state.data.Players.filter(_ => state.includeZeroes || _.LocalScore > 0).slice()
     },
     actions: {
         async setData({ commit }, data) {
