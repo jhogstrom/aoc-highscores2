@@ -12,15 +12,15 @@
         @dblclick:row="editItem"> -->
         <template v-slot:item.Position="{ item }">
             <!-- <span v-bind:class="coloring(item)">{{ customerString(item) }}</span> -->
-            {{ item.Position }})
+            {{ item.LocalScoreAll.Position }})
         </template>
         <template v-slot:item.Name="{ item }">
             <!-- <span v-bind:class="coloring(item)">{{ customerString(item) }}</span> -->
             {{ item.Name }}
         </template>
-        <template v-slot:item.LocalScore="{ item }">
+        <template v-slot:item.Score="{ item }">
             <!-- <span v-bind:class="coloring(item)">{{ customerString(item) }}</span> -->
-            {{ item.LocalScore }}
+            {{ item.LocalScoreAll.Score }}
         </template>
         <template v-slot:item.Stars="{ item }">
             {{ starString(item.UnixCompletionTime) }}
@@ -42,7 +42,7 @@ export default {
         headers: [
             { text: 'Pos.', value: 'Position', width: 30 },
             { text: 'Name', value: 'Name', width: 150 },
-            { text: 'Points', value: 'LocalScore', width: 20  },
+            { text: 'Points', value: 'Score', width: 20  },
             { text: 'Stars', value: 'Stars' },
         ],
     }},
