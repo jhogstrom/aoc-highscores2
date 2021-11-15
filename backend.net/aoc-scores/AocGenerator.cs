@@ -40,7 +40,7 @@ namespace RegenAoc
                     p.Name = name;
                 else
                 {
-                    p.Name = p.AoCName;
+                    p.Name = string.IsNullOrEmpty(p.AoCName) ? $"Anon ({p.Id})" : p.AoCName;
                 }
             }
         }
@@ -174,8 +174,8 @@ namespace RegenAoc
                             runningLastStar[player] = completionTime;
                         }
 
-                        ComputeAccumulatedScore(player, player.LocalScoreAll, day, star, pos=>playerCount-pos, boardConfig);
-                        ComputeAccumulatedScore(player, player.LocalScoreActive, day, star, pos => activePlayerCount-pos, boardConfig);
+                        ComputeAccumulatedScore(player, player.LocalScoreAll, day, star, pos => playerCount - pos, boardConfig);
+                        ComputeAccumulatedScore(player, player.LocalScoreActive, day, star, pos => activePlayerCount - pos, boardConfig);
                         ComputeAccumulatedScore(player, player.TobiiScore, day, star, pos => pos, boardConfig);
 
                         // if (player.LocalScore > leaderBoard.TopLocalScore[day][star])
@@ -192,9 +192,9 @@ namespace RegenAoc
                     CalculateAccumulatedPosition(leaderBoard, p => p.TobiiScore, day, star, +1);
                 }
 
-                CalculatePosition(leaderBoard, p=>p.LocalScoreAll, new Player.LocalScoreComparer(p => p.LocalScoreAll) );
-                CalculatePosition(leaderBoard, p=>p.LocalScoreActive, new Player.LocalScoreComparer(p=>p.LocalScoreActive));
-                CalculatePosition(leaderBoard, p=>p.TobiiScore, new Player.TobiiScoreComparer());
+                CalculatePosition(leaderBoard, p => p.LocalScoreAll, new Player.LocalScoreComparer(p => p.LocalScoreAll));
+                CalculatePosition(leaderBoard, p => p.LocalScoreActive, new Player.LocalScoreComparer(p => p.LocalScoreActive));
+                CalculatePosition(leaderBoard, p => p.TobiiScore, new Player.TobiiScoreComparer());
             }
         }
 
