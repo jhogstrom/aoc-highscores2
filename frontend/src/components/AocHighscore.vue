@@ -60,8 +60,7 @@ export default {
 >>>td.text-start {
     background-color: rgb(5, 7, 39);
     color: lightgray;
-    /* font-family: 'Courier New', Courier, monospace; */
-    font: 16px 'Courier New', Courier, monospace;
+    font: 16px 'Source Code Pro', Courier, monospace;
     /* border: 2px black; */
     /* font-size: 32px; */
 
