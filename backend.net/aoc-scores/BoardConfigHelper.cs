@@ -56,7 +56,7 @@ namespace RegenAoc
 
                 var resp = await client.QueryAsync(request);
 
-                ProcessConf(conf, resp.Items);
+                ProcessConf(conf, resp.Items, year);
 
                 request = CreatePKQueryRequest(year.ToString());
 
@@ -76,7 +76,7 @@ namespace RegenAoc
             return conf;
         }
 
-        private static void ProcessConf(BoardConfig conf, IEnumerable<Dictionary<string, AttributeValue>> items)
+        private static void ProcessConf(BoardConfig conf, IEnumerable<Dictionary<string, AttributeValue>> items, int year)
         {
             foreach (var r in items)
             {
@@ -99,6 +99,13 @@ namespace RegenAoc
                     case "NAMEMAP":
                         if (int.TryParse(parts[1], out var userid))
                             conf.NameMap[userid] = r["to_name"].S;
+                        break;
+                    case "EXCLUDEPLAYER":
+                        if (parts.Length == 3 &&
+                            int.TryParse(parts[1], out var excludeYear) &&
+                            year == excludeYear &&
+                            int.TryParse(parts[2], out var playerId))
+                            conf.ExcludePlayers.Add(playerId);
                         break;
                 }
             }

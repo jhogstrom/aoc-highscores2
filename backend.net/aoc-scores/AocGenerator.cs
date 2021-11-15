@@ -25,9 +25,9 @@ namespace RegenAoc
             var list = await GetAocDataFromS3(boardConfig, year);
             var aocList = DeserializeAocJson(list);
             _logger.LogLine("Computing AoC Stats");
-            var leaderBoard = ConvertList(aocList);
+            var leaderBoard = ConvertList(aocList, boardConfig);
             HandlePlayerRenames(leaderBoard, boardConfig);
-            DeriveMoreStats(leaderBoard, year, boardConfig, true);
+            DeriveMoreStats(leaderBoard, year, boardConfig);
             _logger.LogLine("Uploading results to public S3 bucket");
             await SaveToS3(leaderBoard, boardConfig, year);
         }
@@ -45,11 +45,11 @@ namespace RegenAoc
             }
         }
 
-        private async Task SaveToS3(LeaderBoard leaderboard, BoardConfig boardConfig, int year)
+        private async Task SaveToS3(LeaderBoard leaderBoard, BoardConfig boardConfig, int year)
         {
             using (var client = new AmazonS3Client())
             {
-                var json = JsonConvert.SerializeObject(leaderboard);
+                var json = JsonConvert.SerializeObject(leaderBoard);
 
                 using (var stream = new MemoryStream(StreamHelper.Zip(json)))
                 {
@@ -66,13 +66,21 @@ namespace RegenAoc
             }
         }
 
-        private LeaderBoard ConvertList(AocGenerator.AocList aocList)
+        private LeaderBoard ConvertList(AocList aocList, BoardConfig boardConfig)
         {
             var highestDay = 0;
             var players = new List<Player>();
+            var excludedPlayers = new List<string>();
             foreach (var member in aocList.Members.Values)
             {
-                var player = new Player()
+                if (boardConfig.ExcludePlayers.Contains(member.id))
+                {
+                    _logger.LogLine($"Excluded player {member.id}, {member.name}");
+                    excludedPlayers.Add($"{member.id}:{member.name}");
+                    continue;
+                }
+
+                var player = new Player
                 {
                     Id = member.id,
                     GlobalScore = member.global_score,
@@ -95,28 +103,26 @@ namespace RegenAoc
                 players.Add(player);
             }
 
-            var leaderboard = new LeaderBoard(players, highestDay);
-            return leaderboard;
+            return new LeaderBoard(players, highestDay, boardConfig.ExcludeDays, excludedPlayers);
         }
 
-        private void DeriveMoreStats(LeaderBoard leaderboard, int year, BoardConfig boardConfig, bool excludeZero)
+        private void DeriveMoreStats(LeaderBoard leaderBoard, int year, BoardConfig boardConfig)
         {
-            var bestTime = new TimeSpan[leaderboard.HighestDay][];
-            var lastStar = new Dictionary<Player, long>();
-            var playerCount = leaderboard.Players.Count;
-            if (excludeZero)
-                playerCount = leaderboard.Players.Count(p => p.Stars > 0);
+            var bestTime = new TimeSpan[leaderBoard.HighestDay][];
+            var runningLastStar = new Dictionary<Player, long>();
+            var playerCount = leaderBoard.Players.Count;
+            var activePlayerCount = leaderBoard.Players.Count(p => p.Stars > 0);
 
-            foreach (var player in leaderboard.Players)
+            foreach (var player in leaderBoard.Players)
             {
-                lastStar[player] = -1;
+                runningLastStar[player] = -1;
             }
 
-            for (int day = 0; day < leaderboard.HighestDay; day++)
+            for (int day = 0; day < leaderBoard.HighestDay; day++)
             {
                 var publishTime = new DateTime(year, 12, day + 1, 5, 0, 0);
                 bestTime[day] = new TimeSpan[2];
-                foreach (var player in leaderboard.Players)
+                foreach (var player in leaderBoard.Players)
                 {
                     for (int star = 0; star < 2; star++)
                     {
@@ -134,7 +140,10 @@ namespace RegenAoc
                                 bestTime[day][star] = timeSpan;
                         }
                         else
-                            player.PendingLocalPoints += playerCount - leaderboard.StarsAwarded[day][star];
+                        {
+                            player.PendingLocalPoints += playerCount - leaderBoard.StarsAwarded[day][star];
+                            player.PendingActiveLocalPoints += activePlayerCount - leaderBoard.StarsAwarded[day][star];
+                        }
                     }
 
                     player.TimeToCompleteStar2[day] = player.TimeToComplete[day][1] - player.TimeToComplete[day][0];
@@ -144,41 +153,50 @@ namespace RegenAoc
 
                 for (int star = 0; star < 2; star++)
                 {
-                    var orderedPlayers = leaderboard.Players.Where(p => p.UnixCompletionTime[day][star] != -1)
-                        .OrderBy(p => p.UnixCompletionTime[day][star]).ThenBy(p => lastStar[p]).ToList();
-                    foreach (var player in leaderboard.Players.OrderBy(p => p.UnixCompletionTime[day][star]).ThenBy(p => lastStar[p]))
+                    var orderedPlayers = leaderBoard.Players
+                        .Where(p => p.UnixCompletionTime[day][star] != -1)
+                        .OrderBy(p => p.UnixCompletionTime[day][star])
+                        .ThenBy(p => runningLastStar[p]).ToList();
+
+                    foreach (var player in leaderBoard.Players.OrderBy(p => p.UnixCompletionTime[day][star]).ThenBy(p => runningLastStar[p]))
                     {
-                        if (player.UnixCompletionTime[day][star] != -1)
+                        var completionTime = player.UnixCompletionTime[day][star];
+                        if (completionTime != -1)
                         {
                             var index = orderedPlayers.IndexOf(player);
                             // handle ties
-                            if (index > 0 && player.UnixCompletionTime[day][star] == orderedPlayers[index - 1].UnixCompletionTime[day][star])
+                            if (index > 0 && completionTime == orderedPlayers[index - 1].UnixCompletionTime[day][star])
                                 player.PositionForStar[day][star] = orderedPlayers[index - 1].PositionForStar[day][star];
                             else
                                 player.PositionForStar[day][star] = index;
 
                             if (!boardConfig.ExcludeDays.Contains(day))
                             {
-                                player.LocalScore += playerCount - player.PositionForStar[day][star];
-                                player.TobiiScore += player.PositionForStar[day][star];
+                                var playerPosition = player.PositionForStar[day][star];
+                                player.LocalScore += playerCount - playerPosition;
+                                player.ActiveLocalScore += activePlayerCount - playerPosition;
+                                player.TobiiScore += playerPosition;
                             }
                             player.OffsetFromWinner[day][star] = player.TimeToComplete[day][star] - bestTime[day][star];
-                            lastStar[player] = player.UnixCompletionTime[day][star];
+                            runningLastStar[player] = completionTime;
                         }
 
                         player.AccumulatedLocalScore[day][star] = player.LocalScore;
-                        if (player.LocalScore > leaderboard.TopScorePerDay[day][star])
-                            leaderboard.TopScorePerDay[day][star] = player.LocalScore;
-
+                        player.AccumulatedActiveLocalScore[day][star] = player.ActiveLocalScore;
                         player.AccumulatedTobiiScore[day][star] = player.TobiiScore;
+
+                        // if (player.LocalScore > leaderBoard.TopLocalScore[day][star])
+                        //     leaderBoard.TopLocalScore[day][star] = player.LocalScore;
+                        // if (player.ActiveLocalScore > leaderBoard.TopActiveLocalScore[day][star])
+                        //     leaderBoard.TopActiveLocalScore[day][star] = player.ActiveLocalScore;
                     }
                 }
 
                 for (int star = 0; star < 2; star++)
                 {
-                    var orderedPlayers = leaderboard.Players.Where(p => p.AccumulatedLocalScore[day][star] != 0)
+                    var orderedPlayers = leaderBoard.Players.Where(p => p.AccumulatedLocalScore[day][star] != 0)
                         .OrderByDescending(p => p.AccumulatedLocalScore[day][star]).ToList();
-                    foreach (var player in leaderboard.Players)
+                    foreach (var player in leaderBoard.Players)
                     {
                         var index = orderedPlayers.IndexOf(player);
                         // handle ties
@@ -189,76 +207,30 @@ namespace RegenAoc
                     }
                 }
 
-                leaderboard.Players.Sort(new PlayerComparer());
+                leaderBoard.Players.Sort(new Player.PlayerComparer(false));
 
-                for (int i = 0; i < leaderboard.Players.Count; i++)
-                    leaderboard.Players[i].CurrentPosition = i + 1;
+                for (int i = 0; i < leaderBoard.Players.Count; i++)
+                    leaderBoard.Players[i].Position = i + 1;
+
+                leaderBoard.Players.Sort(new Player.PlayerComparer(true));
+
+                for (int i = 0; i < leaderBoard.Players.Count; i++)
+                    leaderBoard.Players[i].ActivePosition = i + 1;
             }
         }
 
-        public AocGenerator.AocList DeserializeAocJson(string list)
+        public AocList DeserializeAocJson(string list)
         {
-            var x = JsonConvert.DeserializeObject(list);
-            return JsonConvert.DeserializeObject<AocGenerator.AocList>(list);
+            return JsonConvert.DeserializeObject<AocList>(list);
         }
 
         private async Task<string> GetAocDataFromS3(BoardConfig boardConfig, int year)
         {
-            using (var client = new AmazonS3Client())
-            {
-                var obj = await client.GetObjectAsync(AwsHelpers.InternalBucket, AwsHelpers.InternalBucketKey(year, boardConfig.AocId));
-                using (var s = obj.ResponseStream)
-                {
-                    var reader = new StreamReader(s);
-                    return await reader.ReadToEndAsync();
-                }
-            }
-        }
-
-        public class AocList
-        {
-            [JsonProperty("members")]
-            public Dictionary<int, AocGenerator.AocMember> Members { get; set; }
-
-            [JsonProperty("event")]
-            public string Event;
-
-            [JsonProperty("owner_id")]
-            public string OwnerId;
-        }
-
-        public class AocMember
-        {
-            public int stars;
-            public long last_star_ts;
-            public int global_score;
-            public string name;
-            public int local_score;
-            public int id;
-            public Dictionary<int, Dictionary<int, AocGenerator.AocStarInfo>> completion_day_level { get; set; }
-        }
-
-        public class AocStarInfo
-        {
-            public int get_star_ts;
-        }
-    }
-
-    internal class PlayerComparer : IComparer<Player>
-    {
-        public int Compare(Player x, Player y)
-        {
-            if (ReferenceEquals(x, y)) return 0;
-            if (ReferenceEquals(null, y)) return 1;
-            if (ReferenceEquals(null, x)) return -1;
-
-            var comp = - x.LocalScore.CompareTo(y.LocalScore);
-            if (comp != 0) return comp;
-
-            comp = x.LastStar.CompareTo(y.LastStar);
-            if (comp != 0) return comp;
-
-            return x.Id.CompareTo(y.Id);
+            using var client = new AmazonS3Client();
+            var obj = await client.GetObjectAsync(AwsHelpers.InternalBucket, AwsHelpers.InternalBucketKey(year, boardConfig.AocId));
+            await using var s = obj.ResponseStream;
+            var reader = new StreamReader(s);
+            return await reader.ReadToEndAsync();
         }
     }
 }

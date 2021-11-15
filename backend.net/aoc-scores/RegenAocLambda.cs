@@ -87,21 +87,15 @@ namespace RegenAoc
 
     public class BoardConfig
     {
-        public BoardConfig()
-        {
-            ExcludeDays = new List<int>();
-            Years = new List<int>();
-            NameMap = new Dictionary<int, string>();
-        }
-
         public string Guid { get; set; }
         public string AocId { get; set; }
-        public List<int> Years { get; set; }
+        public List<int> Years { get; set; } = new List<int>();
         public string SessionCookie { get; set; }
         public DateTime SessionCookieExpiration { get; set; }
         public string Name { get; set; }
-        public List<int> ExcludeDays { get; set; }
-        public Dictionary<int, string> NameMap { get; set; }
+        public List<int> ExcludeDays { get; set; } = new List<int>();
+        public Dictionary<int, string> NameMap { get; } = new Dictionary<int, string>();
+        public List<int> ExcludePlayers { get; } = new List<int>();
     }
 
     internal class RegenQueueBody

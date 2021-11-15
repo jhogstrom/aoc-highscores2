@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 [DebuggerDisplay("{Name}: {LocalScore}")]
@@ -14,6 +15,7 @@ public class Player
         PositionForStar = InitArray(dayCount, -1);
         AccumulatedTobiiScore = InitArray(dayCount, -1);
         AccumulatedLocalScore = InitArray(dayCount, -1);
+        AccumulatedActiveLocalScore = InitArray(dayCount, -1);
         AccumulatedPosition = InitArray(dayCount, -1);
         GlobalScoreForDay = InitArray<int?>(dayCount, null);
 
@@ -21,7 +23,6 @@ public class Player
 
         for (int i = 0; i < dayCount; i++)
         {
-
             TimeToCompleteStar2[i] = null;
         }
     }
@@ -42,29 +43,64 @@ public class Player
     public int Id { get; set; }
     public long LastStar { get; set; }
     public int Stars { get; set; }
-//    public int LocalScore { get; set; }
     public int GlobalScore { get; set; }
     public int AoCLocalScore { get; set; }
     public int LocalScore { get; set; }
-    public int TobiiScore { get; set; }
-    public int CurrentPosition { get; set; }
     public int PendingLocalPoints { get; set; }
+    public int ActiveLocalScore { get; set; }
+    public int PendingActiveLocalPoints { get; set; }
+    public int TobiiScore { get; set; }
+    public int Position { get; set; }
+    public int ActivePosition { get; set; }
 
-    public string Props { get; set; }
+//    public string Props { get; set; }
 
     public long[][] UnixCompletionTime { get; }
     public int?[][] GlobalScoreForDay { get; set; }
     public int[][] PositionForStar { get; set; }
     public int[][] AccumulatedTobiiScore { get; set; }
     public int[][] AccumulatedLocalScore { get; set; }
+    public int[][] AccumulatedActiveLocalScore { get; set; }
     public int[][] AccumulatedPosition { get; set; }
     public TimeSpan?[][] TimeToComplete { get; set; }
     public TimeSpan?[][] AccumulatedTimeToComplete { get; set; }
     public TimeSpan?[][] OffsetFromWinner { get; set; }
     public TimeSpan?[] TimeToCompleteStar2 { get; set; }
-
     public string Flyoverhint(int day)
     {
         return $"Time *1: {TimeToComplete[day][0]}\nTime *2: {TimeToComplete[day][1]}";
+    }
+
+    internal class PlayerComparer : IComparer<Player>
+    {
+        private readonly bool _active;
+
+        public PlayerComparer(bool active)
+        {
+            _active = active;
+        }
+
+        public int Compare(Player x, Player y)
+        {
+            if (ReferenceEquals(x, y)) return 0;
+            if (ReferenceEquals(null, y)) return 1;
+            if (ReferenceEquals(null, x)) return -1;
+
+            if (_active)
+            {
+                var comp = -x.ActiveLocalScore.CompareTo(y.ActiveLocalScore);
+                if (comp != 0) return comp;
+            }
+            else
+            {
+                var comp = -x.LocalScore.CompareTo(y.LocalScore);
+                if (comp != 0) return comp;
+            }
+
+            var comp2 = x.LastStar.CompareTo(y.LastStar);
+            if (comp2 != 0) return comp2;
+
+            return x.Id.CompareTo(y.Id);
+        }
     }
 }

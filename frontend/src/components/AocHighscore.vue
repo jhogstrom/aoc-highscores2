@@ -12,7 +12,7 @@
         @dblclick:row="editItem"> -->
         <template v-slot:item.Position="{ item }">
             <!-- <span v-bind:class="coloring(item)">{{ customerString(item) }}</span> -->
-            {{ item.CurrentPosition }})
+            {{ item.Position }})
         </template>
         <template v-slot:item.Name="{ item }">
             <!-- <span v-bind:class="coloring(item)">{{ customerString(item) }}</span> -->
