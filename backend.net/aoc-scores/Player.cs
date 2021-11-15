@@ -8,15 +8,14 @@ public class Player
     public Player()
     {
         const int dayCount = 25;
+        LocalScoreActive = new ScoreRec(dayCount);
+        LocalScoreAll = new ScoreRec(dayCount);
+        TobiiScore = new ScoreRec(dayCount);
         UnixCompletionTime = InitArray(dayCount, -1L);
-        TimeToComplete = InitArray<TimeSpan?>(dayCount, null); 
-        AccumulatedTimeToComplete = InitArray<TimeSpan?>(dayCount, null); 
+        TimeToComplete = InitArray<TimeSpan?>(dayCount, null);
+        AccumulatedTimeToComplete = InitArray<TimeSpan?>(dayCount, null);
         OffsetFromWinner = InitArray<TimeSpan?>(dayCount, null);
         PositionForStar = InitArray(dayCount, -1);
-        AccumulatedTobiiScore = InitArray(dayCount, -1);
-        AccumulatedLocalScore = InitArray(dayCount, -1);
-        AccumulatedActiveLocalScore = InitArray(dayCount, -1);
-        AccumulatedPosition = InitArray(dayCount, -1);
         GlobalScoreForDay = InitArray<int?>(dayCount, null);
 
         TimeToCompleteStar2 = new TimeSpan?[dayCount];
@@ -27,7 +26,7 @@ public class Player
         }
     }
 
-    private T[][] InitArray<T>(int size, T def)
+    private static T[][] InitArray<T>(int size, T def)
     {
         var res = new T[size][];
         for (int i = 0; i < size; i++)
@@ -45,39 +44,40 @@ public class Player
     public int Stars { get; set; }
     public int GlobalScore { get; set; }
     public int AoCLocalScore { get; set; }
-    public int LocalScore { get; set; }
-    public int PendingLocalPoints { get; set; }
-    public int ActiveLocalScore { get; set; }
-    public int PendingActiveLocalPoints { get; set; }
-    public int TobiiScore { get; set; }
-    public int Position { get; set; }
-    public int ActivePosition { get; set; }
-
-//    public string Props { get; set; }
+    public ScoreRec LocalScoreActive { get; }
+    public ScoreRec LocalScoreAll { get; }
+    public ScoreRec TobiiScore { get; }
 
     public long[][] UnixCompletionTime { get; }
     public int?[][] GlobalScoreForDay { get; set; }
     public int[][] PositionForStar { get; set; }
-    public int[][] AccumulatedTobiiScore { get; set; }
-    public int[][] AccumulatedLocalScore { get; set; }
-    public int[][] AccumulatedActiveLocalScore { get; set; }
-    public int[][] AccumulatedPosition { get; set; }
     public TimeSpan?[][] TimeToComplete { get; set; }
     public TimeSpan?[][] AccumulatedTimeToComplete { get; set; }
     public TimeSpan?[][] OffsetFromWinner { get; set; }
     public TimeSpan?[] TimeToCompleteStar2 { get; set; }
-    public string Flyoverhint(int day)
+
+    public class ScoreRec
     {
-        return $"Time *1: {TimeToComplete[day][0]}\nTime *2: {TimeToComplete[day][1]}";
+        public ScoreRec(int days)
+        {
+            AccumulatedScore = InitArray(days, -1);
+            AccumulatedPosition = InitArray(days, -1);
+        }
+        public int Score { get; set; }
+        public int Position { get; set; }
+        public int PendingPoints { get; set; }
+        public int[][] AccumulatedScore { get; }
+        public int[][] AccumulatedPosition { get; set; }
+
     }
 
-    internal class PlayerComparer : IComparer<Player>
+    internal class LocalScoreComparer : IComparer<Player>
     {
-        private readonly bool _active;
+        private readonly Func<Player, ScoreRec> _f;
 
-        public PlayerComparer(bool active)
+        public LocalScoreComparer(Func<Player, ScoreRec> f)
         {
-            _active = active;
+            _f = f;
         }
 
         public int Compare(Player x, Player y)
@@ -86,19 +86,31 @@ public class Player
             if (ReferenceEquals(null, y)) return 1;
             if (ReferenceEquals(null, x)) return -1;
 
-            if (_active)
-            {
-                var comp = -x.ActiveLocalScore.CompareTo(y.ActiveLocalScore);
-                if (comp != 0) return comp;
-            }
-            else
-            {
-                var comp = -x.LocalScore.CompareTo(y.LocalScore);
-                if (comp != 0) return comp;
-            }
+            var comp = -1 * _f(x).Score.CompareTo(_f(y).Score);
+            if (comp != 0) return comp;
 
-            var comp2 = x.LastStar.CompareTo(y.LastStar);
-            if (comp2 != 0) return comp2;
+            comp = x.LastStar.CompareTo(y.LastStar);
+            if (comp != 0) return comp;
+
+            return x.Id.CompareTo(y.Id);
+        }
+    }
+    internal class TobiiScoreComparer : IComparer<Player>
+    {
+        public int Compare(Player x, Player y)
+        {
+            if (ReferenceEquals(x, y)) return 0;
+            if (ReferenceEquals(null, y)) return 1;
+            if (ReferenceEquals(null, x)) return -1;
+
+            var comp = -1 * x.Stars.CompareTo(y.Stars);
+            if (comp != 0) return comp;
+
+            comp = x.TobiiScore.Score.CompareTo(y.TobiiScore.Score);
+            if (comp != 0) return comp;
+
+            comp = x.LastStar.CompareTo(y.LastStar);
+            if (comp != 0) return comp;
 
             return x.Id.CompareTo(y.Id);
         }

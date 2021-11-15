@@ -141,8 +141,8 @@ namespace RegenAoc
                         }
                         else
                         {
-                            player.PendingLocalPoints += playerCount - leaderBoard.StarsAwarded[day][star];
-                            player.PendingActiveLocalPoints += activePlayerCount - leaderBoard.StarsAwarded[day][star];
+                            player.LocalScoreAll.PendingPoints += playerCount - leaderBoard.StarsAwarded[day][star];
+                            player.LocalScoreActive.PendingPoints += activePlayerCount - leaderBoard.StarsAwarded[day][star];
                         }
                     }
 
@@ -170,20 +170,13 @@ namespace RegenAoc
                             else
                                 player.PositionForStar[day][star] = index;
 
-                            if (!boardConfig.ExcludeDays.Contains(day))
-                            {
-                                var playerPosition = player.PositionForStar[day][star];
-                                player.LocalScore += playerCount - playerPosition;
-                                player.ActiveLocalScore += activePlayerCount - playerPosition;
-                                player.TobiiScore += playerPosition;
-                            }
                             player.OffsetFromWinner[day][star] = player.TimeToComplete[day][star] - bestTime[day][star];
                             runningLastStar[player] = completionTime;
                         }
 
-                        player.AccumulatedLocalScore[day][star] = player.LocalScore;
-                        player.AccumulatedActiveLocalScore[day][star] = player.ActiveLocalScore;
-                        player.AccumulatedTobiiScore[day][star] = player.TobiiScore;
+                        ComputeAccumulatedScore(player, player.LocalScoreAll, day, star, pos=>playerCount-pos, boardConfig);
+                        ComputeAccumulatedScore(player, player.LocalScoreActive, day, star, pos => activePlayerCount-pos, boardConfig);
+                        ComputeAccumulatedScore(player, player.TobiiScore, day, star, pos => pos, boardConfig);
 
                         // if (player.LocalScore > leaderBoard.TopLocalScore[day][star])
                         //     leaderBoard.TopLocalScore[day][star] = player.LocalScore;
@@ -194,28 +187,55 @@ namespace RegenAoc
 
                 for (int star = 0; star < 2; star++)
                 {
-                    var orderedPlayers = leaderBoard.Players.Where(p => p.AccumulatedLocalScore[day][star] != 0)
-                        .OrderByDescending(p => p.AccumulatedLocalScore[day][star]).ToList();
-                    foreach (var player in leaderBoard.Players)
-                    {
-                        var index = orderedPlayers.IndexOf(player);
-                        // handle ties
-                        if (index > 0 && player.AccumulatedLocalScore[day][star] == orderedPlayers[index - 1].AccumulatedLocalScore[day][star])
-                            player.AccumulatedPosition[day][star] = orderedPlayers[index - 1].AccumulatedPosition[day][star];
-                        else
-                            player.AccumulatedPosition[day][star] = index;
-                    }
+                    CalculateAccumulatedPosition(leaderBoard, p => p.LocalScoreAll, day, star, -1);
+                    CalculateAccumulatedPosition(leaderBoard, p => p.LocalScoreActive, day, star, -1);
+                    CalculateAccumulatedPosition(leaderBoard, p => p.TobiiScore, day, star, +1);
                 }
 
-                leaderBoard.Players.Sort(new Player.PlayerComparer(false));
+                CalculatePosition(leaderBoard, p=>p.LocalScoreAll, new Player.LocalScoreComparer(p => p.LocalScoreAll) );
+                CalculatePosition(leaderBoard, p=>p.LocalScoreActive, new Player.LocalScoreComparer(p=>p.LocalScoreActive));
+                CalculatePosition(leaderBoard, p=>p.TobiiScore, new Player.TobiiScoreComparer());
+            }
+        }
 
-                for (int i = 0; i < leaderBoard.Players.Count; i++)
-                    leaderBoard.Players[i].Position = i + 1;
+        private void ComputeAccumulatedScore(Player player, Player.ScoreRec scoreRec, int day, int star, Func<int, int> posToScore, BoardConfig boardConfig)
+        {
+            var completionTime = player.UnixCompletionTime[day][star];
+            if (completionTime != -1)
+            {
+                if (!boardConfig.ExcludeDays.Contains(day))
+                {
+                    scoreRec.Score += posToScore(player.PositionForStar[day][star]);
+                }
+            }
 
-                leaderBoard.Players.Sort(new Player.PlayerComparer(true));
+            scoreRec.AccumulatedScore[day][star] = scoreRec.Score;
+        }
 
-                for (int i = 0; i < leaderBoard.Players.Count; i++)
-                    leaderBoard.Players[i].ActivePosition = i + 1;
+        private static void CalculatePosition(LeaderBoard leaderBoard, Func<Player, Player.ScoreRec> func, IComparer<Player> localScoreComparer)
+        {
+            leaderBoard.Players.Sort(localScoreComparer);
+
+            for (int i = 0; i < leaderBoard.Players.Count; i++)
+                func(leaderBoard.Players[i]).Position = i + 1;
+        }
+
+        private static void CalculateAccumulatedPosition(LeaderBoard leaderBoard, Func<Player, Player.ScoreRec> f,
+            int day, int star, int sortOrder)
+        {
+            var orderedPlayers = leaderBoard.Players
+                .Where(p => p.PositionForStar[day][star] != -1)
+                .OrderBy(p => sortOrder * f(p).AccumulatedScore[day][star])
+                .ToList();
+            foreach (var player in leaderBoard.Players)
+            {
+                var index = orderedPlayers.IndexOf(player);
+                // handle ties
+                if (index > 0 && f(player).AccumulatedScore[day][star] ==
+                    f(orderedPlayers[index - 1]).AccumulatedScore[day][star])
+                    f(player).AccumulatedPosition[day][star] = f(orderedPlayers[index - 1]).AccumulatedPosition[day][star];
+                else
+                    f(player).AccumulatedPosition[day][star] = index;
             }
         }
 
