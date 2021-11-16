@@ -125,6 +125,10 @@ export default {
 </script>
 
 <style scoped>
+.v-toolbar__title {
+  font-size: 1.5rem !important;
+}
+
 a:link {
   color: lightblue;
 

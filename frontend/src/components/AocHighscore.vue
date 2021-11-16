@@ -4,7 +4,7 @@
         :headers="headers"
         :items="players"
         :items-per-page="-1"
-        class="elevation-1 aocstyle"
+        class="elevation-1 increase-size"
         dense
         hide-default-footer
         single-select>
@@ -57,13 +57,10 @@ export default {
 </script>
 
 <style scoped>
->>>td.text-start {
+>>> TD.text-start {
+    font-size: 1.1rem !important;
     background-color: rgb(5, 7, 39);
     color: lightgray;
-    font: 16px 'Source Code Pro', Courier, monospace;
-    /* border: 2px black; */
-    /* font-size: 32px; */
-
 }
 
 </style>
