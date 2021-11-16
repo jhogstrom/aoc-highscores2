@@ -8,7 +8,8 @@
 
 <script>
 import MainTable from './components/MainTable.vue'
-import store from './store/index'
+// import FooterContent from './components/FooterContent.vue'
+
 
 const tobiilist = "fbc7a3d8-c6f4-410f-9fff-a1b42993c1c1"
 // const smalllist = "7d3e8718-f15c-41ed-a561-fbba4f3fa37c"
@@ -17,7 +18,8 @@ const ROOTURL="https://aochsstack-website.s3.us-east-2.amazonaws.com"
 export default {
   name: 'App',
   components: {
-    MainTable
+    MainTable,
+    // FooterContent
   },
   data() { return {
     guid: "",
@@ -54,7 +56,7 @@ export default {
         })
         .then(data => {
           this.data = data
-          store.dispatch('setData', data)
+          this.$store.dispatch('setData', data)
         })
     }
 

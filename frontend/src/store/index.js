@@ -15,6 +15,7 @@ export default new Vuex.Store({
     },
     getters: {
         data: state => state.data,
+        updateTime: state => state.data.RetrievedFromAoC,
         includeZeroes: state => state.includeZeroes,
         isLoaded: state => (state.data) ? true : false,
         players: state => _.sortBy(state.data.Players, ["LocalScoreAll.Position"]).slice(),

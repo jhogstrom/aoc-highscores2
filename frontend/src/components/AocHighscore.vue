@@ -4,7 +4,7 @@
         :headers="headers"
         :items="players"
         :items-per-page="-1"
-        class="elevation-1 increase-size"
+        class="elevation-1"
         dense
         hide-default-footer
         single-select>

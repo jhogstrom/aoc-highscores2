@@ -7,7 +7,9 @@
       flat
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>AOC Highscores</v-toolbar-title>
+      <v-toolbar-title>AOC Highscores
+      <p class="fetchtime">Fetched from AoC {{updateTime}}</p>
+      </v-toolbar-title>
       <template v-slot:extension>
           <v-tabs
             v-model="tab"
@@ -46,60 +48,19 @@
         :label="'Include null achievers'"
         @change="includeZeroChanged"></v-checkbox>
     </v-navigation-drawer>
-    <v-footer
-      dark
-      padless
-    >
-      <v-card
-        flat
-        tile
-        class="indigo lighten-1 white--text text-center"
-      >
-
-        <v-card-text class="white--text pt-0">
-          This page is created/maintaned by Jesper Högström (<a href="http://wwww.aditrologistics.se">AditroLogistics</a>)
-          and Jonas Högström (<a href="http://www.tobii.com">Tobii</a>).
-          During the month of <a href="http://www.adventofcode.com">AdventofCode</a> we try to keep it as up to date as possible
-          without putting too much stress on the AoC servers.<br>
-          If you find any bugs, have any questions or if you are interested in having these stats for your own
-          private leaderboard, please reach out... jonas.hogstrom at tobii.com.
-        </v-card-text>
-
-        <v-divider></v-divider>
-
-        <v-card-text class="white--text">
-          {{ new Date().getFullYear() }} — <strong>JHSoftService</strong>
-        </v-card-text>
-      </v-card>
-    </v-footer>
-
-  <!-- <plain-highscore-list :players="plainplayers"/> -->
-  <h1>AOC Highscores</h1>
-  <!-- {{ name }}
-  {{ year }}
-  <p v-if="loadedOk">
-    <v-expansion-panels>
-      <v-expansion-panel>
-        <v-expansion-panel-header>
-          raw data
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
-        {{ data }}
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-    </v-expansion-panels>
-
-  </p> -->
-    <footer></footer>
+    <footer-content></footer-content>
   </div>
 </template>
 
 <script>
 import PlainHighscoreList from './PlainHighscoreList.vue'
 import AocHighscore from './AocHighscore.vue'
+import LeaderBoard from './LeaderBoard.vue'
+import RawData from './RawData.vue'
+import FooterContent from './FooterContent.vue'
 
 export default {
-    components: { PlainHighscoreList, AocHighscore },
+    components: { PlainHighscoreList, AocHighscore, LeaderBoard, RawData, FooterContent },
     props: ["guid", "year"],
     data() { return {
         drawer: false,
@@ -107,11 +68,16 @@ export default {
         tab: null,
         loadedOk: false,
         items: [
+          {title: "Leaderboard", component: "LeaderBoard"},
           {title: "highscore", component: "PlainHighscoreList"},
           {title: "AoC style", component: "AocHighscore"},
+          {title: "Raw", component: "RawData"},
         ]
     }},
     computed: {
+        updateTime() {
+            return this.$store.getters.updateTime
+        },
         includeZeroes() {
             return this.$store.getters.includeZeroes
         },
@@ -125,28 +91,11 @@ export default {
 </script>
 
 <style scoped>
+.fetchtime {
+  text-align: right;
+  font-size: 0.6rem !important;
+}
 .v-toolbar__title {
   font-size: 1.5rem !important;
 }
-
-a:link {
-  color: lightblue;
-
-}
-
-/* visited link */
-a:visited {
-  color: white;
-}
-
-/* mouse over link */
-a:hover {
-  color: hotpink;
-}
-
-/* selected link */
-a:active {
-  color: blue;
-}
-
 </style>
