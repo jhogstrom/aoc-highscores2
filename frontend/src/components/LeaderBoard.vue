@@ -9,7 +9,7 @@
         hide-default-footer
         single-select>
         <template v-slot:item.Position="{ item }">
-            {{ item.position }}. {{ item.name }}
+            {{ item.position }}. {{ item.name }} ({{item.id}})
         </template>
         <template v-slot:no-data>
             No data available
@@ -45,6 +45,7 @@ export default {
                         globalScore: p.GlobalScore,
                         stars: p.Stars,
                         tobiiScore: p.TobiiScore.Score,
+                        id: p.Id
                     })
             }
             return res
