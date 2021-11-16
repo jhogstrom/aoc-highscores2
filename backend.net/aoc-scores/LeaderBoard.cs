@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public class LeaderBoard
 {
@@ -9,16 +8,14 @@ public class LeaderBoard
         int highestDay, 
         List<int> excludeDays, 
         List<string> excludedPlayers,
-        DateTime aocLastModified)
+        DateTime aocLastModified, 
+        int year)
     {
         Players = players;
         HighestDay = highestDay;
-//        TopLocalScore = new int[highestDay][];
         StarsAwarded = new int[highestDay][];
         for (int day = 0; day < highestDay; day++)
         {
-//            TopLocalScore[day] = new int[2];
-//            TopActiveLocalScore[day] = new int[2];
             StarsAwarded[day] = new int[2];
             foreach (var p in players)
             {
@@ -29,18 +26,16 @@ public class LeaderBoard
         }
 
         RetrievedFromAoC = aocLastModified;
+        Year = year;
         ExcludedDays = new List<int>(excludeDays);
         ExcludedPlayers = new List<string>(excludedPlayers);
-
     }
 
     public int HighestDay { get; }
+    public int Year { get; }
     public List<int> ExcludedDays { get; }
     public List<string> ExcludedPlayers { get; }
     public List<Player> Players { get; }
     public DateTime RetrievedFromAoC { get; set; }
-
-    // public int[][] TopLocalScore { get; }
-    // public int[][] TopActiveLocalScore { get; }
     public int[][] StarsAwarded { get; set; }
 }

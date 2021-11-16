@@ -25,7 +25,7 @@ namespace RegenAoc
             var aocData = await GetAocDataFromS3(boardConfig, year);
             var aocList = DeserializeAocJson(aocData.Item1);
             _logger.LogLine("Computing AoC Stats");
-            var leaderBoard = ConvertList(aocList, boardConfig, aocData.LastModified);
+            var leaderBoard = ConvertList(aocList, boardConfig, aocData.LastModified, year);
             HandlePlayerRenames(leaderBoard, boardConfig);
             DeriveMoreStats(leaderBoard, year, boardConfig);
             _logger.LogLine("Uploading results to public S3 bucket");
@@ -66,7 +66,7 @@ namespace RegenAoc
             }
         }
 
-        private LeaderBoard ConvertList(AocList aocList, BoardConfig boardConfig, DateTime aocLastModified)
+        private LeaderBoard ConvertList(AocList aocList, BoardConfig boardConfig, DateTime aocLastModified, int year)
         {
             var highestDay = 0;
             var players = new List<Player>();
@@ -103,7 +103,7 @@ namespace RegenAoc
                 players.Add(player);
             }
 
-            return new LeaderBoard(players, highestDay, boardConfig.ExcludeDays, excludedPlayers, aocLastModified);
+            return new LeaderBoard(players, highestDay, boardConfig.ExcludeDays, excludedPlayers, aocLastModified, year);
         }
 
         private void DeriveMoreStats(LeaderBoard leaderBoard, int year, BoardConfig boardConfig)
