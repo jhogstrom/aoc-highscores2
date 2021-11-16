@@ -57,7 +57,12 @@ export default {
 </script>
 
 <style scoped>
->>> TD.text-start {
+>>> .v-data-table__mobile-row {
+    font-size: 1.1rem !important;
+    background-color: rgb(5, 7, 39);
+    color: lightgray;
+}
+>>> td.text-start {
     font-size: 1.1rem !important;
     background-color: rgb(5, 7, 39);
     color: lightgray;
