@@ -116,7 +116,6 @@ namespace RegenAoc
             foreach (var player in leaderBoard.Players)
             {
                 runningLastStar[player] = -1;
-                player.RaffleTickets = player.Stars;
             }
 
             for (int day = 0; day < leaderBoard.HighestDay; day++)
@@ -139,6 +138,12 @@ namespace RegenAoc
                                 player.AccumulatedTimeToComplete[day][star] = lastTime + timeSpan;
                             if (bestTime[day][star] == TimeSpan.Zero || timeSpan < bestTime[day][star])
                                 bestTime[day][star] = timeSpan;
+                            // raffle tickets awarded for stars before new years
+                            if (starTime.Year == year)
+                                player.RaffleTickets++;
+                            // raffle tickets awarded for completing both stars in 24h 
+                            if (star == 1 && timeSpan.TotalDays < 1)
+                                player.RaffleTickets++;
                         }
                         else
                         {
@@ -165,14 +170,19 @@ namespace RegenAoc
                         if (completionTime != -1)
                         {
                             var index = orderedPlayers.IndexOf(player);
+                            var pos = index;
                             // handle ties
                             if (index > 0 && completionTime == orderedPlayers[index - 1].UnixCompletionTime[day][star])
-                                player.PositionForStar[day][star] = orderedPlayers[index - 1].PositionForStar[day][star];
-                            else
-                                player.PositionForStar[day][star] = index;
+                                pos = orderedPlayers[index - 1].PositionForStar[day][star];
+                            
+                            player.PositionForStar[day][star] = pos;
 
                             player.OffsetFromWinner[day][star] = player.TimeToComplete[day][star] - bestTime[day][star];
                             runningLastStar[player] = completionTime;
+
+                            // raffle tickets awarded for medals
+                            if (pos < 3)
+                                player.RaffleTickets += 3 - pos;
                         }
 
                         ComputeAccumulatedScore(player, player.LocalScoreAll, day, star, pos => playerCount - pos, boardConfig);
@@ -192,21 +202,6 @@ namespace RegenAoc
                     CalculateAccumulatedPosition(leaderBoard, p => p.LocalScoreActive, day, star, -1);
                     CalculateAccumulatedPosition(leaderBoard, p => p.TobiiScore, day, star, +1);
                 }
-
-                foreach (var player in leaderBoard.Players)
-                {
-                    for (int star = 0; star < 2; star++)
-                    {
-                        var pos = player.PositionForStar[day][star];
-                        if (pos >= 0 && pos < 3)
-                            player.RaffleTickets += 3 - pos;
-                    }
-
-                    var t = player.TimeToComplete[day][1];
-                    if (t.HasValue && t.Value < TimeSpan.FromDays(1))
-                        player.RaffleTickets += 1;
-                }
-
             }
             CalculatePosition(leaderBoard, p => p.LocalScoreAll, new Player.LocalScoreComparer(p => p.LocalScoreAll));
             CalculatePosition(leaderBoard, p => p.LocalScoreActive, new Player.LocalScoreComparer(p => p.LocalScoreActive));

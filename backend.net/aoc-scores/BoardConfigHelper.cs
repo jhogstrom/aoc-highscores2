@@ -103,7 +103,7 @@ namespace RegenAoc
                     case "EXCLUDEPLAYER":
                         if (parts.Length == 3 &&
                             int.TryParse(parts[1], out var excludeYear) &&
-                            year == excludeYear &&
+                            year >= excludeYear &&
                             int.TryParse(parts[2], out var playerId))
                             conf.ExcludePlayers.Add(playerId);
                         break;
