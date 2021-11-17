@@ -1,6 +1,7 @@
 <template>
 <div>
     <info-block :infotext="infotext"></info-block>
+    <div class="scrollable">
     <v-data-table
         :headers="allheaders"
         :items="playerList"
@@ -21,6 +22,7 @@
             No data available
         </template>
     </v-data-table>
+    </div>
 </div>
 </template>
 
@@ -126,5 +128,9 @@ export default {
 }
 tbody tr:nth-of-type(odd) {
    background-color: rgba(0, 0, 0, .05);
+ }
+ .scrollable {
+    overflow-y: scroll;
+    height: 50rem;
  }
 </style>
