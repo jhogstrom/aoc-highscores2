@@ -39,6 +39,7 @@ public class Player
 
     public string Name { get; set; }
     public string AoCName { get; set; }
+    public int RaffleTickets { get; set; }
     public int Id { get; set; }
     public long LastStar { get; set; }
     public int Stars { get; set; }

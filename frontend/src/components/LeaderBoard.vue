@@ -27,6 +27,7 @@ export default {
             { text: 'G', value: 'globalScore', align: "end", width: 15 },
             { text: 'S', value: 'stars', align: "end", width: 15 },
             { text: 'T', value: 'tobiiScore', align: "end", width: 15 },
+            { text: 'R', value: 'raffleTickets', align: "end", width: 15 },
         ],
     }},
     computed: {
@@ -45,6 +46,7 @@ export default {
                         globalScore: p.GlobalScore,
                         stars: p.Stars,
                         tobiiScore: p.TobiiScore.Score,
+                        raffleTickets: p.RaffleTickets,
                         id: p.Id
                     })
             }
