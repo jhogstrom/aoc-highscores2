@@ -116,6 +116,7 @@ namespace RegenAoc
             foreach (var player in leaderBoard.Players)
             {
                 runningLastStar[player] = -1;
+                player.RaffleTickets = player.Stars;
             }
 
             for (int day = 0; day < leaderBoard.HighestDay; day++)
@@ -192,10 +193,25 @@ namespace RegenAoc
                     CalculateAccumulatedPosition(leaderBoard, p => p.TobiiScore, day, star, +1);
                 }
 
-                CalculatePosition(leaderBoard, p => p.LocalScoreAll, new Player.LocalScoreComparer(p => p.LocalScoreAll));
-                CalculatePosition(leaderBoard, p => p.LocalScoreActive, new Player.LocalScoreComparer(p => p.LocalScoreActive));
-                CalculatePosition(leaderBoard, p => p.TobiiScore, new Player.TobiiScoreComparer());
+                foreach (var player in leaderBoard.Players)
+                {
+                    for (int star = 0; star < 2; star++)
+                    {
+                        var pos = player.PositionForStar[day][star];
+                        if (pos >= 0 && pos < 3)
+                            player.RaffleTickets += 3 - pos;
+                    }
+
+                    var t = player.TimeToComplete[day][1];
+                    if (t.HasValue && t.Value < TimeSpan.FromDays(1))
+                        player.RaffleTickets += 1;
+                }
+
             }
+            CalculatePosition(leaderBoard, p => p.LocalScoreAll, new Player.LocalScoreComparer(p => p.LocalScoreAll));
+            CalculatePosition(leaderBoard, p => p.LocalScoreActive, new Player.LocalScoreComparer(p => p.LocalScoreActive));
+            CalculatePosition(leaderBoard, p => p.TobiiScore, new Player.TobiiScoreComparer());
+
         }
 
         private void ComputeAccumulatedScore(Player player, Player.ScoreRec scoreRec, int day, int star, Func<int, int> posToScore, BoardConfig boardConfig)
