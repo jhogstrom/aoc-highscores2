@@ -1,5 +1,23 @@
 <template>
 <div>
+    <v-expansion-panels>
+      <v-expansion-panel>
+        <v-expansion-panel-header>
+            <div>
+        <!-- color="green darken-2" -->
+        <!-- large -->
+      <v-icon
+      >
+        mdi-information
+      </v-icon>
+            </div>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+            This board shows the leaders and points per day.
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
     <v-data-table
         :headers="headers"
         :items="playerList"
@@ -37,16 +55,18 @@ export default {
             let res = []
             for (const p of this.players) {
                 console.log(p.Name)
-                res.push(
-                    {
-                        name: p.Name,
-                        position: p.LocalScoreAll.Position,
-                        score: p.LocalScoreAll.Score,
-                        globalScore: p.GlobalScore,
-                        stars: p.Stars,
-                        tobiiScore: p.TobiiScore.Score,
-                        id: p.Id
-                    })
+                let player = {
+                    name: p.Name,
+                    position: p.LocalScoreAll.Position,
+                    score: p.LocalScoreAll.Score,
+                    globalScore: p.GlobalScore,
+                    stars: p.Stars,
+                    tobiiScore: p.TobiiScore.Score,
+                    id: p.Id
+                }
+
+                res.push(player)
+
             }
             return res
         }
