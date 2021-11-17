@@ -26,7 +26,10 @@
             <star-line :times="item.UnixCompletionTime"></star-line>
         </template>
         <template v-slot:no-data>
-            No data available
+            Loading/No data available
+        </template>
+        <template v-slot:Loading>
+            Loading...
         </template>
     </v-data-table>
     </div>

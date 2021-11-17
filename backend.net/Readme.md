@@ -1,5 +1,6 @@
-Template for sample files:
+# Template for sample files:
 
+```
 boardconfig.json: 
 {
   "Guid": "7d3e8718-f15c-41ed-a561-fbba4f3fa37c",
@@ -10,10 +11,12 @@ boardconfig.json:
   "SessionCookieExpiration": "2021-12-31T00:00:00",
   "ExcludedDays": [ 6 ]
 }
+```
 
-Documentation of the fields in the final json file:
+# Documentation of the fields in the final json file:
 
 Players are by default sorted on local score as the primary sort criteria. To solve ties, the timestamp of the most recent star is used.
+
 
 | Field | Example | Description |
 | ----- | ------- | ----------- |
