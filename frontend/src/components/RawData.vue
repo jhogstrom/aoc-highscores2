@@ -1,6 +1,8 @@
 <template>
   <div>
-      {{data}}
+      <pre>
+          {{data}}
+      </pre>
   </div>
 </template>
 
@@ -8,7 +10,7 @@
 export default {
     computed: {
         data() {
-            return this.$store.getters.data;
+            return JSON.stringify(this.$store.getters.data, null, 2)
         },
     },
 }
