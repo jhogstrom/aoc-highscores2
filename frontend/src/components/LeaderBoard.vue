@@ -59,7 +59,8 @@ export default {
         },
         headers() {
             let res = [
-                { text: 'Pos.', value: 'identity', width: 230 },
+                { text: 'Pos.', value: 'identity', width: 23 },
+                { text: 'Name', value: 'name', width: 230 },
                 { text: 'L', value: 'score', align: "end", width: 15  },
                 { text: 'G', value: 'globalScore', align: "end", width: 15 },
                 { text: 'S', value: 'stars', align: "end", width: 15 },
@@ -81,7 +82,6 @@ export default {
             let res = []
             for (const p of this.players) {
                 let player = {
-                    name: p.Name,
                     position: p.LocalScoreAll.Position,
                     score: p.LocalScoreAll.Score,
                     globalScore: p.GlobalScore,
@@ -102,7 +102,8 @@ export default {
                     player[`s_${day}_0`] = starPositions[0]
                     player[`s_${day}_1`] = starPositions[1]
                 }
-                player["identity"] = `${player.position}. ${player.name} (${player.id})`
+                player["name"] = `${p.Name} (${player.id})`
+                player["identity"] = `${player.position}`
                 res.push(player)
             }
             return res
