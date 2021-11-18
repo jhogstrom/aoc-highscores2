@@ -19,10 +19,12 @@ public class Player
         GlobalScoreForDay = InitArray<int?>(dayCount, null);
 
         TimeToCompleteStar2 = new TimeSpan?[dayCount];
+        PositionStar2 = new int[dayCount];
 
         for (int i = 0; i < dayCount; i++)
         {
             TimeToCompleteStar2[i] = null;
+            PositionStar2[i] = -1;
         }
     }
 
@@ -56,6 +58,7 @@ public class Player
     public TimeSpan?[][] AccumulatedTimeToComplete { get; set; }
     public TimeSpan?[][] OffsetFromWinner { get; set; }
     public TimeSpan?[] TimeToCompleteStar2 { get; set; }
+    public int[] PositionStar2 { get; set; }
 
     public class ScoreRec
     {

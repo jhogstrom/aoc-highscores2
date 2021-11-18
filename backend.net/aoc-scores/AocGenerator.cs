@@ -148,13 +148,31 @@ namespace RegenAoc
                         else
                         {
                             player.LocalScoreAll.PendingPoints += playerCount - leaderBoard.StarsAwarded[day][star];
-                            player.LocalScoreActive.PendingPoints += activePlayerCount - leaderBoard.StarsAwarded[day][star];
+                            player.LocalScoreActive.PendingPoints +=
+                                activePlayerCount - leaderBoard.StarsAwarded[day][star];
                         }
                     }
 
                     player.TimeToCompleteStar2[day] = player.TimeToComplete[day][1] - player.TimeToComplete[day][0];
                     if (player.TimeToCompleteStar2[day] < TimeSpan.FromSeconds(10) && day != 24)
                         player.TimeToCompleteStar2[day] = TimeSpan.MaxValue;
+                }
+
+                {
+                    var orderedPlayers = leaderBoard.Players
+                        .Where(p => p.TimeToCompleteStar2[day].HasValue)
+                        .OrderBy(p => p.TimeToCompleteStar2[day])
+                        .ToList();
+                    foreach (var player in orderedPlayers)
+                    {
+                        var index = orderedPlayers.IndexOf(player);
+                        var pos = index;
+                        if (index > 0 && player.TimeToCompleteStar2[day] ==
+                            orderedPlayers[index - 1].TimeToCompleteStar2[day])
+                            pos = orderedPlayers[index - 1].PositionStar2[day];
+
+                        player.PositionStar2[day] = pos;
+                    }
                 }
 
                 for (int star = 0; star < 2; star++)
@@ -174,7 +192,7 @@ namespace RegenAoc
                             // handle ties
                             if (index > 0 && completionTime == orderedPlayers[index - 1].UnixCompletionTime[day][star])
                                 pos = orderedPlayers[index - 1].PositionForStar[day][star];
-                            
+
                             player.PositionForStar[day][star] = pos;
 
                             player.OffsetFromWinner[day][star] = player.TimeToComplete[day][star] - bestTime[day][star];
@@ -263,7 +281,7 @@ namespace RegenAoc
             metadataRequest.BucketName = AwsHelpers.InternalBucket;
             metadataRequest.Key = AwsHelpers.InternalBucketKey(year, boardConfig.AocId);
             var obj2 = await client.GetObjectMetadataAsync(metadataRequest);
-            
+
 
             await using var s = obj.ResponseStream;
             var reader = new StreamReader(s);
