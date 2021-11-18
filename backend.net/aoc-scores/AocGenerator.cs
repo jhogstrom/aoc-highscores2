@@ -73,9 +73,9 @@ namespace RegenAoc
             var excludedPlayers = new List<string>();
             foreach (var member in aocList.Members.Values)
             {
-                if (boardConfig.ExcludePlayers.Contains(member.id))
+                if (boardConfig.ExcludePlayers.ContainsKey(member.id))
                 {
-                    _logger.LogLine($"Excluded player {member.id}, {member.name}");
+                    _logger.LogLine($"Excluded player {member.id}, {member.name} ({boardConfig.ExcludePlayers[member.id]})");
                     excludedPlayers.Add($"{member.id}:{member.name}");
                     continue;
                 }

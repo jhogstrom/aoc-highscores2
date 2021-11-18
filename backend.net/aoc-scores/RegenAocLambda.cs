@@ -70,15 +70,15 @@ namespace RegenAoc
             var msg = JsonConvert.DeserializeObject<RegenQueueBody>(message.Body);
             context.Logger.LogLine($"List ID: {msg.BoardGuid} - year {msg.Year}");
             var refresher = new AocRefresher(context.Logger, AwsHelpers.InternalBucket);
-            var listConfig = await GetBoardConfig(msg.BoardGuid, msg.Year);
+            var listConfig = await GetBoardConfig(msg.BoardGuid, msg.Year, context.Logger);
             await refresher.EnsureFresh(listConfig, msg.Year);
             var gen = new AocGenerator(context.Logger);
             await gen.Generate(listConfig, msg.Year);
         }
 
-        private async Task<BoardConfig> GetBoardConfig(string guid, int year)
+        private async Task<BoardConfig> GetBoardConfig(string guid, int year, ILambdaLogger logger)
         {
-            return await BoardConfigHelper.LoadFromDynamo(guid, year);
+            return await BoardConfigHelper.LoadFromDynamo(guid, year, logger);
             //            return BoardConfigHelper.LoadFromFile();
         }
 
@@ -95,7 +95,7 @@ namespace RegenAoc
         public string Name { get; set; }
         public List<int> ExcludeDays { get; set; } = new List<int>();
         public Dictionary<int, string> NameMap { get; } = new Dictionary<int, string>();
-        public List<int> ExcludePlayers { get; } = new List<int>();
+        public Dictionary<int, int> ExcludePlayers { get; } = new Dictionary<int, int>();
     }
 
     internal class RegenQueueBody

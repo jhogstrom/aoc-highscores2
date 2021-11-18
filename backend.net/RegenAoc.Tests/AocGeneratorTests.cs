@@ -29,9 +29,10 @@ namespace RegenAoc.Tests
         [Test]
         public async Task TestGenerate()
         {
-            var config = await BoardConfigHelper.LoadFromDynamo(TestData.Guid1, 2020);
+            var year = 2021;
+            var config = await BoardConfigHelper.LoadFromDynamo(TestData.Guid1, year, Logger);
 
-            await _sut.Generate(config, 2020);
+            await _sut.Generate(config, year);
         }
     }
 }

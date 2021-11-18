@@ -20,7 +20,7 @@ namespace RegenAoc.Tests
         [Test]
         public async Task TestRefresh2020()
         {
-            _boardConfig = await BoardConfigHelper.LoadFromDynamo(TestData.Guid1, 2020);
+            _boardConfig = await BoardConfigHelper.LoadFromDynamo(TestData.Guid1, 2020, Logger);
             await _sut.EnsureFresh(_boardConfig, 2020);
         }
     }

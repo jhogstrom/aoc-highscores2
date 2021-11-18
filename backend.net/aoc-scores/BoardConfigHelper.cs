@@ -8,6 +8,7 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
+using Amazon.Lambda.Core;
 using Newtonsoft.Json;
 
 namespace RegenAoc
@@ -35,7 +36,7 @@ namespace RegenAoc
             };
         }
 
-        public static async Task<BoardConfig> LoadFromDynamo(string guid, int year)
+        public static async Task<BoardConfig> LoadFromDynamo(string guid, int year, ILambdaLogger logger)
         {
             var conf = new BoardConfig();
             conf.Guid = guid;
@@ -56,7 +57,7 @@ namespace RegenAoc
 
                 var resp = await client.QueryAsync(request);
 
-                ProcessConf(conf, resp.Items, year);
+                ProcessConf(conf, resp.Items, year, logger);
 
                 request = CreatePKQueryRequest(year.ToString());
 
@@ -76,7 +77,7 @@ namespace RegenAoc
             return conf;
         }
 
-        private static void ProcessConf(BoardConfig conf, IEnumerable<Dictionary<string, AttributeValue>> items, int year)
+        private static void ProcessConf(BoardConfig conf, IEnumerable<Dictionary<string, AttributeValue>> items, int year, ILambdaLogger logger)
         {
             foreach (var r in items)
             {
@@ -105,8 +106,12 @@ namespace RegenAoc
                             int.TryParse(parts[1], out var excludeYear) &&
                             year >= excludeYear &&
                             int.TryParse(parts[2], out var playerId))
-                            conf.ExcludePlayers.Add(playerId);
+                            conf.ExcludePlayers[playerId] = excludeYear;
                         break;
+                    default:
+                        logger.LogLine("Unknown config directive: "+sk);
+                        break;
+                        
                 }
             }
         }
