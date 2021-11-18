@@ -62,7 +62,7 @@ export default {
         headers() {
             let res = [
                 { text: 'Pos.', value: 'identity', width: 23 },
-                { text: 'Name', value: 'name', width: 230 },
+                { text: 'Name', value: 'name', width: 250 },
                 { text: 'L', value: 'score', align: "end", width: 15  },
                 { text: 'G', value: 'globalScore', align: "end", width: 15 },
                 { text: 'S', value: 'stars', align: "end", width: 15 },
@@ -82,6 +82,7 @@ export default {
         },
         playerList() {
             let res = []
+            // TODO: Sort original list by p.LocalScoreAll.Position
             for (const p of this.players) {
                 let player = {
                     position: p.LocalScoreAll.Position,
