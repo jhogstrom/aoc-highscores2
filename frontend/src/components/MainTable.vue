@@ -56,11 +56,12 @@
 import PlainHighscoreList from './PlainHighscoreList.vue'
 import AocHighscore from './AocHighscore.vue'
 import LeaderBoard from './LeaderBoard.vue'
+import CompletionTime from './CompletionTime.vue'
 import RawData from './RawData.vue'
 import FooterContent from './FooterContent.vue'
 
 export default {
-    components: { PlainHighscoreList, AocHighscore, LeaderBoard, RawData, FooterContent },
+    components: { PlainHighscoreList, AocHighscore, LeaderBoard, CompletionTime, RawData, FooterContent },
     props: ["guid", "year"],
     data() { return {
         drawer: false,
@@ -69,6 +70,7 @@ export default {
         loadedOk: false,
         items: [
           {title: "Leaderboard", component: "LeaderBoard"},
+          {title: "CompletionTime", component: "CompletionTime"},
           {title: "highscore", component: "PlainHighscoreList"},
           {title: "AoC style", component: "AocHighscore"},
           {title: "Raw", component: "RawData"},
