@@ -48,7 +48,7 @@
         :label="'Include null achievers'"
         @change="includeZeroChanged"></v-checkbox>
     </v-navigation-drawer>
-    <footer-content></footer-content>
+    <footer-content class="footer"></footer-content>
   </div>
 </template>
 
@@ -97,5 +97,12 @@ export default {
 }
 .v-toolbar__title {
   font-size: 1.5rem !important;
+}
+
+.footer {
+  position: absolute;
+  bottom: 10px;
+  /*width: 50%;
+  border: 3px solid #8AC007; */
 }
 </style>
