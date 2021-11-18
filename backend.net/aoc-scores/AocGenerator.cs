@@ -108,7 +108,7 @@ namespace RegenAoc
 
         private void DeriveMoreStats(LeaderBoard leaderBoard, int year, BoardConfig boardConfig)
         {
-            var bestTime = new TimeSpan[leaderBoard.HighestDay][];
+            var bestTime = new int[leaderBoard.HighestDay][];
             var runningLastStar = new Dictionary<Player, long>();
             var playerCount = leaderBoard.Players.Count;
             var activePlayerCount = leaderBoard.Players.Count(p => p.Stars > 0);
@@ -121,7 +121,7 @@ namespace RegenAoc
             for (int day = 0; day < leaderBoard.HighestDay; day++)
             {
                 var publishTime = new DateTime(year, 12, day + 1, 5, 0, 0);
-                bestTime[day] = new TimeSpan[2];
+                bestTime[day] = new int[2];
                 foreach (var player in leaderBoard.Players)
                 {
                     for (int star = 0; star < 2; star++)
@@ -131,13 +131,13 @@ namespace RegenAoc
                         {
                             var starTime = DateTimeOffset.FromUnixTimeSeconds(unixStarTime).DateTime;
                             var timeSpan = starTime - publishTime;
-                            player.TimeToComplete[day][star] = timeSpan;
+                            player.TimeToComplete[day][star] = (int)timeSpan.TotalSeconds;
 
-                            var lastTime = day == 0 ? TimeSpan.Zero : player.AccumulatedTimeToComplete[day - 1][1];
-                            if (lastTime.HasValue)
-                                player.AccumulatedTimeToComplete[day][star] = lastTime + timeSpan;
-                            if (bestTime[day][star] == TimeSpan.Zero || timeSpan < bestTime[day][star])
-                                bestTime[day][star] = timeSpan;
+                            var lastTime = day == 0 ? 0 : player.AccumulatedTimeToComplete[day - 1][1];
+                            if (lastTime != -1)
+                                player.AccumulatedTimeToComplete[day][star] = lastTime + (int)timeSpan.TotalSeconds;
+                            if (bestTime[day][star] == 0 || timeSpan.TotalSeconds < bestTime[day][star])
+                                bestTime[day][star] = (int)timeSpan.TotalSeconds;
                             // raffle tickets awarded for stars before new years
                             if (starTime.Year == year)
                                 player.RaffleTickets++;
@@ -154,13 +154,18 @@ namespace RegenAoc
                     }
 
                     player.TimeToCompleteStar2[day] = player.TimeToComplete[day][1] - player.TimeToComplete[day][0];
-                    if (player.TimeToCompleteStar2[day] < TimeSpan.FromSeconds(10) && day != 24)
-                        player.TimeToCompleteStar2[day] = TimeSpan.MaxValue;
+                    // punish anyone who solves star 2 in < 10 seconds (except for xmas day where it is actually possible
+                    if (player.TimeToCompleteStar2[day] < 10 && day != 24)
+                    {
+                        player.TimeToCompleteStar2[day] = 60*60*24;
+                        player.Fraud.Add(day);
+                    }
+
                 }
 
                 {
                     var orderedPlayers = leaderBoard.Players
-                        .Where(p => p.TimeToCompleteStar2[day].HasValue)
+                        .Where(p => p.TimeToCompleteStar2[day] != -1)
                         .OrderBy(p => p.TimeToCompleteStar2[day])
                         .ToList();
                     foreach (var player in orderedPlayers)

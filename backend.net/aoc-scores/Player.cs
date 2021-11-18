@@ -12,18 +12,19 @@ public class Player
         LocalScoreAll = new ScoreRec(dayCount);
         TobiiScore = new ScoreRec(dayCount);
         UnixCompletionTime = InitArray(dayCount, -1L);
-        TimeToComplete = InitArray<TimeSpan?>(dayCount, null);
-        AccumulatedTimeToComplete = InitArray<TimeSpan?>(dayCount, null);
-        OffsetFromWinner = InitArray<TimeSpan?>(dayCount, null);
+        TimeToComplete = InitArray<int>(dayCount, -1);
+        AccumulatedTimeToComplete = InitArray<int>(dayCount, -1);
+        OffsetFromWinner = InitArray<int>(dayCount, -1);
         PositionForStar = InitArray(dayCount, -1);
         GlobalScoreForDay = InitArray<int?>(dayCount, null);
+        Fraud = new List<int>();
 
-        TimeToCompleteStar2 = new TimeSpan?[dayCount];
+        TimeToCompleteStar2 = new int[dayCount];
         PositionStar2 = new int[dayCount];
 
         for (int i = 0; i < dayCount; i++)
         {
-            TimeToCompleteStar2[i] = null;
+            TimeToCompleteStar2[i] = -1;
             PositionStar2[i] = -1;
         }
     }
@@ -54,11 +55,12 @@ public class Player
     public long[][] UnixCompletionTime { get; }
     public int?[][] GlobalScoreForDay { get; set; }
     public int[][] PositionForStar { get; set; }
-    public TimeSpan?[][] TimeToComplete { get; set; }
-    public TimeSpan?[][] AccumulatedTimeToComplete { get; set; }
-    public TimeSpan?[][] OffsetFromWinner { get; set; }
-    public TimeSpan?[] TimeToCompleteStar2 { get; set; }
+    public int[][] TimeToComplete { get; set; }
+    public int[][] AccumulatedTimeToComplete { get; set; }
+    public int[][] OffsetFromWinner { get; set; }
+    public int[] TimeToCompleteStar2 { get; set; }
     public int[] PositionStar2 { get; set; }
+    public List<int> Fraud { get; }
 
     public class ScoreRec
     {
