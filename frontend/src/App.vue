@@ -78,4 +78,24 @@ body {
   width: 98%;
   padding-left: 1%;
 }
+
+.goldMedal {
+    background: linear-gradient(to bottom right, #ff9988 5%, #ffd700 55%, #ffffff 100%);
+    padding: 5px;
+}
+.silverMedal {
+    background: linear-gradient(to bottom right, gray 5%, silver 55%, #ffffff 100%);
+    padding: 5px;
+}
+.bronzeMedal {
+    background: linear-gradient(to bottom right, GoldenRod 5%, DarkGoldenRod 55%, #ffffff 100%);
+    padding: 5px;
+}
+tbody tr:nth-of-type(odd) {
+   background-color: rgba(0, 0, 0, .05);
+ }
+ .scrollable {
+    overflow-y: scroll;
+    height: 50rem;
+ }
 </style>

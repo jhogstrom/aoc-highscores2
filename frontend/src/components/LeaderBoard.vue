@@ -28,6 +28,7 @@
 
 <script>
 import InfoBlock from './InfoBlock.vue'
+import { fixedColumns, fixedData, dayColumns, getMedalColor, isDayExcluded } from './tablehelpers'
 export default {
     components: { InfoBlock },
     data() { return {
@@ -38,41 +39,15 @@ export default {
             return item[key]
         },
         medalColor(item, key) {
-            const posKey = "s" + key.slice(1)
-            if (item[posKey] === 0) { return "goldMedal"}
-            if (item[posKey] === 1) { return "silverMedal"}
-            if (item[posKey] === 2) { return "bronzeMedal"}
-            return undefined
+            return getMedalColor(item, key)
         }
     },
     computed: {
         dayheaders() {
-            let res = []
-            for (let day = 1; day < this.data.HighestDay + 1; day++) {
-                if (this.data.ExcludedDays.includes(day-1)) {
-                    console.log("Skipped day", day)
-                    continue
-                }
-                res.push({ text: `day ${day} *`, value: `d_${day}_0`, align: "end", width: 15 })
-                res.push({ text: `day ${day} **`, value: `d_${day}_1`, align: "end", width: 15 })
-            }
-            return res
-
-        },
-        headers() {
-            let res = [
-                { text: 'Pos.', value: 'identity', width: 23 },
-                { text: 'Name', value: 'name', width: 250 },
-                { text: 'L', value: 'score', align: "end", width: 15  },
-                { text: 'G', value: 'globalScore', align: "end", width: 15 },
-                { text: 'S', value: 'stars', align: "end", width: 15 },
-                { text: 'T', value: 'tobiiScore', align: "end", width: 15 },
-                { text: 'R', value: 'raffleTickets', align: "end", width: 15 },
-            ]
-            return res
+            return dayColumns()
         },
         allheaders() {
-            return [...this.headers, ...this.dayheaders]
+            return [...fixedColumns(), ...this.dayheaders]
         },
         players() {
             return this.$store.getters.filteredPlayers
@@ -84,18 +59,9 @@ export default {
             let res = []
             // TODO: Sort original list by p.LocalScoreAll.Position
             for (const p of this.players) {
-                let player = {
-                    position: p.LocalScoreAll.Position,
-                    score: p.LocalScoreAll.Score,
-                    globalScore: p.GlobalScore,
-                    stars: p.Stars,
-                    tobiiScore: p.TobiiScore.Score,
-                    raffleTickets: p.RaffleTickets,
-                    id: p.Id
-                }
+                let player = fixedData(p)
                 for (let day = 1; day < this.data.HighestDay + 1; day++) {
-                    if (this.data.ExcludedDays.includes(day-1)) {
-                        console.log("Skipped day", day)
+                    if (isDayExcluded(day)) {
                         continue
                     }
                     const accumulatedScores = p.LocalScoreAll.AccumulatedScore[day-1]
@@ -105,8 +71,6 @@ export default {
                     player[`s_${day}_0`] = starPositions[0]
                     player[`s_${day}_1`] = starPositions[1]
                 }
-                player["name"] = `${p.Name} (${player.id})`
-                player["identity"] = `${player.position}`
                 res.push(player)
             }
             return res
@@ -116,23 +80,5 @@ export default {
 </script>
 
 <style>
-.goldMedal {
-    background: linear-gradient(to bottom right, #ff9988 5%, #ffd700 55%, #ffffff 100%);
-    padding: 5px;
-}
-.silverMedal {
-    background: linear-gradient(to bottom right, gray 5%, silver 55%, #ffffff 100%);
-    padding: 5px;
-}
-.bronzeMedal {
-    background: linear-gradient(to bottom right, GoldenRod 5%, DarkGoldenRod 55%, #ffffff 100%);
-    padding: 5px;
-}
-tbody tr:nth-of-type(odd) {
-   background-color: rgba(0, 0, 0, .05);
- }
- .scrollable {
-    overflow-y: scroll;
-    height: 50rem;
- }
+
 </style>
