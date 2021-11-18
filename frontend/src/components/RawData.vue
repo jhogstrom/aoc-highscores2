@@ -11,7 +11,7 @@ const stringify = require("json-stringify-pretty-compact");
 export default {
     computed: {
         data() {
-            return stringify(this.$store.getters.data, null, 2)
+            return stringify(this.$store.getters.data, {maxLength: 150})
         },
     },
 }
