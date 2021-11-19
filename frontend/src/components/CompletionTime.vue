@@ -28,11 +28,11 @@
 
 <script>
 import InfoBlock from './InfoBlock.vue'
-import { fixedColumns, fixedData, dayColumns, getMedalColor, isDayExcluded, secondsToString } from './tablehelpers'
+import { fixedColumns, fixedData, dayColumns, getMedalColor, secondsToString } from './tablehelpers'
 export default {
     components: { InfoBlock },
     data() { return {
-        infotext: "This board shows the time to complete the tasks from their release (which i the same time for both tasks)."
+        infotext: "This board shows the time to complete the tasks from their release (which is the same time for both tasks)."
     }},
     methods: {
         getValue(item, key) {
@@ -61,9 +61,6 @@ export default {
             for (const p of this.players) {
                 let player = fixedData(p)
                 for (let day = 1; day < this.data.HighestDay + 1; day++) {
-                    if (isDayExcluded(day)) {
-                        continue
-                    }
                     const dataValue = p.TimeToComplete[day-1]
                     const starPositions = p.PositionForStar[day-1]
                     player[`d_${day}_0`] = dataValue[0] ? dataValue[0] : ""

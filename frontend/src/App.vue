@@ -92,10 +92,17 @@ body {
     padding: 5px;
 }
 tbody tr:nth-of-type(odd) {
-   background-color: rgba(0, 0, 0, .05);
+  background-color: rgba(0, 0, 0, .05);
  }
  .scrollable {
-    overflow-y: scroll;
+   overflow-y: scroll;
     height: 50rem;
+ }
+
+ .excludedday {
+   color: rgba(0, 0, 0, .5);
+   background-color: rgba(221, 101, 101, 0.2);
+   padding-left: 5px;
+   padding-right: 5px;
  }
 </style>

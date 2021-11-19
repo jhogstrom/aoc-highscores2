@@ -28,7 +28,7 @@
 
 <script>
 import InfoBlock from './InfoBlock.vue'
-import { fixedColumns, fixedData, dayColumns, getMedalColor, isDayExcluded, secondsToString } from './tablehelpers'
+import { fixedColumns, fixedData, dayColumns, getMedalColor, secondsToString } from './tablehelpers'
 export default {
     components: { InfoBlock },
     data() { return {
@@ -62,9 +62,6 @@ export default {
             for (const p of this.players) {
                 let player = fixedData(p)
                 for (let day = 1; day < this.data.HighestDay + 1; day++) {
-                    if (isDayExcluded(day)) {
-                        continue
-                    }
                     const dataValue = p.AccumulatedTimeToComplete[day-1]
                     const starPositions = p.PositionForStar[day-1]
                     player[`d_${day}_0`] = dataValue[0] ? dataValue[0] : ""

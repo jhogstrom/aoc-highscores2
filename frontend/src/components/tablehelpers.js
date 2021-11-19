@@ -26,30 +26,26 @@ export function fixedData(player) {
     return res
 }
 import store from '../store/index'
-export function isDayExcluded(day) {
-    if (store.getters.data.ExcludedDays.includes(day-1)) {
-        console.log("Skipped day", day)
-        return true
-    }
-    return false
 
-}
 export function dayColumns() {
     let res = []
     for (let day = 1; day < store.getters.data.HighestDay + 1; day++) {
-        if (isDayExcluded(day)) {
-            continue
-        }
         res.push({ text: `day ${day} *`, value: `d_${day}_0`, align: "end", width: 15 })
         res.push({ text: `day ${day} **`, value: `d_${day}_1`, align: "end", width: 15 })
     }
     return res
 }
 
+const medals = {0: "goldMedal", 1: "silverMedal", 2: "bronzeMedal"}
 export function getMedalColor(item, key) {
     const posKey = "s" + key.slice(1)
-    const medals = {0: "goldMedal", 1: "silverMedal", 2: "bronzeMedal"}
-    return medals[item[posKey]]
+    let daynum = parseInt(key.slice(2, -2)) - 1
+    const excluded = store.getters.data.ExcludedDays.includes(daynum) ? " excludedday" : ""
+    if (excluded) {
+        console.log(excluded, daynum)
+    }
+    const medal = medals[item[posKey]] === undefined ? "" : medals[item[posKey]]
+    return  medal + excluded
 }
 
 const secondsInHour = 60 * 60

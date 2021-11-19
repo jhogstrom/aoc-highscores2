@@ -28,7 +28,7 @@
 
 <script>
 import InfoBlock from './InfoBlock.vue'
-import { fixedColumns, fixedData, dayColumns, getMedalColor, isDayExcluded } from './tablehelpers'
+import { fixedColumns, fixedData, dayColumns, getMedalColor } from './tablehelpers'
 export default {
     components: { InfoBlock },
     data() { return {
@@ -61,9 +61,6 @@ export default {
             for (const p of this.players) {
                 let player = fixedData(p)
                 for (let day = 1; day < this.data.HighestDay + 1; day++) {
-                    if (isDayExcluded(day)) {
-                        continue
-                    }
                     const accumulatedScores = p.LocalScoreAll.AccumulatedScore[day-1]
                     const starPositions = p.PositionForStar[day-1]
                     player[`d_${day}_0`] = accumulatedScores[0] > -1 ? accumulatedScores[0] : ""
