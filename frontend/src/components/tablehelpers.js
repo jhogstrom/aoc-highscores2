@@ -51,3 +51,23 @@ export function getMedalColor(item, key) {
     const medals = {0: "goldMedal", 1: "silverMedal", 2: "bronzeMedal"}
     return medals[item[posKey]]
 }
+
+const secondsInHour = 60 * 60
+const secondsInDay = secondsInHour * 24
+
+export function secondsToString(seconds) {
+    if (seconds === 0) {
+        return "WINNER"}
+    if (seconds === -1) {
+        return ""}
+    if (seconds > secondsInDay) {
+        const days = Math.floor(seconds / secondsInDay)
+        if (days >= 365 * 2) { return `>${Math.floor(days/365)} years` }
+        if (days >= 365) { return `>${Math.floor(days/365)} year` }
+        if (days === 1) { return `>${days} day` }
+        return `>${days} days`
+    }
+    const res = new Date(seconds * 1000).toISOString().substr(11, 8)
+
+    return res
+}

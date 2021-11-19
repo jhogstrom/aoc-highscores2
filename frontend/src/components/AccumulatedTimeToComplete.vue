@@ -32,15 +32,12 @@ import { fixedColumns, fixedData, dayColumns, getMedalColor, isDayExcluded, seco
 export default {
     components: { InfoBlock },
     data() { return {
-        infotext: "This board shows the time offset to the winner for each star."
+        infotext: "This board shows the total time used to complete the task - counted from task release to completion!"
     }},
     methods: {
         getValue(item, key) {
-            const offset = secondsToString(item[key])
-            if (offset === "00:00:00") {
-                return "Winner"
-            }
-            return offset
+            const value = item[key]
+            return secondsToString(value)
         },
         medalColor(item, key) {
             return getMedalColor(item, key)
@@ -68,7 +65,7 @@ export default {
                     if (isDayExcluded(day)) {
                         continue
                     }
-                    const dataValue = p.OffsetFromWinner[day-1]
+                    const dataValue = p.AccumulatedTimeToComplete[day-1]
                     const starPositions = p.PositionForStar[day-1]
                     player[`d_${day}_0`] = dataValue[0] ? dataValue[0] : ""
                     player[`d_${day}_1`] = dataValue[1] ? dataValue[1] : ""
