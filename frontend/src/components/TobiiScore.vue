@@ -32,7 +32,16 @@ import { fixedColumns, fixedData, dayColumns, getMedalColor } from './tablehelpe
 export default {
     components: { InfoBlock },
     data() { return {
-        infotext: "This board shows the <h1>leaders</h1> and points per day."
+        infotext: `TobiiScore leaderboard is ordered by
+        <ul>
+            <li>Completed stars
+            <li>TobiiScore
+            <li>Time for last star
+        </ul>
+        <p>TobiiScore calculated as the number of players on the list with a better result for each star.
+        That means that a gold medal gives 0 points, silver gives 1 point etc.</p>
+        <p>The advantage of this is that the score does not change if new players enters the list,
+        and the ordering method encourages participants to solve all puzzles.</p>`
     }},
     methods: {
         getValue(item, key) {
@@ -60,7 +69,7 @@ export default {
             for (const p of this.players) {
                 let player = fixedData(p)
                 for (let day = 1; day < this.data.HighestDay + 1; day++) {
-                    const dataValue = p.LocalScoreAll.AccumulatedScore[day-1]
+                    const dataValue = p.TobiiScore.AccumulatedScore[day-1]
                     const starPositions = p.PositionForStar[day-1]
                     player[`d_${day}_0`] = dataValue[0] > -1 ? dataValue[0] : ""
                     player[`d_${day}_1`] = dataValue[1] > -1 ? dataValue[1] : ""
