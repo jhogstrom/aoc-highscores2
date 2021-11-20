@@ -36,7 +36,6 @@ export default {
     }},
     methods: {
         getValue(item, key) {
-            console.log(item[key])
             return secondsToString(item[key])
         },
         medalColor(item, key) {
