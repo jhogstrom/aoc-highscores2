@@ -64,3 +64,26 @@ export function secondsToString(seconds) {
 
     return res
 }
+
+export function secondsToString2(seconds) {
+    if (seconds === 0) {
+        return "WINNER"
+    }
+    if (seconds === -1 || seconds === Number.MAX_SAFE_INTEGER) {
+        return ""
+    }
+    const days = Math.floor(seconds / secondsInDay)
+    if (days > 10) {
+        if (days >= 365 * 2) { return `>${Math.floor(days/365)} years` }
+        if (days >= 365) { return `>${Math.floor(days/365)} year` }
+        if (days === 1) { return `>${days} day` }
+        return `>${days} days`
+    }
+
+    let str = new Date(seconds * 1000).toISOString().substr(11, 8);
+
+    if (days > 0)
+        str = days + "d "+ str;
+
+    return str
+}

@@ -28,7 +28,7 @@
 
 <script>
 import InfoBlock from './InfoBlock.vue'
-import { fixedColumns, fixedData, dayColumns, getMedalColor, secondsToString } from './tablehelpers'
+import { fixedColumns, fixedData, dayColumns, getMedalColor, secondsToString2 } from './tablehelpers'
 export default {
     components: { InfoBlock },
     data() { return {
@@ -37,7 +37,7 @@ export default {
     methods: {
         getValue(item, key) {
             const value = item[key]
-            return secondsToString(value)
+            return secondsToString2(value)
         },
         medalColor(item, key) {
             return getMedalColor(item, key)
