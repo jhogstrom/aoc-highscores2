@@ -132,13 +132,15 @@ namespace RegenAoc
                         {
                             var starTime = DateTimeOffset.FromUnixTimeSeconds(unixStarTime).DateTime;
                             var timeSpan = starTime - publishTimeUTC;
-                            player.TimeToComplete[day][star] = (int)timeSpan.TotalSeconds;
+                            var timeToSolve = (int)timeSpan.TotalSeconds;
+                            player.TimeToComplete[day][star] = timeToSolve;
 
-                            var lastTime = day == 0 ? 0 : player.AccumulatedTimeToComplete[day - 1][1];
-                            if (lastTime != -1)
-                                player.AccumulatedTimeToComplete[day][star] = lastTime + (int)timeSpan.TotalSeconds;
-                            if (bestTime[day][star] == 0 || timeSpan.TotalSeconds < bestTime[day][star])
-                                bestTime[day][star] = (int)timeSpan.TotalSeconds;
+                            // get the accumulated time to solve previous days
+                            var accumulatedTime = day == 0 ? 0 : player.AccumulatedTimeToComplete[day - 1][1];
+                            if (accumulatedTime != -1)
+                                player.AccumulatedTimeToComplete[day][star] = accumulatedTime + timeToSolve;
+                            if (bestTime[day][star] == 0 || timeToSolve < bestTime[day][star])
+                                bestTime[day][star] = timeToSolve;
 
                             // raffle tickets awarded for stars before new years
                             if (starTime.Year == year)
