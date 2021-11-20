@@ -120,8 +120,9 @@ namespace RegenAoc
 
             for (int day = 0; day < leaderBoard.HighestDay; day++)
             {
-                var publishTime = new DateTime(year, 12, day + 1, 5, 0, 0);
+                var publishTimeUTC = new DateTime(year, 12, day + 1, 5, 0, 0);
                 bestTime[day] = new int[2];
+                
                 foreach (var player in leaderBoard.Players)
                 {
                     for (int star = 0; star < 2; star++)
@@ -130,7 +131,7 @@ namespace RegenAoc
                         if (unixStarTime != -1)
                         {
                             var starTime = DateTimeOffset.FromUnixTimeSeconds(unixStarTime).DateTime;
-                            var timeSpan = starTime - publishTime;
+                            var timeSpan = starTime - publishTimeUTC;
                             player.TimeToComplete[day][star] = (int)timeSpan.TotalSeconds;
 
                             var lastTime = day == 0 ? 0 : player.AccumulatedTimeToComplete[day - 1][1];
@@ -138,6 +139,7 @@ namespace RegenAoc
                                 player.AccumulatedTimeToComplete[day][star] = lastTime + (int)timeSpan.TotalSeconds;
                             if (bestTime[day][star] == 0 || timeSpan.TotalSeconds < bestTime[day][star])
                                 bestTime[day][star] = (int)timeSpan.TotalSeconds;
+
                             // raffle tickets awarded for stars before new years
                             if (starTime.Year == year)
                                 player.RaffleTickets++;
@@ -274,6 +276,10 @@ namespace RegenAoc
                     f(player).AccumulatedPosition[day][star] = f(orderedPlayers[index - 1]).AccumulatedPosition[day][star];
                 else
                     f(player).AccumulatedPosition[day][star] = index;
+
+                f(player).ScoreDiff[day][star] = 
+                    f(orderedPlayers.First()).AccumulatedScore[day][star]-
+                    f(player).AccumulatedScore[day][star];
             }
         }
 

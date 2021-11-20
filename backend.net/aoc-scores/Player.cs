@@ -71,12 +71,14 @@ public class Player
         {
             AccumulatedScore = InitArray(days, -1);
             AccumulatedPosition = InitArray(days, -1);
+            ScoreDiff = InitArray(days, -1);
         }
         public int Score { get; set; }
         public int Position { get; set; }
         public int PendingPoints { get; set; }
         public int[][] AccumulatedScore { get; }
         public int[][] AccumulatedPosition { get; set; }
+        public int[][] ScoreDiff { get; set; }
 
     }
 
