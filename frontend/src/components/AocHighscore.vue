@@ -1,6 +1,6 @@
 <template>
     <div class="scrollbox">
-    <v-data-table
+    <!-- <v-data-table
         :headers="headers"
         :items="players"
         :items-per-page="-1"
@@ -18,13 +18,24 @@
             {{ item.LocalScoreAll.Score }}
         </template>
         <template v-slot:item.Stars="{ item }">
-            <star-line :times="item.UnixCompletionTime"></star-line>
+            <star-line :days="item.UnixCompletionTime"></star-line>
         </template>
-    </v-data-table>
+    </v-data-table> -->
 
-    <!-- <div v-for="p in players" v-bind:key="p.Name">
-        {{p.LocalScoreAll.Position|rightAdjust(3)}}) {{p.LocalScoreAll.Score|rightAdjust(4)}}
-    </div> -->
+    <div id="aocdiv">
+        <div id="greentext">
+        <span v-for="i in 18" :key="i">&nbsp;</span>
+        1111111111222222<br>
+        <span v-for="i in 9" :key="i">&nbsp;</span>
+        1234567890123456789012345
+        </div>
+        <div v-for="p in players" v-bind:key="p.Name">
+            {{p.LocalScoreAll.Position|rightAdjust(3)}})
+            {{p.LocalScoreAll.Score|rightAdjust(4)}}
+            <star-line :days="p.UnixCompletionTime"></star-line>
+            {{p.Name}}
+        </div>
+    </div>
     </div>
 
   
@@ -70,6 +81,16 @@ export default {
     font-size: 1.1rem !important;
     background-color: rgb(5, 7, 39);
     color: lightgray;
+}
+
+#aocdiv {
+    font-size: 1.1rem !important;
+    background-color: rgb(5, 7, 39);
+    color: lightgray;
+}
+
+#greentext {
+    color: rgb(00, 99, 00);;
 }
 
 </style>

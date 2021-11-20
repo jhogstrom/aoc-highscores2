@@ -1,7 +1,9 @@
 <template>
-<div>
-<span v-for="t, index in times" :key="index"><star :times="t"></star></span>
-</div>
+<span>
+    <span v-for="t, day in days" :key="day">
+        <star :times="t" :day="day+1"></star>
+    </span>
+</span>
 </template>
 
 <script>
@@ -9,7 +11,7 @@ import Star from './Star.vue'
 
 export default {
     components: { Star },
-    props: ['times'],
+    props: ['days'],
 }
 </script>
 

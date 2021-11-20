@@ -83,7 +83,7 @@ export function secondsToString2(seconds) {
     let str = new Date(seconds * 1000).toISOString().substr(11, 8);
 
     if (days > 0)
-        str = days + "d "+ str;
+        str = days + "d " + str;
 
     return str
 }

@@ -6,6 +6,8 @@
         :headers="allheaders"
         :items="playerList"
         :items-per-page="-1"
+        fixed-header
+        height="700"
         class="elevation-1"
         dense
         hide-default-footer
