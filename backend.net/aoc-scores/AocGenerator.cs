@@ -266,7 +266,7 @@ namespace RegenAoc
             int day, int star, int sortOrder)
         {
             var orderedPlayers = leaderBoard.Players
-                .Where(p => p.PositionForStar[day][star] != -1)
+                .Where(p => f(p).AccumulatedScore[day][star] != -1)
                 .OrderBy(p => sortOrder * f(p).AccumulatedScore[day][star])
                 .ToList();
             foreach (var player in leaderBoard.Players)
