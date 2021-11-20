@@ -63,6 +63,7 @@ import RawData from './RawData.vue'
 import FooterContent from './FooterContent.vue'
 import CompletionTimeStarTwo from './CompletionTimeStarTwo.vue'
 import GlobalScoreForDay from './GlobalScoreForDay.vue'
+import PositionChart from './PositionChart.vue'
 import TobiiScore from './TobiiScore.vue'
 
 export default {
@@ -70,7 +71,7 @@ export default {
       PlainHighscoreList, AocHighscore,
       LeaderBoard, CompletionTime, OffsetFromWinner,
       AccumulatedTimeToComplete, CompletionTimeStarTwo,
-      GlobalScoreForDay, TobiiScore,
+      GlobalScoreForDay, TobiiScore, PositionChart,
       RawData, FooterContent },
     props: ["guid", "year"],
     data() { return {
@@ -80,6 +81,7 @@ export default {
         loadedOk: false,
         items: [
           {title: "Leaderboard", component: "LeaderBoard"},
+          {title: "PositionChart", component: "PositionChart"},
           {title: "CompletionTime", component: "CompletionTime"},
           {title: "Time offset", component: "OffsetFromWinner"},
           {title: "Accumulated Time", component: "AccumulatedTimeToComplete"},
