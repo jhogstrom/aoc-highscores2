@@ -32,7 +32,7 @@ import { fixedColumns, fixedData, getMedalColor, secondsToString } from './table
 export default {
     components: { InfoBlock },
     data() { return {
-        infotext: "This board shows the time to complete the tasks from their release (which is the same time for both tasks)."
+        infotext: "This board shows the time to complete second star after completing the first."
     }},
     methods: {
         getValue(item, key) {
