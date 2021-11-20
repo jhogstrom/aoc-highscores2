@@ -1,44 +1,20 @@
 <template>
     <div class="scrollbox">
-    <!-- <v-data-table
-        :headers="headers"
-        :items="players"
-        :items-per-page="-1"
-        class="elevation-1"
-        dense
-        hide-default-footer
-        single-select>
-        <template v-slot:item.Position="{ item }">
-            {{ item.LocalScoreAll.Position }})
-        </template>
-        <template v-slot:item.Filler>
-
-        </template>
-        <template v-slot:item.Score="{ item }">
-            {{ item.LocalScoreAll.Score }}
-        </template>
-        <template v-slot:item.Stars="{ item }">
-            <star-line :days="item.UnixCompletionTime"></star-line>
-        </template>
-    </v-data-table> -->
-
-    <div id="aocdiv">
-        <div id="greentext">
-        <span v-for="i in 18" :key="i">&nbsp;</span>
-        1111111111222222<br>
-        <span v-for="i in 9" :key="i">&nbsp;</span>
-        1234567890123456789012345
-        </div>
-        <div v-for="p in players" v-bind:key="p.Name">
-            {{p.LocalScoreAll.Position|rightAdjust(3)}})
-            {{p.LocalScoreAll.Score|rightAdjust(4)}}
-            <star-line :days="p.UnixCompletionTime"></star-line>
-            {{p.Name}}
+        <div id="aocdiv">
+            <div id="greentext">
+            <span v-for="i in 18" :key="key(i, 17)">&nbsp;</span>
+            1111111111222222<br>
+            <span v-for="i in 9" :key="key(i, 3)">&nbsp;</span>
+            1234567890123456789012345
+            </div>
+            <div v-for="p in players" v-bind:key="p.Name">
+                {{p.LocalScoreAll.Position|rightAdjust(3)}})
+                {{p.LocalScoreAll.Score|rightAdjust(4)}}
+                <star-line :days="p.UnixCompletionTime"></star-line>
+                {{p.Name}}
+            </div>
         </div>
     </div>
-    </div>
-
-  
 </template>
 
 <script>
@@ -67,6 +43,9 @@ export default {
             res = res.replaceAll("*", '\xa0')
             return res
         }
+    },
+    methods: {
+        key(i, k) { return i * k}
     }
 }
 </script>
