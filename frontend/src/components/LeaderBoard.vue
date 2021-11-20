@@ -1,10 +1,11 @@
 <template>
 <div>
     <info-block :infotext="infotext"></info-block>
-    <div class="scrollable">
     <v-data-table
         :headers="allheaders"
         :items="playerList"
+        fixed-header
+        height="700"
         :items-per-page="-1"
         class="elevation-1"
         dense
@@ -22,8 +23,7 @@
             No data available
         </template>
     </v-data-table>
-    </div>
-</div>
+ </div>
 </template>
 
 <script>
