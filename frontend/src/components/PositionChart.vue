@@ -4,8 +4,8 @@
     <GChart
         type="LineChart"
         :data="playerList"
-        :options="chartOptions"
-        height="400px"
+        :options="chartOptions"    
+        height="400px"    
     />
  </div>
 </template>
@@ -17,7 +17,7 @@ import { GChart } from 'vue-google-charts'
 export default {
     components: { InfoBlock, GChart },
     data() { return {
-        infotext: "This board shows the <h1>leaders</h1> and points per day.",
+        infotext: "This board shows the positions per day/star.",
         chartOptions: {
             chart: {
                 title: 'Day/star',
@@ -41,26 +41,30 @@ export default {
             return this.$store.getters.data
         },
         playerList() {
-            let res = [undefined]
             let headers = ["Player"]
-            for (let day = 1; day < this.data.HighestDay + 1; day++) {
-                headers.push(`${day}-1`)
-                headers.push(`${day}-2`)
-            }
             for (const p of this.players) {
-                let pdata = [p.Name]
-                for (let day = 1; day < this.data.HighestDay + 1; day++) {
-                    const dataValue = p.LocalScoreAll.AccumulatedPosition[day-1]
-                    pdata.push(dataValue[0])
-                    pdata.push(dataValue[1])
-                }
-                res.push(pdata)
+                headers.push(p.Name);
             }
-            res[0] = headers
+            let res = [headers]
+
+            for (let day = 0; day < this.data.HighestDay; day++) {
+                const excluded = this.$store.getters.data.ExcludedDays.includes(day)
+                if (!excluded) {
+                    for (let star = 0; star < 2; star++ ) {
+                        let pdata = [`${day+1}-${star+1}`]
+                        for (const p of this.players) {
+                            pdata.push(p.LocalScoreAll.AccumulatedPosition[day][star]);
+
+                        }   
+                        res.push(pdata);          
+                    }
+                }
+            }
+
             console.log(res)
             return res
         }
-    },
+    }
 }
 </script>
 
