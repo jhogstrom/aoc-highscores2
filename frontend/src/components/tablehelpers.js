@@ -41,9 +41,6 @@ export function getMedalColor(item, key) {
     const posKey = "s" + key.slice(1)
     let daynum = parseInt(key.slice(2, -2)) - 1
     const excluded = store.getters.data.ExcludedDays.includes(daynum) ? " excludedday" : ""
-    if (excluded) {
-        console.log(excluded, daynum)
-    }
     const medal = medals[item[posKey]] === undefined ? "" : medals[item[posKey]]
     return  medal + excluded
 }
@@ -54,7 +51,7 @@ const secondsInDay = secondsInHour * 24
 export function secondsToString(seconds) {
     if (seconds === 0) {
         return "WINNER"}
-    if (seconds === -1) {
+    if (seconds === -1 || seconds === Number.MAX_SAFE_INTEGER) {
         return ""}
     if (seconds > secondsInDay) {
         const days = Math.floor(seconds / secondsInDay)

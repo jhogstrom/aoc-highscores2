@@ -63,8 +63,8 @@ export default {
                 for (let day = 1; day < this.data.HighestDay + 1; day++) {
                     const dataValue = p.TimeToComplete[day-1]
                     const starPositions = p.PositionForStar[day-1]
-                    player[`d_${day}_0`] = dataValue[0] ? dataValue[0] : ""
-                    player[`d_${day}_1`] = dataValue[1] ? dataValue[1] : ""
+                    player[`d_${day}_0`] = dataValue[0] !== -1 ? dataValue[0] : Number.MAX_SAFE_INTEGER
+                    player[`d_${day}_1`] = dataValue[1] !== -1 ? dataValue[1] : Number.MAX_SAFE_INTEGER
                     player[`s_${day}_0`] = starPositions[0]
                     player[`s_${day}_1`] = starPositions[1]
                 }

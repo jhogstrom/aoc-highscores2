@@ -28,27 +28,28 @@
 
 <script>
 import InfoBlock from './InfoBlock.vue'
-import { fixedColumns, fixedData, dayColumns, getMedalColor, secondsToString } from './tablehelpers'
+import { fixedColumns, fixedData, getMedalColor, secondsToString } from './tablehelpers'
 export default {
     components: { InfoBlock },
     data() { return {
-        infotext: "This board shows the time offset to the winner for each star."
+        infotext: "This board shows the time to complete the tasks from their release (which is the same time for both tasks)."
     }},
     methods: {
         getValue(item, key) {
-            const offset = secondsToString(item[key])
-            if (offset === "00:00:00") {
-                return "Winner"
-            }
-            return offset
+            console.log(item[key])
+            return secondsToString(item[key])
         },
         medalColor(item, key) {
             return getMedalColor(item, key)
-        },
+        }
     },
     computed: {
         dayheaders() {
-            return dayColumns()
+            let res = []
+            for (let day = 1; day < this.$store.getters.data.HighestDay + 1; day++) {
+                res.push({ text: `day ${day} *->**`, value: `d_${day}_0`, align: "end", width: 15 })
+            }
+            return res
         },
         allheaders() {
             return [...fixedColumns(), ...this.dayheaders]
@@ -65,12 +66,10 @@ export default {
             for (const p of this.players) {
                 let player = fixedData(p)
                 for (let day = 1; day < this.data.HighestDay + 1; day++) {
-                    const dataValue = p.OffsetFromWinner[day-1]
-                    const starPositions = p.PositionForStar[day-1]
-                    player[`d_${day}_0`] = dataValue[0] !== -1 ? dataValue[0] : Number.MAX_SAFE_INTEGER
-                    player[`d_${day}_1`] = dataValue[1] !== -1 ? dataValue[1] : Number.MAX_SAFE_INTEGER
-                    player[`s_${day}_0`] = starPositions[0]
-                    player[`s_${day}_1`] = starPositions[1]
+                    const dataValue = p.TimeToCompleteStar2[day-1]
+                    const starPositions = p.PositionStar2[day-1]
+                    player[`d_${day}_0`] = dataValue !== -1 ? dataValue : Number.MAX_SAFE_INTEGER
+                    player[`s_${day}_0`] = starPositions
                 }
                 res.push(player)
             }
