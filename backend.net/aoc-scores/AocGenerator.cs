@@ -153,14 +153,16 @@ namespace RegenAoc
                         }
                     }
 
-                    player.TimeToCompleteStar2[day] = player.TimeToComplete[day][1] - player.TimeToComplete[day][0];
-                    // punish anyone who solves star 2 in < 10 seconds (except for xmas day where it is actually possible
-                    if (player.TimeToCompleteStar2[day] < 10 && day != 24)
+                    if (player.UnixCompletionTime[day][1] != -1)
                     {
-                        player.TimeToCompleteStar2[day] = 60*60*24;
-                        player.Fraud.Add(day);
+                        player.TimeToCompleteStar2[day] = player.TimeToComplete[day][1] - player.TimeToComplete[day][0];
+                        // punish anyone who solves star 2 in < 10 seconds (except for xmas day where it is actually possible
+                        if (player.TimeToCompleteStar2[day] < 10 && day != 24)
+                        {
+                            player.TimeToCompleteStar2[day] = 60 * 60 * 24;
+                            player.Fraud.Add(day);
+                        }
                     }
-
                 }
 
                 {
@@ -199,6 +201,8 @@ namespace RegenAoc
                                 pos = orderedPlayers[index - 1].PositionForStar[day][star];
 
                             player.PositionForStar[day][star] = pos;
+                            if (pos < 3)
+                                player.Medals[pos]++;
 
                             player.OffsetFromWinner[day][star] = player.TimeToComplete[day][star] - bestTime[day][star];
                             runningLastStar[player] = completionTime;

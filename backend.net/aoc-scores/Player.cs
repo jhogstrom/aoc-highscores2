@@ -21,6 +21,7 @@ public class Player
 
         TimeToCompleteStar2 = new int[dayCount];
         PositionStar2 = new int[dayCount];
+        Medals = new int[3];
 
         for (int i = 0; i < dayCount; i++)
         {
@@ -51,6 +52,8 @@ public class Player
     public ScoreRec LocalScoreActive { get; }
     public ScoreRec LocalScoreAll { get; }
     public ScoreRec TobiiScore { get; }
+
+    public int[] Medals { get; }
 
     public long[][] UnixCompletionTime { get; }
     public int?[][] GlobalScoreForDay { get; set; }
