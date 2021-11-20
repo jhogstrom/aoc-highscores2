@@ -16,7 +16,7 @@ public class Player
         AccumulatedTimeToComplete = InitArray<int>(dayCount, -1);
         OffsetFromWinner = InitArray<int>(dayCount, -1);
         PositionForStar = InitArray(dayCount, -1);
-        GlobalScoreForDay = InitArray<int?>(dayCount, null);
+        GlobalScoreForDay = InitArray<int>(dayCount, 0);
         Fraud = new List<int>();
 
         TimeToCompleteStar2 = new int[dayCount];
@@ -56,7 +56,7 @@ public class Player
     public int[] Medals { get; }
 
     public long[][] UnixCompletionTime { get; }
-    public int?[][] GlobalScoreForDay { get; set; }
+    public int[][] GlobalScoreForDay { get; set; }
     public int[][] PositionForStar { get; set; }
     public int[][] TimeToComplete { get; set; }
     public int[][] AccumulatedTimeToComplete { get; set; }
