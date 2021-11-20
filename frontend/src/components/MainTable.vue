@@ -62,12 +62,14 @@ import AccumulatedTimeToComplete from './AccumulatedTimeToComplete.vue'
 import RawData from './RawData.vue'
 import FooterContent from './FooterContent.vue'
 import CompletionTimeStarTwo from './CompletionTimeStarTwo.vue'
+import GlobalScoreForDay from './GlobalScoreForDay.vue'
 
 export default {
     components: {
       PlainHighscoreList, AocHighscore,
       LeaderBoard, CompletionTime, OffsetFromWinner,
       AccumulatedTimeToComplete, CompletionTimeStarTwo,
+      GlobalScoreForDay,
       RawData, FooterContent },
     props: ["guid", "year"],
     data() { return {
@@ -78,9 +80,10 @@ export default {
         items: [
           {title: "Leaderboard", component: "LeaderBoard"},
           {title: "CompletionTime", component: "CompletionTime"},
-          {title: "OffsetFromWinner", component: "OffsetFromWinner"},
-          {title: "AccumulatedTimeToComplete", component: "AccumulatedTimeToComplete"},
-          {title: "CompletionTimeStarTwo", component: "CompletionTimeStarTwo"},
+          {title: "Time offset", component: "OffsetFromWinner"},
+          {title: "Accumulated Time", component: "AccumulatedTimeToComplete"},
+          {title: "Time*2", component: "CompletionTimeStarTwo"},
+          {title: "Global", component: "GlobalScoreForDay"},
           // {title: "highscore", component: "PlainHighscoreList"},
           {title: "AoC style", component: "AocHighscore"},
           {title: "Raw", component: "RawData"},
