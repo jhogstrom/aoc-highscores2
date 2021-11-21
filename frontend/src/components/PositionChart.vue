@@ -5,8 +5,7 @@
         type="LineChart"
         :data="playerList"
         :options="chartOptions"    
-        height="400px"    
-    />
+        />
  </div>
 </template>
 
@@ -16,15 +15,20 @@ import InfoBlock from './InfoBlock.vue'
 import { GChart } from 'vue-google-charts'
 export default {
     components: { InfoBlock, GChart },
-    data() { return {
+    data() { 
+        return {
         infotext: "This board shows the positions per day/star.",
         chartOptions: {
+            height: 800,
             chart: {
                 title: 'Day/star',
             },
             vAxis: {
-                // title: 'Time',
+                title: 'Position',
                 // textPosition: "none",
+                // minValue: 5,
+                direction: -1,
+                ticks: [5, 10, 15, 20, 25],
                 viewWindow: {
                     // max: 1000,
                     min: 0,
@@ -71,7 +75,6 @@ export default {
 <style>
 
 .chartclass {
-    height: 800px;
 }
 
 </style>
