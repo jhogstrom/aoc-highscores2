@@ -79,6 +79,7 @@ export default {
       RawData, FooterContent, MenuButton },
     props: ["guid", "year"],
     data() { return {
+        infoTitle: "AOC FTW",
         displayComponent: null,
         drawer: false,
         includeZero: this.includeZeroes,
