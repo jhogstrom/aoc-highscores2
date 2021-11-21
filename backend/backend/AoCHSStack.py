@@ -45,7 +45,6 @@ class AoCHSStack(cdk.Stack):
         regenerator.add_event_source(aws_lambda_event_sources.SqsEventSource(regenerateQ, batch_size=1))
 
         # S3 bucket for public pages + data-blobs
-        # aws_s3.Bucket(blo
         website = aws.Bucket(
             self,
             "website",
@@ -73,8 +72,19 @@ class AoCHSStack(cdk.Stack):
         boardconfig = aws.Table(
             self,
             "boardsconfig",
-            sort_key=aws_dynamodb.Attribute(name="sk", type=aws_dynamodb.AttributeType.STRING))
+            sort_key=aws_dynamodb.Attribute(name="sk", type=aws_dynamodb.AttributeType.STRING),
+            billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST
+        )
         boardconfig.grant_read_write_data(regenerator)
+
+        globalscores = aws.Table(
+            self,
+            "globalscores",
+            partition_key=aws_dynamodb.Attribute(name="year", type=aws_dynamodb.AttributeType.NUMBER),
+            sort_key=aws_dynamodb.Attribute(name="day", type=aws_dynamodb.AttributeType.NUMBER),
+            billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST
+        )
+        globalscores.grant_read_write_data(regenerator)
 
         layers = aws.PipLayers(self, "layers", layers={"api": "backend/api_requirements.txt"})
 
@@ -89,4 +99,3 @@ class AoCHSStack(cdk.Stack):
         admin_api = aws_apigateway.LambdaRestApi(self, "admin_api", handler=admin_api_handler)
         admin_api_handler.add_environment("CONFIGDB", boardconfig.table_name)
         boardconfig.grant_read_write_data(admin_api_handler)
-
