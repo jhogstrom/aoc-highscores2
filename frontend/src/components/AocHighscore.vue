@@ -1,5 +1,7 @@
 <template>
     <div class="scrollbox">
+        <info-block :infotext="infotext" :title="infoTitle"></info-block>
+
         <div id="aocdiv">
             <div id="greentext">
             <span v-for="i in 18" :key="key(i, 17)">&nbsp;</span>
@@ -19,10 +21,11 @@
 
 <script>
 import StarLine from './StarLine.vue'
-
+import InfoBlock from './InfoBlock.vue'
 
 export default {
-    components: { StarLine },
+    components: { StarLine,InfoBlock },
+    props: ["infoTitle"],
     data () { return {
         headers: [
             { text: 'Pos.', value: 'Position', width: 20 },

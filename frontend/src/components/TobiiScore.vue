@@ -1,6 +1,6 @@
 <template>
 <div>
-    <info-block :infotext="infotext"></info-block>
+    <info-block :infotext="infotext" :title="infoTitle"></info-block>
     <div class="scrollable">
     <v-data-table
         :headers="allheaders"
@@ -29,8 +29,10 @@
 <script>
 import InfoBlock from './InfoBlock.vue'
 import { fixedColumns, fixedData, dayColumns, getMedalColor } from './tablehelpers'
+
 export default {
     components: { InfoBlock },
+    props: ["infoTitle"],
     data() { return {
         infotext: `TobiiScore leaderboard is ordered by
         <ul>

@@ -5,6 +5,7 @@
             <div>
               <v-icon>mdi-information</v-icon>
             </div>
+            {{ title }}
         </v-expansion-panel-header>
         <v-expansion-panel-content>
             <div v-html="infotext"></div>
@@ -15,7 +16,7 @@
 
 <script>
 export default {
-    props: ["infotext"]
+    props: ["infotext", "title"]
 
 }
 </script>

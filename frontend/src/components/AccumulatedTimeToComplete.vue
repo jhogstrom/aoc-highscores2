@@ -1,6 +1,6 @@
 <template>
 <div>
-    <info-block :infotext="infotext"></info-block>
+    <info-block :infotext="infotext" :title="infoTitle"></info-block>
     <div class="scrollable">
     <v-data-table
         :headers="allheaders"
@@ -31,6 +31,7 @@ import InfoBlock from './InfoBlock.vue'
 import { fixedColumns, fixedData, dayColumns, getMedalColor, secondsToString2 } from './tablehelpers'
 export default {
     components: { InfoBlock },
+    props: ["infoTitle"],
     data() { return {
         infotext: "This board shows the total time used to complete the task - counted from task release to completion!"
     }},

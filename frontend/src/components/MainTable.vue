@@ -10,34 +10,37 @@
       <v-toolbar-title>AOC Highscores
       <p class="fetchtime">Fetched from AoC {{updateTime}}</p>
       </v-toolbar-title>
+
+
       <template v-slot:extension>
           <v-tabs
             v-model="tab"
             align-with-title
           >
             <v-tabs-slider color="yellow"></v-tabs-slider>
-
-            <v-tab
-              v-for="item in items"
-              :key="item.title"
-            >
-              {{ item.title }}
+            <v-tab>
+              <menu-button
+                :caption="'Boards'"
+                :menuItems="boards"
+                @menuSelected="menuSelected"></menu-button>
+            </v-tab>
+            <v-tab>
+              <menu-button
+                :caption="'Charts'"
+                :menuItems="charts"
+                @menuSelected="menuSelected"></menu-button>
+            </v-tab>
+            <v-tab>
+              <menu-button
+                :caption="'Other'"
+                :menuItems="otherPages"
+                @menuSelected="menuSelected"></menu-button>
             </v-tab>
           </v-tabs>
         </template>
       </v-toolbar>
-        <v-tabs-items v-model="tab">
-          <v-tab-item
-            v-for="item in items"
-            :key="item.title"
-          >
-            <v-card flat>
-              <component v-bind:is="item.component"></component>
-              <!-- <v-card-text v-text="text"></v-card-text> -->
-            </v-card>
-          </v-tab-item>
-        </v-tabs-items>
     </v-card>
+    <component v-bind:is="displayComponent" :infoTitle="infoTitle"></component>
     <v-navigation-drawer
         v-model="drawer"
         absolute
@@ -65,6 +68,7 @@ import CompletionTimeStarTwo from './CompletionTimeStarTwo.vue'
 import GlobalScoreForDay from './GlobalScoreForDay.vue'
 import PositionChart from './PositionChart.vue'
 import TobiiScore from './TobiiScore.vue'
+import MenuButton from './MenuButton.vue'
 
 export default {
     components: {
@@ -72,26 +76,32 @@ export default {
       LeaderBoard, CompletionTime, OffsetFromWinner,
       AccumulatedTimeToComplete, CompletionTimeStarTwo,
       GlobalScoreForDay, TobiiScore, PositionChart,
-      RawData, FooterContent },
+      RawData, FooterContent, MenuButton },
     props: ["guid", "year"],
     data() { return {
+        displayComponent: null,
         drawer: false,
         includeZero: this.includeZeroes,
         tab: null,
         loadedOk: false,
-        items: [
+        boards: [
           {title: "Leaderboard", component: "LeaderBoard"},
-          {title: "PositionChart", component: "PositionChart"},
           {title: "CompletionTime", component: "CompletionTime"},
           {title: "Time offset", component: "OffsetFromWinner"},
           {title: "Accumulated Time", component: "AccumulatedTimeToComplete"},
           {title: "Time*2", component: "CompletionTimeStarTwo"},
           {title: "Global", component: "GlobalScoreForDay"},
           {title: "TobiiScore", component: "TobiiScore"},
-          // {title: "highscore", component: "PlainHighscoreList"},
+
+        ],
+        charts: [
+          {title: "PositionChart", component: "PositionChart"},
+
+        ],
+        otherPages: [
           {title: "AoC style", component: "AocHighscore"},
           {title: "Raw", component: "RawData"},
-        ]
+        ],
     }},
     computed: {
         updateTime() {
@@ -104,8 +114,12 @@ export default {
     methods: {
       includeZeroChanged() {
         this.$store.dispatch('setIncludeZeroes', this.includeZero)
+      },
+      menuSelected(item) {
+        this.infoTitle = item.title
+        this.displayComponent = item.component
       }
-    }
+    },
 }
 </script>
 

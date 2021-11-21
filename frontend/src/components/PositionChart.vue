@@ -1,6 +1,6 @@
 <template>
 <div class="chartclass">
-    <info-block :infotext="infotext"></info-block>
+    <info-block :infotext="infotext" :title="infoTitle"></info-block>
     <GChart
         type="LineChart"
         :data="playerList"
@@ -15,6 +15,7 @@ import InfoBlock from './InfoBlock.vue'
 import { GChart } from 'vue-google-charts'
 export default {
     components: { InfoBlock, GChart },
+    props: ["infoTitle"],
     data() { 
         return {
         infotext: "This board shows the positions per day/star.",
