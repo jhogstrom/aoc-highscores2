@@ -47,9 +47,9 @@
         temporary
       >
       <v-checkbox
-        v-model="includeZero"
+        v-model="includeZeroes"
         :label="'Include null achievers'"
-        @change="includeZeroChanged"></v-checkbox>
+        ></v-checkbox>
     </v-navigation-drawer>
     <footer-content class="footer"></footer-content>
   </div>
@@ -82,7 +82,6 @@ export default {
         infoTitle: "AOC FTW",
         displayComponent: null,
         drawer: false,
-        includeZero: this.includeZeroes,
         tab: null,
         loadedOk: false,
         boards: [
@@ -108,14 +107,16 @@ export default {
         updateTime() {
             return this.$store.getters.updateTime
         },
-        includeZeroes() {
+        includeZeroes: {
+          get: function() {
             return this.$store.getters.includeZeroes
-        },
+          },
+          set: function() {
+            this.$store.dispatch('setIncludeZeroes', !this.includeZeroes)
+          }
+        }
     },
     methods: {
-      includeZeroChanged() {
-        this.$store.dispatch('setIncludeZeroes', this.includeZero)
-      },
       menuSelected(item) {
         this.infoTitle = item.title
         this.displayComponent = item.component

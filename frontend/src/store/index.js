@@ -28,6 +28,7 @@ export default new Vuex.Store({
         },
         async setIncludeZeroes({ commit }, includeZeroes) {
             console.log("Setting", includeZeroes)
+            localStorage.setItem('includeZeroes', includeZeroes)
             commit(types.SET_INCLUDEZEROES, includeZeroes)
         },
     },
@@ -40,5 +41,11 @@ export default new Vuex.Store({
             state.includeZeroes = includeZeroes
             console.log("mutating includeZeroes", includeZeroes)
         },
+        initialiseStore(state) {
+            console.log("initializing store", state)
+            if (localStorage.getItem('includeZeroes') == "true") {
+                state.includeZeroes = localStorage.getItem('includeZeroes');
+            }
+        }
     }
 })
