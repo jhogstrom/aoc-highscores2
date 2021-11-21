@@ -277,7 +277,7 @@ namespace RegenAoc
                     f(orderedPlayers[index - 1]).AccumulatedScore[day][star])
                     f(player).AccumulatedPosition[day][star] = f(orderedPlayers[index - 1]).AccumulatedPosition[day][star];
                 else
-                    f(player).AccumulatedPosition[day][star] = index;
+                    f(player).AccumulatedPosition[day][star] = index+1;
 
                 f(player).ScoreDiff[day][star] = 
                     f(orderedPlayers.First()).AccumulatedScore[day][star]-
