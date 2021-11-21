@@ -1,2 +1,3 @@
 export const SET_DATA = 'SET_DATA'
 export const SET_INCLUDEZEROES = 'SET_INCLUDEZEROES'
+export const SET_AUTOREFRESH = 'SET_AUTOREFRESH'

@@ -50,6 +50,10 @@
         v-model="includeZeroes"
         :label="'Include null achievers'"
         ></v-checkbox>
+      <v-checkbox
+        v-model="autoRefresh"
+        :label="'Reload data every 20 seconds (if page is active)'"
+        ></v-checkbox>
     </v-navigation-drawer>
     <footer-content class="footer"></footer-content>
   </div>
@@ -114,7 +118,16 @@ export default {
           set: function() {
             this.$store.dispatch('setIncludeZeroes', !this.includeZeroes)
           }
+        },
+        autoRefresh: {
+          get: function() {
+            return this.$store.getters.autoRefresh
+          },
+          set: function() {
+            this.$store.dispatch('setAutoRefresh', !this.autoRefresh)
+          }
         }
+
     },
     methods: {
       menuSelected(item) {

@@ -11,12 +11,14 @@ export default new Vuex.Store({
     strict: debug,
     state: {
         data: { Players: [{ LocalScore: 0 }] },
-        includeZeroes: false
+        includeZeroes: false,
+        autoRefresh: false,
     },
     getters: {
         data: state => state.data,
         updateTime: state => state.data.RetrievedFromAoC,
         includeZeroes: state => state.includeZeroes,
+        autoRefresh: state => state.autoRefresh,
         isLoaded: state => (state.data) ? true : false,
         players: state => _.sortBy(state.data.Players, ["LocalScoreAll.Position"]).slice(),
         filteredPlayers: state => state.data.Players.filter(_ => state.includeZeroes || _.Stars > 0).slice()
@@ -28,8 +30,11 @@ export default new Vuex.Store({
         },
         async setIncludeZeroes({ commit }, includeZeroes) {
             console.log("Setting", includeZeroes)
-            localStorage.setItem('includeZeroes', includeZeroes)
             commit(types.SET_INCLUDEZEROES, includeZeroes)
+        },
+        async setAutoRefresh({ commit }, autoRefresh) {
+            console.log("Setting", autoRefresh)
+            commit(types.SET_AUTOREFRESH, autoRefresh)
         },
     },
     mutations: {
@@ -39,12 +44,21 @@ export default new Vuex.Store({
         },
         SET_INCLUDEZEROES(state, includeZeroes) {
             state.includeZeroes = includeZeroes
+            localStorage.setItem('includeZeroes', includeZeroes)
             console.log("mutating includeZeroes", includeZeroes)
+        },
+        SET_AUTOREFRESH(state, autoRefresh) {
+            state.autoRefresh = autoRefresh
+            localStorage.setItem('autoRefresh', autoRefresh)
+            console.log("mutating autoRefresh", autoRefresh)
         },
         initialiseStore(state) {
             console.log("initializing store", state)
             if (localStorage.getItem('includeZeroes') == "true") {
                 state.includeZeroes = localStorage.getItem('includeZeroes');
+            }
+            if (localStorage.getItem('autoRefresh') == "true") {
+                state.autoRefresh = localStorage.getItem('autoRefresh');
             }
         }
     }
