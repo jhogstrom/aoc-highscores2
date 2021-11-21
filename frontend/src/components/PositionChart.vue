@@ -13,30 +13,13 @@
 import InfoBlock from './InfoBlock.vue'
 // import { fixedColumns,  dayColumns, getMedalColor } from './tablehelpers'
 import { GChart } from 'vue-google-charts'
+
 export default {
     components: { InfoBlock, GChart },
     props: ["infoTitle"],
     data() { 
         return {
         infotext: "This board shows the positions per day/star.",
-        chartOptions: {
-            height: 800,
-            chart: {
-                title: 'Day/star',
-            },
-            vAxis: {
-                title: 'Position',
-                // textPosition: "none",
-                // minValue: 5,
-                direction: -1,
-                ticks: [5, 10, 15, 20, 25],
-                viewWindow: {
-                    // max: 1000,
-                    min: 0,
-                },
-            },
-
-        }
     }},
     computed: {
         players() {
@@ -44,6 +27,41 @@ export default {
         },
         data() {
             return this.$store.getters.data
+        },
+        chartOptions() {
+            return {
+                height: 800,
+                chart: {
+                    title: 'Day/star',
+                },
+                vAxis: {
+                    title: 'Position',
+                    // textPosition: "none",
+                    // minValue: 5,
+                    direction: -1,
+                    ticks: this.tickMarks,
+                    viewWindow: {
+                        // max: 1000,
+                        min: 0,
+                    },
+                }
+            }
+        },
+        tickMarks() {
+            const playerCount = this.players.length
+            let tickInterval = 25 // for 100+ players in list
+            if (playerCount < 51) {
+                tickInterval = 5
+            } else if (playerCount < 101) {
+                tickInterval = 10
+            }
+            const maxTick = Math.floor(playerCount/tickInterval) * tickInterval + tickInterval
+            const res = []
+            for (let i = tickInterval; i <= maxTick; i += tickInterval) {
+                res.push(i)
+            }
+            console.log(res)
+            return res
         },
         playerList() {
             let headers = ["Player"]
@@ -66,7 +84,7 @@ export default {
                 }
             }
 
-            console.log(res)
+            // console.log(res)
             return res
         }
     }
@@ -74,8 +92,5 @@ export default {
 </script>
 
 <style>
-
-.chartclass {
-}
 
 </style>
