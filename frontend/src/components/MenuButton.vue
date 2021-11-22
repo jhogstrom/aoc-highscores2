@@ -3,6 +3,7 @@
         bottom
         origin="center center"
         transition="scale-transition"
+        offset-y
         >
         <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -16,19 +17,15 @@
         </template>
 
         <v-list>
-            <v-list-item
-            v-for="(item, i) in menuItems"
-            :key="i"
-            >
-            <v-list-item-title>
-                <span id="menuitem" @click="menuSelect(item)">
-                {{ item.title }}
-                </span>
-            </v-list-item-title>
+            <v-list-item v-for="(item, i) in menuItems" :key="i">
+                <v-list-item-title>
+                    <span id="menuitem" @click="menuSelect(item)">
+                    {{ item.title }}
+                    </span>
+                </v-list-item-title>
             </v-list-item>
         </v-list>
     </v-menu>
-
 </template>
 
 <script>
@@ -39,7 +36,6 @@ export default {
             this.$emit("menuSelected", item)
         }
     }
-
 }
 </script>
 
@@ -48,6 +44,5 @@ div.v-list-item__title:hover {
     background-color: black;
     color: blanchedalmond;
     cursor: pointer;
-
 }
 </style>
