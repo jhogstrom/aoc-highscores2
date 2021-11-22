@@ -77,14 +77,15 @@ class AoCHSStack(cdk.Stack):
         )
         boardconfig.grant_read_write_data(regenerator)
         # DynamoDB table with listguid + config for all boards
-        playerInfo = aws.Table(
+        playerdata = aws.Table(
             self,
-            "playerinfo",
-            partition_key=aws_dynamodb.Attribute(name="playerid", type=aws_dynamodb.AttributeType.NUMBER),
-            sort_key=aws_dynamodb.Attribute(name="sk", type=aws_dynamodb.AttributeType.STRING),
+            "playerdata",
+            sort_key=aws_dynamodb.Attribute(
+                name="sk",
+                type=aws_dynamodb.AttributeType.STRING),
             billing_mode=aws_dynamodb.BillingMode.PAY_PER_REQUEST
         )
-        playerInfo.grant_read_write_data(regenerator)
+        playerdata.grant_read_write_data(regenerator)
 
         globalscores = aws.Table(
             self,
