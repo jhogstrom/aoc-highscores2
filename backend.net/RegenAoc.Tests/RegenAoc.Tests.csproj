@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="20.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="boardconfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

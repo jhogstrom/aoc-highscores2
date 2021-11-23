@@ -1,12 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Amazon;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Lambda.Core;
 using Newtonsoft.Json;
@@ -27,6 +23,7 @@ namespace RegenAoc
             return new BoardConfig()
             {
                 AocId = "123456",
+                Year = 2020,
                 Name = "Test-list",
                 SessionCookie = "dummycookie",
                 Years = new List<int> { 2019, 2020, 2021 },
@@ -38,8 +35,11 @@ namespace RegenAoc
 
         public static async Task<BoardConfig> LoadFromDynamo(string guid, int year, ILambdaLogger logger)
         {
-            var conf = new BoardConfig();
-            conf.Guid = guid;
+            var conf = new BoardConfig
+            {
+                Guid = guid,
+                Year = year
+            };
 
             using (var client = new AmazonDynamoDBClient(AwsHelpers.DynamoRegion))
             {
@@ -53,13 +53,13 @@ namespace RegenAoc
                 //
                 // ProcessConf(conf, scanResponse.Items.Where(i=>i["id"].S == guid));
 
-                var request = CreatePKQueryRequest(guid);
+                var request = AwsHelpers.CreateBoardConfigPKQueryRequest(guid);
 
                 var resp = await client.QueryAsync(request);
 
                 ProcessConf(conf, resp.Items, year, logger);
 
-                request = CreatePKQueryRequest(year.ToString());
+                request = AwsHelpers.CreateBoardConfigPKQueryRequest(year.ToString());
 
                 resp = await client.QueryAsync(request);
                 foreach (var r in resp.Items)
@@ -116,19 +116,7 @@ namespace RegenAoc
             }
         }
 
-        private static QueryRequest CreatePKQueryRequest(string key)
-        {
-            var request = new QueryRequest
-            {
-                TableName = AwsHelpers.ConfigTableName,
-                KeyConditionExpression = "id = :pk",
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                {
-                    { ":pk", new AttributeValue { S = key } },
-                }
-            };
-            return request;
-        }
+  
 
         public static void SaveFile(BoardConfig config)
         {

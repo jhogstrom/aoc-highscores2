@@ -19,17 +19,61 @@ namespace RegenAoc
             _logger = logger;
         }
 
-        public async Task Generate(BoardConfig boardConfig, int year)
+        public async Task Generate(BoardConfig boardConfig)
         {
             _logger.LogLine("Loading AoC data from S3");
-            var aocData = await GetAocDataFromS3(boardConfig, year);
+            var aocData = await GetAocDataFromS3(boardConfig);
             var aocList = DeserializeAocJson(aocData.Item1);
             _logger.LogLine("Computing AoC Stats");
-            var leaderBoard = ConvertList(aocList, boardConfig, aocData.LastModified, year);
+            var leaderBoard = ConvertList(aocList, boardConfig, aocData.LastModified);
+            
+            var globalMgr = new GlobalManager(_logger);
+            var globalScore = await globalMgr.GetGlobalScore(boardConfig, leaderBoard.HighestDay);
+
+            var privateLeaderboardParser = new PrivateLeaderboardParser(_logger);
+            await privateLeaderboardParser.UpdatePlayersFromPrivateLeaderboard(boardConfig, leaderBoard.Players);
+
             HandlePlayerRenames(leaderBoard, boardConfig);
-            DeriveMoreStats(leaderBoard, year, boardConfig);
+            DeriveMoreStats(leaderBoard, boardConfig);
+
+            ComputeGlobalScores(leaderBoard, globalScore);
             _logger.LogLine("Uploading results to public S3 bucket");
-            await SaveToS3(leaderBoard, boardConfig, year);
+            await SaveToS3(leaderBoard, boardConfig);
+        }
+
+        private void ComputeGlobalScores(LeaderBoard leaderBoard, GlobalScore globalScore)
+        {
+            for (var day = 0; day < leaderBoard.HighestDay; day++)
+            {
+                for (var star = 0; star < 2; star++)
+                {
+                    var scores = globalScore.Days[day+1].Stars[star].Players.ToDictionary(p => p.Name);
+
+                foreach (var p in leaderBoard.Players)
+                    {
+                        if (p.GlobalScore > 0)
+                        {
+                            GlobalPlayer globalPlayer = null;
+                            if (scores.ContainsKey(p.AoCName))
+                            {
+                                globalPlayer = scores[p.AoCName];
+                            }
+
+                            // verify solvetime
+                            if (globalPlayer != null && (long)globalPlayer.SolveTime.TotalSeconds != p.TimeToComplete[day][star])
+                                globalPlayer = null;
+                            if (globalPlayer != null)
+                            {
+                                p.GlobalScoreForDay[day][star] = globalPlayer.Points;
+                                p.Avatar = globalPlayer.Avatar;
+                                p.Supporter = globalPlayer.Supporter;
+                                p.PublicProfile = globalPlayer.PublicProfile;
+                            }
+                        }
+
+                    }
+                }
+            }
         }
 
         private void HandlePlayerRenames(LeaderBoard leaderBoard, BoardConfig boardConfig)
@@ -45,7 +89,7 @@ namespace RegenAoc
             }
         }
 
-        private async Task SaveToS3(LeaderBoard leaderBoard, BoardConfig boardConfig, int year)
+        private async Task SaveToS3(LeaderBoard leaderBoard, BoardConfig boardConfig)
         {
             using (var client = new AmazonS3Client())
             {
@@ -56,7 +100,7 @@ namespace RegenAoc
                     var req = new PutObjectRequest()
                     {
                         BucketName = AwsHelpers.PublicBucket,
-                        Key = AwsHelpers.PublicBucketKey(year, boardConfig.Guid),
+                        Key = AwsHelpers.PublicBucketKey(boardConfig.Year, boardConfig.Guid),
                         InputStream = stream,
                         ContentType = "text/json"
                     };
@@ -66,7 +110,7 @@ namespace RegenAoc
             }
         }
 
-        private LeaderBoard ConvertList(AocList aocList, BoardConfig boardConfig, DateTime aocLastModified, int year)
+        private LeaderBoard ConvertList(AocList aocList, BoardConfig boardConfig, DateTime aocLastModified)
         {
             var highestDay = 0;
             var players = new List<Player>();
@@ -103,10 +147,10 @@ namespace RegenAoc
                 players.Add(player);
             }
 
-            return new LeaderBoard(players, highestDay, boardConfig.ExcludeDays, excludedPlayers, aocLastModified, year);
+            return new LeaderBoard(players, highestDay, boardConfig.ExcludeDays, excludedPlayers, aocLastModified, boardConfig.Year);
         }
 
-        private void DeriveMoreStats(LeaderBoard leaderBoard, int year, BoardConfig boardConfig)
+        private void DeriveMoreStats(LeaderBoard leaderBoard, BoardConfig boardConfig)
         {
             var bestTime = new int[leaderBoard.HighestDay][];
             var runningLastStar = new Dictionary<Player, long>();
@@ -120,7 +164,7 @@ namespace RegenAoc
 
             for (int day = 0; day < leaderBoard.HighestDay; day++)
             {
-                var publishTimeUTC = new DateTime(year, 12, day + 1, 5, 0, 0);
+                var publishTimeUTC = new DateTime(boardConfig.Year, 12, day + 1, 5, 0, 0);
                 bestTime[day] = new int[2];
                 
                 foreach (var player in leaderBoard.Players)
@@ -143,7 +187,7 @@ namespace RegenAoc
                                 bestTime[day][star] = timeToSolve;
 
                             // raffle tickets awarded for stars before new years
-                            if (starTime.Year == year)
+                            if (starTime.Year == boardConfig.Year)
                                 player.RaffleTickets++;
                             // raffle tickets awarded for completing both stars in 24h 
                             if (star == 1 && timeSpan.TotalDays < 1)
@@ -290,13 +334,13 @@ namespace RegenAoc
             return JsonConvert.DeserializeObject<AocList>(list);
         }
 
-        private async Task<(string, DateTime LastModified)> GetAocDataFromS3(BoardConfig boardConfig, int year)
+        private async Task<(string, DateTime LastModified)> GetAocDataFromS3(BoardConfig boardConfig)
         {
             using var client = new AmazonS3Client();
-            var obj = await client.GetObjectAsync(AwsHelpers.InternalBucket, AwsHelpers.InternalBucketKey(year, boardConfig.AocId));
+            var obj = await client.GetObjectAsync(AwsHelpers.InternalBucket, AwsHelpers.InternalBucketKey(boardConfig.Year, boardConfig.AocId));
             var metadataRequest = new GetObjectMetadataRequest();
             metadataRequest.BucketName = AwsHelpers.InternalBucket;
-            metadataRequest.Key = AwsHelpers.InternalBucketKey(year, boardConfig.AocId);
+            metadataRequest.Key = AwsHelpers.InternalBucketKey(boardConfig.Year, boardConfig.AocId);
             var obj2 = await client.GetObjectMetadataAsync(metadataRequest);
 
 
