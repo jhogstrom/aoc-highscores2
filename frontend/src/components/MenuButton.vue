@@ -7,7 +7,8 @@
         >
         <template v-slot:activator="{ on, attrs }">
             <v-btn
-                color="primary"
+                class="menubutton"
+                color="cyan darken-2"
                 dark
                 v-bind="attrs"
                 v-on="on"
@@ -18,10 +19,11 @@
 
         <v-list>
             <v-list-item v-for="(item, i) in menuItems" :key="i">
-                <v-list-item-title>
-                    <span id="menuitem" @click="menuSelect(item)">
+                <v-list-item-title >
+                    <span v-if="!item.path" id="menuitem" @click="menuSelect(item)">
                     {{ item.title }}
                     </span>
+                    <router-link v-else :to="item.path">xx{{item.title}}</router-link>
                 </v-list-item-title>
             </v-list-item>
         </v-list>
@@ -45,4 +47,8 @@ div.v-list-item__title:hover {
     color: blanchedalmond;
     cursor: pointer;
 }
+.menubutton {
+  margin: 5px;
+}
+
 </style>

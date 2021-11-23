@@ -64,9 +64,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* text-align: center; */
@@ -74,6 +74,17 @@ export default {
   font: 1.1rem  'Source Code Pro', Courier, monospace !important;
 }
 
+#nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
 body {
   width: 98%;
   padding-left: 1%;
@@ -105,4 +116,5 @@ tbody tr:nth-of-type(odd) {
    padding-left: 5px;
    padding-right: 5px;
  }
+}
 </style>

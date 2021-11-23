@@ -1,11 +1,11 @@
-const path = require('path');
+// const path = require('path');
 
-module.exports = {
-  css: {
-    loaderOptions: {
-      sass: {
-        data: `@import "variables.scss";`
-      }
-    }
-  }
-};
+// module.exports = {
+//   css: {
+//     loaderOptions: {
+//       sass: {
+//         // data: `@import "variables.scss";`
+//       }
+//     }
+//   }
+// };
