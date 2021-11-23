@@ -13,6 +13,7 @@ export default new Vuex.Store({
         data: { Players: [{ LocalScore: 0 }] },
         includeZeroes: false,
         autoRefresh: false,
+        firstDayFirst: true
     },
     getters: {
         data: state => state.data,
@@ -21,7 +22,8 @@ export default new Vuex.Store({
         autoRefresh: state => state.autoRefresh,
         isLoaded: state => (state.data) ? true : false,
         players: state => _.sortBy(state.data.Players, ["LocalScoreAll.Position"]).slice(),
-        filteredPlayers: state => state.data.Players.filter(_ => state.includeZeroes || _.Stars > 0).slice()
+        filteredPlayers: state => state.data.Players.filter(_ => state.includeZeroes || _.Stars > 0).slice(),
+        firstDayFirst: state => state.firstDayFirst
     },
     actions: {
         async setData({ commit }, data) {
@@ -31,6 +33,10 @@ export default new Vuex.Store({
         async setIncludeZeroes({ commit }, includeZeroes) {
             console.log("Setting", includeZeroes)
             commit(types.SET_INCLUDEZEROES, includeZeroes)
+        },
+        async setFirstDayFirst({ commit }, firstDayFirst) {
+            console.log("Setting", firstDayFirst)
+            commit(types.SET_FIRSTDAYFIRST, firstDayFirst)
         },
         async setAutoRefresh({ commit }, autoRefresh) {
             console.log("Setting", autoRefresh)
@@ -47,6 +53,11 @@ export default new Vuex.Store({
             localStorage.setItem('includeZeroes', includeZeroes)
             console.log("mutating includeZeroes", includeZeroes)
         },
+        SET_FIRSTDAYFIRST(state, firstDayFirst) {
+            state.firstDayFirst = firstDayFirst
+            localStorage.setItem('firstDayFirst', firstDayFirst)
+            console.log("mutating firstDayFirst", firstDayFirst)
+        },
         SET_AUTOREFRESH(state, autoRefresh) {
             state.autoRefresh = autoRefresh
             localStorage.setItem('autoRefresh', autoRefresh)
@@ -56,6 +67,9 @@ export default new Vuex.Store({
             console.log("initializing store", state)
             if (localStorage.getItem('includeZeroes') == "true") {
                 state.includeZeroes = localStorage.getItem('includeZeroes');
+            }
+            if (localStorage.getItem('firstDayFirst') == "true") {
+                state.firstDayFirst = localStorage.getItem('firstDayFirst');
             }
             if (localStorage.getItem('autoRefresh') == "true") {
                 state.autoRefresh = localStorage.getItem('autoRefresh');

@@ -37,6 +37,10 @@
         :label="'Include null achievers'"
         ></v-checkbox>
       <v-checkbox
+        v-model="firstDayFirst"
+        :label="'Start columns from first day'"
+        ></v-checkbox>
+      <v-checkbox
         v-model="autoRefresh"
         :label="'Reload data every 20 seconds (if page is active)'"
         ></v-checkbox>
@@ -75,6 +79,14 @@ export default {
           },
           set: function() {
             this.$store.dispatch('setIncludeZeroes', !this.includeZeroes)
+          }
+        },
+        firstDayFirst: {
+          get: function() {
+            return this.$store.getters.firstDayFirst
+          },
+          set: function() {
+            this.$store.dispatch('setFirstDayFirst', !this.firstDayFirst)
           }
         },
         autoRefresh: {
