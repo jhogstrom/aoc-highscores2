@@ -33,6 +33,9 @@ export function dayColumns() {
         res.push({ text: `day ${day} *`, value: `d_${day}_0`, align: "end", width: 15 })
         res.push({ text: `day ${day} **`, value: `d_${day}_1`, align: "end", width: 15 })
     }
+    if (store.getters.firstDayFirst) {
+        return res
+    }
     return res.reverse()
 }
 
