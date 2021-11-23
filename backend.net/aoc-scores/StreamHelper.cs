@@ -1,5 +1,6 @@
 using System.IO;
 using System.IO.Compression;
+using System.Net;
 using System.Text;
 
 namespace RegenAoc
@@ -36,55 +37,25 @@ namespace RegenAoc
             }
         }
 
-        public static string Unzip(byte[] bytes)
+        public static string DownloadFromURL(string url)
         {
-            using (var msi = new MemoryStream(bytes))
-            using (var mso = new MemoryStream())
-            {
-                using (var gs = new GZipStream(msi, CompressionMode.Decompress))
-                {
-                    //gs.CopyTo(mso);
-                    CopyTo(gs, mso);
-                }
 
-                return Encoding.UTF8.GetString(mso.ToArray());
+            // Create a WebRequest object and assign it a cookie container and make them think your Mozilla ;)
+            var webRequest = (HttpWebRequest)WebRequest.Create(url);
+            webRequest.Method = "GET";
+            webRequest.Accept = "*/*";
+            webRequest.AllowAutoRedirect = false;
+            webRequest.UserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; .NET CLR 1.0.3705)";
+
+            // Grab the response from the server for the current WebRequest
+            using (var webResponse = webRequest.GetResponse())
+            using (var stream = webResponse.GetResponseStream())
+            using (var tr = new StreamReader(stream))
+            {
+                return tr.ReadToEnd();
             }
         }
 
 
-        public static Stream GenerateStreamFromString(string s)
-        {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(s);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
-        }
-
-        public static Stream CompressStream(Stream uncompressed)
-        {
-            var compressed = new MemoryStream();
-            var gzipStream = new GZipStream(compressed, CompressionMode.Compress);
-
-            while (true)
-            {
-                var buff = new byte[1024];
-                var read = uncompressed.Read(buff, 0, buff.Length);
-                if (read == 0)
-                    break;
-                gzipStream.Write(buff, 0, read);
-            };
-            // int read;
-            // do
-            // {
-            //     var buff = new byte[1024];
-            //     read = uncompressed.Read(buff, 0, buff.Length);
-            //     gzipStream.Write(buff, 0, read);
-            // } while (read != 0);
-            gzipStream.Flush();
-            compressed.Position = 0;
-            return compressed;
-        }
     }
 }

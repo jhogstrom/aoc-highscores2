@@ -27,12 +27,13 @@ namespace RegenAoc.Tests
 
 
         [Test]
-        public async Task TestGenerate()
+        [TestCase(TestData.Guid4, 2018)]
+        [TestCase(TestData.Guid1, 2020)]
+        public async Task TestGenerate(string id, int year)
         {
-            var year = 2020;
-            var config = await BoardConfigHelper.LoadFromDynamo(TestData.Guid1, year, Logger);
+            var config = await BoardConfigHelper.LoadFromDynamo(id, year, Logger);
 
-            await _sut.Generate(config, year);
+            await _sut.Generate(config);
         }
     }
 }

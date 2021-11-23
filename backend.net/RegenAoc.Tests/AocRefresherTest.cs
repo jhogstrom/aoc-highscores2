@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Amazon.Lambda.Core;
 using Amazon.Runtime.Internal.Util;
 using NUnit.Framework;
 
@@ -18,15 +17,11 @@ namespace RegenAoc.Tests
         }
 
         [Test]
-        public async Task TestRefresh2020()
+        public async Task TestRefresh()
         {
-            _boardConfig = await BoardConfigHelper.LoadFromDynamo(TestData.Guid1, 2020, Logger);
-            await _sut.EnsureFresh(_boardConfig, 2020);
+            var year = 2018;
+            _boardConfig = await BoardConfigHelper.LoadFromDynamo(TestData.Guid4, year, Logger);
+            await _sut.EnsureFresh(_boardConfig);
         }
-    }
-
-    internal class TestBase
-    {
-        protected ILambdaLogger Logger { get; } = AwsMockHelpers.CreateMockLogger();
     }
 }

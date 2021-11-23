@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-[DebuggerDisplay("{Name}: {LocalScore}")]
+[DebuggerDisplay("{Name}: {LocalScoreAll.Score}")]
 public class Player
 {
     public Player()
@@ -49,11 +49,16 @@ public class Player
     public int Stars { get; set; }
     public int GlobalScore { get; set; }
     public int AoCLocalScore { get; set; }
+    public string Avatar { get; set; }
+    public bool Supporter { get; set; }
+    public string PublicProfile { get; set; }
+
     public ScoreRec LocalScoreActive { get; }
     public ScoreRec LocalScoreAll { get; }
     public ScoreRec TobiiScore { get; }
 
     public int[] Medals { get; }
+    public List<int> Fraud { get; }
 
     public long[][] UnixCompletionTime { get; }
     public int[][] GlobalScoreForDay { get; set; }
@@ -63,7 +68,6 @@ public class Player
     public int[][] OffsetFromWinner { get; set; }
     public int[] TimeToCompleteStar2 { get; set; }
     public int[] PositionStar2 { get; set; }
-    public List<int> Fraud { get; }
 
     public class ScoreRec
     {

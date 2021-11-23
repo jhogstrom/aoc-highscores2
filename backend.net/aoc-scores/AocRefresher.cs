@@ -23,11 +23,11 @@ namespace RegenAoc
             S3BucketName = bucketName;
         }
 
-        public async Task<bool> EnsureFresh(BoardConfig boardConfig, int year)
+        public async Task<bool> EnsureFresh(BoardConfig boardConfig)
         {
             using (var client = new AmazonS3Client(AwsHelpers.S3Region))
             {
-                var key = AwsHelpers.InternalBucketKey(year, boardConfig.AocId);
+                var key = AwsHelpers.InternalBucketKey(boardConfig.Year, boardConfig.AocId);
                 var l = await client.ListObjectsAsync(S3BucketName, key);
                 if (l.S3Objects.Any())
                 {
@@ -40,14 +40,14 @@ namespace RegenAoc
                         return false;
                     }
                 }
-                await DownloadLatestAocData(boardConfig, year, client, key);
+                await DownloadLatestAocData(boardConfig, client, key);
                 return true;
             }
         }
 
-        private async Task<bool> DownloadLatestAocData(BoardConfig boardConfig, int year, AmazonS3Client client, string key)
+        private async Task<bool> DownloadLatestAocData(BoardConfig boardConfig, AmazonS3Client client, string key)
         {
-            var aocData = DownloadAocData(boardConfig, year);
+            var aocData = DownloadAocData(boardConfig);
             // compare aocData with stored data in S3, abort if identical?
             if (string.IsNullOrEmpty(aocData))
                 return false;
@@ -61,11 +61,11 @@ namespace RegenAoc
             return true;
         }
 
-        private string DownloadAocData(BoardConfig boardConfig, int year)
+        private string DownloadAocData(BoardConfig boardConfig)
         {
-            _logger.LogLine($"Downloading new data for {boardConfig.Name}/{year} ({boardConfig.AocId})");
+            _logger.LogLine($"Downloading new data for {boardConfig.Name}/{boardConfig.Year} ({boardConfig.AocId})");
 
-            var url = $"https://adventofcode.com/{year}/leaderboard/private/view/{boardConfig.AocId}.json";
+            var url = $"https://adventofcode.com/{boardConfig.Year}/leaderboard/private/view/{boardConfig.AocId}.json";
             try
             {
                 var s = DownloadFromURL(url, boardConfig.SessionCookie);
@@ -80,7 +80,7 @@ namespace RegenAoc
             }
         }
 
-        private string DownloadFromURL(string url, string cookie)
+        public static string DownloadFromURL(string url, string cookie)
         {
             var cookies = new CookieContainer();
 

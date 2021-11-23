@@ -70,10 +70,11 @@ namespace RegenAoc
             var msg = JsonConvert.DeserializeObject<RegenQueueBody>(message.Body);
             context.Logger.LogLine($"List ID: {msg.BoardGuid} - year {msg.Year}");
             var refresher = new AocRefresher(context.Logger, AwsHelpers.InternalBucket);
-            var listConfig = await GetBoardConfig(msg.BoardGuid, msg.Year, context.Logger);
-            await refresher.EnsureFresh(listConfig, msg.Year);
+            var boardConfig = await GetBoardConfig(msg.BoardGuid, msg.Year, context.Logger);
+            await refresher.EnsureFresh(boardConfig);
+
             var gen = new AocGenerator(context.Logger);
-            await gen.Generate(listConfig, msg.Year);
+            await gen.Generate(boardConfig);
         }
 
         private async Task<BoardConfig> GetBoardConfig(string guid, int year, ILambdaLogger logger)
@@ -84,6 +85,7 @@ namespace RegenAoc
 
 
     }
+
 
     public class BoardConfig
     {
@@ -96,6 +98,7 @@ namespace RegenAoc
         public List<int> ExcludeDays { get; set; } = new List<int>();
         public Dictionary<int, string> NameMap { get; } = new Dictionary<int, string>();
         public Dictionary<int, int> ExcludePlayers { get; } = new Dictionary<int, int>();
+        public int Year { get; set; }
     }
 
     internal class RegenQueueBody
