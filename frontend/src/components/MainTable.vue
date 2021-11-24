@@ -7,7 +7,7 @@
       flat
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>AOC Highscores
+        <v-toolbar-title>{{boardTitle}}
           <p class="fetchtime">Fetched from AoC {{updateTime}}</p>
         </v-toolbar-title>
         <template v-slot:extension>
@@ -70,6 +70,9 @@ export default {
         otherPages: other,
     }},
     computed: {
+        boardTitle() {
+          return `AOC -> ${this.$store.getters.boardName} - ${this.$store.getters.boardYear}`
+        },
         updateTime() {
             return this.$store.getters.updateTime
         },
