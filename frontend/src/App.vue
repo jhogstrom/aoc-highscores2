@@ -65,6 +65,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import './assets/styles.css';
+
 #app {
 font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -90,31 +92,9 @@ body {
   padding-left: 1%;
 }
 
-.goldMedal {
-    background: linear-gradient(to bottom right, #ff9988 5%, #ffd700 55%, #ffffff 100%);
-    padding: 5px;
-}
-.silverMedal {
-    background: linear-gradient(to bottom right, gray 5%, silver 55%, #ffffff 100%);
-    padding: 5px;
-}
-.bronzeMedal {
-    background: linear-gradient(to bottom right, GoldenRod 5%, DarkGoldenRod 55%, #ffffff 100%);
-    padding: 5px;
-}
-tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, .05);
- }
- .scrollable {
+.scrollable {
    overflow-y: scroll;
     height: 50rem;
- }
-
- .excludedday {
-   color: rgba(0, 0, 0, .5);
-   background-color: rgba(221, 101, 101, 0.2);
-   padding-left: 5px;
-   padding-right: 5px;
  }
 }
 </style>
