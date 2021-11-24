@@ -147,7 +147,7 @@ namespace RegenAoc
                 players.Add(player);
             }
 
-            return new LeaderBoard(players, highestDay, boardConfig.ExcludeDays, excludedPlayers, aocLastModified, boardConfig.Year);
+            return new LeaderBoard(players, highestDay, boardConfig.ExcludeDays, excludedPlayers, aocLastModified, boardConfig.Year, boardConfig.Name);
         }
 
         private void DeriveMoreStats(LeaderBoard leaderBoard, BoardConfig boardConfig)

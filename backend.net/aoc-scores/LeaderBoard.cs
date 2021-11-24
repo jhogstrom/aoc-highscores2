@@ -9,7 +9,7 @@ public class LeaderBoard
         List<int> excludeDays, 
         List<string> excludedPlayers,
         DateTime aocLastModified, 
-        int year)
+        int year, string name)
     {
         Players = players;
         HighestDay = highestDay;
@@ -27,15 +27,17 @@ public class LeaderBoard
 
         RetrievedFromAoC = aocLastModified;
         Year = year;
+        Name = name;
         ExcludedDays = new List<int>(excludeDays);
         ExcludedPlayers = new List<string>(excludedPlayers);
     }
 
-    public int HighestDay { get; }
+    public string Name { get; }
     public int Year { get; }
+    public DateTime RetrievedFromAoC { get; set; }
+    public int HighestDay { get; }
     public List<int> ExcludedDays { get; }
     public List<string> ExcludedPlayers { get; }
-    public List<Player> Players { get; }
-    public DateTime RetrievedFromAoC { get; set; }
     public int[][] StarsAwarded { get; set; }
+    public List<Player> Players { get; }
 }
