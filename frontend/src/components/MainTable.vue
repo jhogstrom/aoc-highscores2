@@ -23,6 +23,7 @@
             :caption="'Other'"
             :menuItems="otherPages"
             @menuSelected="menuSelected"></menu-button>
+          <year-menu></year-menu>
         </template>
       </v-toolbar>
     </v-card>
@@ -53,11 +54,13 @@
 <script>
 import FooterContent from './FooterContent.vue'
 import MenuButton from './MenuButton.vue'
+import YearMenu from './YearMenu.vue'
 import { boards, charts, other } from '../router'
 
 export default {
     components: {
-      FooterContent, MenuButton },
+      FooterContent, MenuButton,
+        YearMenu },
     props: ["guid", "year"],
     data() { return {
         infoTitle: "AOC FTW",
