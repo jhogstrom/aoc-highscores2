@@ -10,7 +10,24 @@ const debug = process.env.NODE_ENV !== 'production'
 export default new Vuex.Store({
     strict: debug,
     state: {
-        data: { Players: [{ LocalScore: 0 }] },
+        data: {
+            Players: [
+                {
+                    Id: 0,
+                    LocalScore: 0,
+                    GlobalScore: 0,
+                    Stars: 0,
+                    RaffleTickets: 0,
+                    LocalScoreAll: {
+                        Position: 0,
+                        Score: 0,
+                    },
+                    TobiiScore: {
+                        Score: 0,
+                    }
+
+                }
+            ] },
         includeZeroes: false,
         autoRefresh: false,
         firstDayFirst: true

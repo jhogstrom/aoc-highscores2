@@ -23,7 +23,7 @@
                     <span v-if="!item.path" id="menuitem" @click="menuSelect(item)">
                     {{ item.title }}
                     </span>
-                    <router-link v-else :to="item.path">xx{{item.title}}</router-link>
+                    <router-link v-else :to="item.path">{{item.title}}</router-link>
                 </v-list-item-title>
             </v-list-item>
         </v-list>
