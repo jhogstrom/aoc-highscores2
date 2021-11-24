@@ -48,7 +48,7 @@ export default {
             }
         },
         tickMarks() {
-            const playerCount = this.players.length
+            const playerCount = this.maxYvalue
             let tickInterval = 25 // for 100+ players in list
             if (playerCount < 51) {
                 tickInterval = 5
@@ -62,6 +62,20 @@ export default {
             }
             console.log(res)
             return res
+        },
+        maxYvalue() {
+            let maxPos = 0
+            for (let day = 0; day < this.data.HighestDay; day++) {
+                const excluded = this.$store.getters.data.ExcludedDays.includes(day)
+                if (!excluded) {
+                    for (let star = 0; star < 2; star++ ) {
+                        for (const p of this.players) {
+                            const position = p.LocalScoreAll.AccumulatedPosition[day][star]
+                            maxPos = Math.max(maxPos, position)                        }
+                    }
+                }
+            }
+            return maxPos
         },
         playerList() {
             let headers = ["Player"]
@@ -78,7 +92,7 @@ export default {
                         for (const p of this.players) {
                             pdata.push(p.LocalScoreAll.AccumulatedPosition[day][star]);
 
-                        }   
+                        }
                         res.push(pdata);          
                     }
                 }
