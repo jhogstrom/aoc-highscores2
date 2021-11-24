@@ -33,8 +33,8 @@ import InfoBlock from './InfoBlock.vue'
 import { fixedColumns, fixedData, dayColumns, getMedalColor, secondsToString } from './tablehelpers'
 export default {
     components: { InfoBlock },
-    props: ["infoTitle"],
     data() { return {
+        infoTitle: "Time offset from winner",
         infotext: "This board shows the time offset to the winner for each star."
     }},
     methods: {

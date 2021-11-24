@@ -25,8 +25,8 @@ import InfoBlock from './InfoBlock.vue'
 
 export default {
     components: { StarLine,InfoBlock },
-    props: ["infoTitle"],
     data () { return {
+        infoTitle: "Classic Aoc style board",
         headers: [
             { text: 'Pos.', value: 'Position', width: 20 },
             { text: 'Points', value: 'Score', width: 20  },

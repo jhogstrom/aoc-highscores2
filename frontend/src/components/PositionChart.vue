@@ -16,10 +16,10 @@ import { GChart } from 'vue-google-charts'
 
 export default {
     components: { InfoBlock, GChart },
-    props: ["infoTitle"],
     data() { 
         return {
-        infotext: "This board shows the positions per day/star.",
+        infoTitle: "Position per day and star",
+        infotext: "This board shows the position per day/star.",
     }},
     computed: {
         players() {

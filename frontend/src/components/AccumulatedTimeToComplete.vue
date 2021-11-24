@@ -31,8 +31,8 @@ import InfoBlock from './InfoBlock.vue'
 import { fixedColumns, fixedData, dayColumns, getMedalColor, secondsToString2 } from './tablehelpers'
 export default {
     components: { InfoBlock },
-    props: ["infoTitle"],
     data() { return {
+        infoTitle: "Total time used to solve the challenges",
         infotext: "This board shows the total time used to complete the task - counted from task release to completion!"
     }},
     methods: {

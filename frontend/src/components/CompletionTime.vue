@@ -33,8 +33,8 @@ import InfoBlock from './InfoBlock.vue'
 import { fixedColumns, fixedData, dayColumns, getMedalColor, secondsToString } from './tablehelpers'
 export default {
     components: { InfoBlock },
-    props: ["infoTitle"],
     data() { return {
+        infoTitle: "Completion Time",
         infotext: "This board shows the time to complete the tasks from their release (which is the same time for both tasks)."
     }},
     methods: {

@@ -33,8 +33,8 @@ import InfoBlock from './InfoBlock.vue'
 import { fixedColumns, fixedData, dayColumns, getMedalColor } from './tablehelpers'
 export default {
     components: { InfoBlock },
-    props: ["infoTitle"],
     data() { return {
+        infoTitle: "Global scores per day",
         infotext: "This board shows the global points scored per day (and star)."
     }},
     methods: {

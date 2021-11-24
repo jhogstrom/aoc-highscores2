@@ -13,7 +13,9 @@ import InfoBlock from './InfoBlock.vue'
 
 export default {
     components: { InfoBlock },
-    props: ["infoTitle"],
+    data() { return {
+        infoTitle: "Raw data",
+    }},
     computed: {
         data() {
             return stringify(this.$store.getters.data, {maxLength: 150})

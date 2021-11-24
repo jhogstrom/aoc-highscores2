@@ -31,8 +31,8 @@ import InfoBlock from './InfoBlock.vue'
 import { fixedColumns, fixedData, dayColumns, getMedalColor } from './tablehelpers'
 export default {
     components: { InfoBlock },
-    props: ["infoTitle"],
     data() { return {
+        infoTitle: "Leaderboard",
         infotext: "This board shows the <h1>leaders</h1> and points per day."
     }},
     methods: {

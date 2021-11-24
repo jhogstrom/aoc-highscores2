@@ -32,8 +32,8 @@ import { fixedColumns, fixedData, dayColumns, getMedalColor } from './tablehelpe
 
 export default {
     components: { InfoBlock },
-    props: ["infoTitle"],
     data() { return {
+        infoTitle: "Scoring based on TobiiScore<tm>",
         infotext: `TobiiScore leaderboard is ordered by
         <ul>
             <li>Completed stars
