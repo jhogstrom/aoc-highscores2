@@ -11,6 +11,9 @@
         dense
         hide-default-footer
         single-select>
+        <template v-slot:item.identity="{item}">
+            <position-col :item="item"/>
+        </template>
         <template v-for="h in dayheaders" v-slot:[`item.${h.value}`]="{ item }">
             <span
                 v-bind:class="medalColor(item, h.value)"
@@ -28,9 +31,10 @@
 
 <script>
 import InfoBlock from './InfoBlock.vue'
+import PositionCol from './PositionCol.vue'
 import { fixedColumns, fixedData, dayColumns, getMedalColor } from './tablehelpers'
 export default {
-    components: { InfoBlock },
+    components: { InfoBlock, PositionCol },
     data() { return {
         infoTitle: "Leaderboard",
         infotext: "This board shows the <h1>leaders</h1> and points per day."

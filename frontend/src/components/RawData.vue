@@ -15,7 +15,7 @@ export default {
     components: { InfoBlock },
     data() { return {
         infoTitle: "Raw data",
-        infoText: "The downloaded data structure. Great for debugging :)"
+        infotext: "The downloaded data structure. Great for debugging :)"
     }},
     computed: {
         data() {

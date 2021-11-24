@@ -10,6 +10,9 @@
         dense
         hide-default-footer
         single-select>
+        <template v-slot:item.identity="{item}">
+            <position-col :item="item"/>
+        </template>
         <template v-for="h in dayheaders" v-slot:[`item.${h.value}`]="{ item }">
             <span
                 v-bind:class="medalColor(item, h.value)"
@@ -28,9 +31,11 @@
 
 <script>
 import InfoBlock from './InfoBlock.vue'
+import PositionCol from './PositionCol.vue'
 import { fixedColumns, fixedData, dayColumns, getMedalColor, secondsToString2 } from './tablehelpers'
+
 export default {
-    components: { InfoBlock },
+    components: { InfoBlock, PositionCol },
     data() { return {
         infoTitle: "Total time used to solve the challenges",
         infotext: "This board shows the total time used to complete the task - counted from task release to completion!"
