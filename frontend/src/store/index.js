@@ -40,7 +40,9 @@ export default new Vuex.Store({
         isLoaded: state => (state.data) ? true : false,
         players: state => _.sortBy(state.data.Players, ["LocalScoreAll.Position"]).slice(),
         filteredPlayers: state => state.data.Players.filter(_ => state.includeZeroes || _.Stars > 0).slice(),
-        firstDayFirst: state => state.firstDayFirst
+        firstDayFirst: state => state.firstDayFirst,
+        boardName: state => state.data.Name,
+        boardYear: state => state.data.Year,
     },
     actions: {
         async setData({ commit }, data) {
