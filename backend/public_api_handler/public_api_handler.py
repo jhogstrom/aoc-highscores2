@@ -64,14 +64,19 @@ async def log_invocation(request: Request, call_next):
     # response.headers["X-Process-Time"] = str(process_time)
     return response
 
-@app.get("/refresh")
-def request_refresh(boardguid: str, year: int):
-    REFRESHQ.send_message(
-        MessageBody=json.dumps({
-            'boardguid': boardguid,
-            'year': year
-        })
-    )
+@app.get("/refresh/{year}/{boardguid}")
+def request_refresh(year: int, boardguid: str):
+    try:
+        REFRESHQ.send_message(
+            MessageBody=json.dumps({
+                'boardguid': boardguid,
+                'year': year
+            })
+        )
+    except Exception as e:
+        return {"message": str(e)}
+
+    return {"message": "Request refresh sent for the board"}
 
 
 if __name__ == "__main__":

@@ -1,15 +1,10 @@
 <template>
-        <!-- v-bind:key="header"> -->
-    <span
-        v-bind:class="medalColor(item)">
         <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-                <span v-bind="attrs" v-on="on">{{ getValue(item, header) }}</span>
+                <span v-bind="attrs" v-on="on" v-bind:class="medalColor(item)">{{ getValue(item, header) }}</span>
             </template>
             <span>{{item.name}}</span>
         </v-tooltip>
-    </span>
-
 </template>
 
 <script>
@@ -20,7 +15,7 @@ export default {
     methods: {
         medalColor(item) {
             return getMedalColor(item, this.header)
-        }
+        },
     }
 }
 </script>

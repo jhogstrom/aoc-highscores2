@@ -99,13 +99,29 @@ class AoCHSStack(cdk.Stack):
         layers = aws.PipLayers(self, "layers", layers={"api": "backend/api_requirements.txt"})
 
         # API GW + handler for public API
-        public_api_handler = aws.Function(self, "public_api_handler", layers=layers.layers)
-        public_api = aws_apigateway.LambdaRestApi(self, "public_api", handler=public_api_handler)
+        public_api_handler = aws.Function(
+            self,
+            "public_api_handler",
+            layers=layers.layers,
+            handler="public_api_handler.handler")
+        public_api = aws_apigateway.LambdaRestApi(
+            self,
+            "public_api",
+            description="AOC-Public API",
+            handler=public_api_handler)
         refreshQ.grant_send_messages(public_api_handler)
         public_api_handler.add_environment("REFRESHQ", refreshQ.queue_url)
 
         # API GW + handler for private API
-        admin_api_handler = aws.Function(self, "admin_api_handler", layers=layers.layers)
-        admin_api = aws_apigateway.LambdaRestApi(self, "admin_api", handler=admin_api_handler)
+        admin_api_handler = aws.Function(
+            self,
+            "admin_api_handler",
+            layers=layers.layers,
+            handler="admin_api_handler.handler")
+        admin_api = aws_apigateway.LambdaRestApi(
+            self,
+            "admin_api",
+            description="AOC-Admin API",
+            handler=admin_api_handler)
         admin_api_handler.add_environment("CONFIGDB", boardconfig.table_name)
         boardconfig.grant_read_write_data(admin_api_handler)

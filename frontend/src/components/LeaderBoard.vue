@@ -15,11 +15,11 @@
             <position-col :item="item"/>
         </template>
         <template v-for="h in dayheaders" v-slot:[`item.${h.value}`]="{ item }">
-            <span
-                v-bind:class="medalColor(item, h.value)"
-                v-bind:key="h.value">
-                {{ getValue(item, h.value) }}
-            </span>
+            <value-col
+                :item="item"
+                :header="h.value"
+                :getValue="getValue"
+                v-bind:key="h.value"></value-col>
         </template>
 
         <template v-slot:no-data>
@@ -32,9 +32,11 @@
 <script>
 import InfoBlock from './InfoBlock.vue'
 import PositionCol from './PositionCol.vue'
-import { fixedColumns, fixedData, dayColumns, getMedalColor } from './tablehelpers'
+import ValueCol from './ValueCol.vue'
+import { fixedColumns, fixedData, dayColumns } from './tablehelpers'
+
 export default {
-    components: { InfoBlock, PositionCol },
+    components: { InfoBlock, PositionCol, ValueCol },
     data() { return {
         infoTitle: "Leaderboard",
         infotext: "This board shows the <h1>leaders</h1> and points per day."
@@ -43,9 +45,6 @@ export default {
         getValue(item, key) {
             return item[key]
         },
-        medalColor(item, key) {
-            return getMedalColor(item, key)
-        }
     },
     computed: {
         dayheaders() {
