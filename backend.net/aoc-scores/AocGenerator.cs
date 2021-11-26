@@ -273,9 +273,22 @@ namespace RegenAoc
 
                 for (int star = 0; star < 2; star++)
                 {
-                    CalculateAccumulatedPosition(leaderBoard, p => p.LocalScoreAll, day, star, -1);
-                    CalculateAccumulatedPosition(leaderBoard, p => p.LocalScoreActive, day, star, -1);
-                    CalculateAccumulatedPosition(leaderBoard, p => p.TobiiScore, day, star, +1);
+                    CalculateAccumulatedPosition(leaderBoard, p => p.LocalScoreAll, day, star, 
+                        list=> list
+                            .OrderByDescending(p => p.LocalScoreAll.AccumulatedScore[day][star])
+                            .ThenBy(p=>p.LastStar)
+                        );
+                    CalculateAccumulatedPosition(leaderBoard, p => p.LocalScoreActive, day, star,
+                        list => list
+                            .OrderByDescending(p => p.LocalScoreActive.AccumulatedScore[day][star])
+                            .ThenBy(p => p.LastStar)
+                        );
+                    CalculateAccumulatedPosition(leaderBoard, p => p.TobiiScore, day, star,
+                        list => list
+                            .OrderByDescending(p => p.Stars)
+                            .ThenBy(p=>p.TobiiScore.AccumulatedScore[day][star])
+                            .ThenBy(p => p.LastStar)
+                    );
                 }
             }
             CalculatePosition(leaderBoard, p => p.LocalScoreAll, new Player.LocalScoreComparer(p => p.LocalScoreAll));
@@ -306,13 +319,14 @@ namespace RegenAoc
                 func(leaderBoard.Players[i]).Position = i + 1;
         }
 
-        private static void CalculateAccumulatedPosition(LeaderBoard leaderBoard, Func<Player, Player.ScoreRec> f,
-            int day, int star, int sortOrder)
+        private static void CalculateAccumulatedPosition(LeaderBoard leaderBoard, 
+            Func<Player, Player.ScoreRec> f,
+            int day, int star, 
+            Func<IEnumerable<Player>, IEnumerable<Player>> orderFunc)
         {
-            var orderedPlayers = leaderBoard.Players
-                .Where(p => f(p).AccumulatedScore[day][star] != -1)
-                .OrderBy(p => sortOrder * f(p).AccumulatedScore[day][star])
-                .ToList();
+            var players = leaderBoard.Players
+                .Where(p => f(p).AccumulatedScore[day][star] != -1);
+                var orderedPlayers = orderFunc(players).ToList();
             foreach (var player in leaderBoard.Players)
             {
                 var index = orderedPlayers.IndexOf(player);
