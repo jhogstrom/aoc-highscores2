@@ -8,8 +8,7 @@
 
 <script>
 import MainTable from './components/MainTable.vue'
-// import FooterContent from './components/FooterContent.vue'
-
+import { HttpApi } from './http.js'
 
 const tobiilist = "fbc7a3d8-c6f4-410f-9fff-a1b42993c1c1"
 // const smalllist = "7d3e8718-f15c-41ed-a561-fbba4f3fa37c"
@@ -48,7 +47,7 @@ export default {
       console.log("loading data for ", guid, year);
 
       const url = this.makeUrl(year, guid);
-      return fetch(url)
+      fetch(url)
         .then(response => {
           console.log("status:", response.status)
           this.loadedOk = response.status === 200
@@ -57,7 +56,6 @@ export default {
           } else {
             return null
           }
-
         })
         .then(data => {
           if (this.loadedOk) {
@@ -68,6 +66,8 @@ export default {
             this.$store.dispatch('setData', {})
           }
         })
+      HttpApi.get(`/refresh/${this.year}/${this.guid}`)
+        .then(res => console.log(res))
     }
 
   }

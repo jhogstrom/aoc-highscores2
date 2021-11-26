@@ -45,7 +45,6 @@ export default {
     },
     methods: {
         isCurrent(year) {
-            console.log(year, this.currentYear)
             return String(year) == this.currentYear
         },
         menuSelect(item) {
