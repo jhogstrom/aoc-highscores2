@@ -8,6 +8,7 @@ import AccumulatedTimeToComplete from '../components/AccumulatedTimeToComplete.v
 import CompletionTimeStarTwo from '../components/CompletionTimeStarTwo.vue'
 import GlobalScoreForDay from '../components/GlobalScoreForDay.vue'
 import TobiiScore from '../components/TobiiScore.vue'
+import PositionForStar from '../components/PositionForStar.vue'
 // Charts
 import PositionChart from '../components/PositionChart.vue'
 // Other
@@ -46,6 +47,11 @@ export const boards = [
     path: '/tobiiscore',
     title: "TobiiScore",
     component: TobiiScore
+  },
+  {
+    path: '/positionforstar',
+    title: "Position for Star",
+    component: PositionForStar
   },
   {
     path: '/completiontime',
