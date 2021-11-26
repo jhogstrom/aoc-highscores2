@@ -62,3 +62,9 @@ export class HttpApi {
         })
     }
 }
+
+const S3URL="https://aochsstack-website.s3.us-east-2.amazonaws.com"
+
+export function fileUrl(year, guid) {
+    return `${S3URL}/${year}/${guid}.json`
+}
