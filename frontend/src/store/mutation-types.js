@@ -1,4 +1,6 @@
 export const SET_DATA = 'SET_DATA'
+export const SET_YEAR = 'SET_YEAR'
+export const SET_GUID = 'SET_GUID'
 export const SET_INCLUDEZEROES = 'SET_INCLUDEZEROES'
 export const SET_AUTOREFRESH = 'SET_AUTOREFRESH'
 export const SET_FIRSTDAYFIRST = 'SET_FIRSTDAYFIRST'

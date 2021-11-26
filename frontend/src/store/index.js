@@ -30,24 +30,37 @@ export default new Vuex.Store({
             ] },
         includeZeroes: false,
         autoRefresh: false,
-        firstDayFirst: true
+        firstDayFirst: true,
+        year: null,
+        guid: null,
+        isLoaded: false
     },
     getters: {
         data: state => state.data,
         updateTime: state => state.data.RetrievedFromAoC,
         includeZeroes: state => state.includeZeroes,
         autoRefresh: state => state.autoRefresh,
-        isLoaded: state => (state.data) ? true : false,
+        isLoaded: state => state.isLoaded,
         players: state => _.sortBy(state.data.Players, ["LocalScoreAll.Position"]).slice(),
-        filteredPlayers: state => state.data.Players.filter(_ => state.includeZeroes || _.Stars > 0).slice(),
+        filteredPlayers: state => state.isLoaded ? state.data.Players.filter(_ => state.includeZeroes || _.Stars > 0).slice() : [],
         firstDayFirst: state => state.firstDayFirst,
-        boardName: state => state.data.Name,
-        boardYear: state => state.data.Year,
+        boardName: state => state.isLoaded ? state.data.Name || "highscores" : "No such board",
+        boardYear: state => state.isLoaded ? state.data.Year : "No data",
+        year: state => state.year, // from query parameter
+        guid: state => state.guid, // from query parameter
     },
     actions: {
         async setData({ commit }, data) {
             console.log("Setting", data)
             commit(types.SET_DATA, data)
+        },
+        async setParams({ commit }, payload) {
+            if (!payload) {
+                payload = {year: null, guid: null}
+            }
+            console.log("setParams", payload.year, payload.guid)
+            commit(types.SET_YEAR, payload.year)
+            commit(types.SET_GUID, payload.guid)
         },
         async setIncludeZeroes({ commit }, includeZeroes) {
             console.log("Setting", includeZeroes)
@@ -65,7 +78,26 @@ export default new Vuex.Store({
     mutations: {
         SET_DATA(state, data) {
             state.data = data
+            state.isLoaded = data ? true : false
             console.log("mutating data", data)
+        },
+        SET_GUID(state, guid) {
+            state.guid = guid
+            console.log("mutating guid", guid)
+            if (guid) {
+                localStorage.setItem('aocguid', guid)
+            } else {
+                localStorage.removeItem('aocguid')
+            }
+        },
+        SET_YEAR(state, year) {
+            state.year = year
+            console.log("mutating year", year)
+            if (year) {
+                localStorage.setItem('year', year)
+            } else {
+                localStorage.removeItem('year')
+            }
         },
         SET_INCLUDEZEROES(state, includeZeroes) {
             state.includeZeroes = includeZeroes
@@ -83,7 +115,6 @@ export default new Vuex.Store({
             console.log("mutating autoRefresh", autoRefresh)
         },
         initialiseStore(state) {
-            console.log("initializing store", state)
             if (localStorage.getItem('includeZeroes') == "true") {
                 state.includeZeroes = localStorage.getItem('includeZeroes');
             }
@@ -93,6 +124,16 @@ export default new Vuex.Store({
             if (localStorage.getItem('autoRefresh') == "true") {
                 state.autoRefresh = localStorage.getItem('autoRefresh');
             }
+
+            if (localStorage.getItem('year')) {
+                state.year = localStorage.getItem('year')
+            }
+            const guid = localStorage.getItem('aocguid')
+            if (guid) {
+                state.guid = guid
+                console.log("read aocgrid:", guid)
+            }
+            console.log("initializing store", state)
         }
     }
 })

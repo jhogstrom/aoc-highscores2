@@ -38,9 +38,8 @@ export default {
         defaultYear = (now.getFullYear() - 1).toString();
       }
 
-      this.year = params.get("year") || defaultYear
-      this.guid = params.get("guid") || params.get("uuid") || tobiilist;
-      console.log("params:", this.year, this.guid);
+      this.year = params.get("year") || this.$store.getters.year || defaultYear
+      this.guid = params.get("guid") || params.get("uuid") || this.$store.getters.guid || tobiilist;
     },
     makeUrl(year, guid) {
       return `${ROOTURL}/${year}/${guid}.json`
@@ -51,12 +50,23 @@ export default {
       const url = this.makeUrl(year, guid);
       return fetch(url)
         .then(response => {
-          // this.loadedOk = response.status == 200
-          return response.json()
+          console.log("status:", response.status)
+          this.loadedOk = response.status === 200
+          if (this.loadedOk) {
+            return response.json()
+          } else {
+            return null
+          }
+
         })
         .then(data => {
-          this.data = data
-          this.$store.dispatch('setData', data)
+          if (this.loadedOk) {
+            this.$store.dispatch('setParams', {year: this.year, guid: this.guid})
+            this.$store.dispatch('setData', data)
+          } else {
+            this.$store.dispatch('setParams', null)
+            this.$store.dispatch('setData', {})
+          }
         })
     }
 
