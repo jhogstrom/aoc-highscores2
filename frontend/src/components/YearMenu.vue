@@ -18,9 +18,10 @@
         </template>
 
         <v-list>
-            <v-list-item v-for="(item, i) in menuItems" :key="i">
+            <v-list-item v-for="item in menuItems" :key="item.url">
                 <v-list-item-title >
-                    <a :href="item.url">{{item.text}}</a>
+                    <span v-if="isCurrent(item.year)">[{{ item.year}}]</span>
+                    <a v-else :href="item.url">{{item.year}}</a>
                 </v-list-item-title>
             </v-list-item>
         </v-list>
@@ -30,16 +31,23 @@
 <script>
 export default {
     computed: {
+        currentYear() {
+            return this.$store.getters.year
+        },
         menuItems() {
+
             let res = []
-            for (let i = 2016; i <= new Date().getFullYear(); i++) {
-                res.push({ text: i, url: `/?year=${i}`})
+            for (let year = 2016; year <= new Date().getFullYear(); year++) {
+                res.push({ year: year, url: `/?year=${year}`})
             }
-            console.log(res)
             return res
         }
     },
     methods: {
+        isCurrent(year) {
+            console.log(year, this.currentYear)
+            return String(year) == this.currentYear
+        },
         menuSelect(item) {
             this.$emit("menuSelected", item)
         }
