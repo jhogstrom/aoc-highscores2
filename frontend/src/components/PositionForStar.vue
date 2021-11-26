@@ -16,11 +16,11 @@
             <position-col :item="item"/>
         </template>
         <template v-for="h in dayheaders" v-slot:[`item.${h.value}`]="{ item }">
-            <span
-                v-bind:class="medalColor(item, h.value)"
-                v-bind:key="h.value">
-                {{ getValue(item, h.value) }}
-            </span>
+            <value-col
+                :item="item"
+                :header="h.value"
+                :getValue="getValue"
+                v-bind:key="h.value"></value-col>
         </template>
 
         <template v-slot:no-data>
@@ -34,10 +34,11 @@
 <script>
 import InfoBlock from './InfoBlock.vue'
 import PositionCol from './PositionCol.vue'
-import { fixedColumns, fixedData, dayColumns, getMedalColor } from './tablehelpers'
+import ValueCol from './ValueCol.vue'
+import { fixedColumns, fixedData, dayColumns } from './tablehelpers'
 
 export default {
-    components: { InfoBlock, PositionCol },
+    components: { InfoBlock, PositionCol, ValueCol },
     data() { return {
         infoTitle: "Position for star",
         infotext: "This board shows the position for each star."
@@ -46,13 +47,10 @@ export default {
         getValue(item, key) {
             const res = item[key]
             if (res === 0) {
-                return "<Winner>"
+                return "#1"
             }
             return item[key] + 1
         },
-        medalColor(item, key) {
-            return getMedalColor(item, key)
-        }
     },
     computed: {
         dayheaders() {
