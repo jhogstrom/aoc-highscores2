@@ -17,6 +17,7 @@ public class Player
         OffsetFromWinner = InitArray<int>(dayCount, -1);
         PositionForStar = InitArray(dayCount, -1);
         GlobalScoreForDay = InitArray<int>(dayCount, 0);
+        StarCount = InitArray<int>(dayCount, 0);
         Fraud = new List<int>();
 
         TimeToCompleteStar2 = new int[dayCount];
@@ -68,6 +69,7 @@ public class Player
     public int[][] OffsetFromWinner { get; set; }
     public int[] TimeToCompleteStar2 { get; set; }
     public int[] PositionStar2 { get; set; }
+    public int[][] StarCount { get; set; }
 
     public class ScoreRec
     {
@@ -86,8 +88,24 @@ public class Player
 
     }
 
-    internal class LocalScoreComparer : IComparer<Player>
+    internal abstract class PlayerComparer : IComparer<Player>
     {
+        public abstract int ComparePosition(Player x, Player y);
+
+        public int Compare(Player x, Player y)
+        {
+            var res = ComparePosition(x, y);
+            if (res != 0) return res;
+
+            return x.Id.CompareTo(y.Id);
+        }
+
+        public abstract int ComparePosition(Player x, Player y, int day, int star);
+    }
+
+    internal class LocalScoreComparer : PlayerComparer
+    {
+
         private readonly Func<Player, ScoreRec> _f;
 
         public LocalScoreComparer(Func<Player, ScoreRec> f)
@@ -95,7 +113,7 @@ public class Player
             _f = f;
         }
 
-        public int Compare(Player x, Player y)
+        public override int ComparePosition(Player x, Player y)
         {
             if (ReferenceEquals(x, y)) return 0;
             if (ReferenceEquals(null, y)) return 1;
@@ -104,15 +122,26 @@ public class Player
             var comp = -1 * _f(x).Score.CompareTo(_f(y).Score);
             if (comp != 0) return comp;
 
-            comp = x.LastStar.CompareTo(y.LastStar);
+            return x.LastStar.CompareTo(y.LastStar);
+        }
+
+        public override int ComparePosition(Player x, Player y, int day, int star)
+        {
+            if (ReferenceEquals(x, y)) return 0;
+            if (ReferenceEquals(null, y)) return 1;
+            if (ReferenceEquals(null, x)) return -1;
+
+            var comp = -1 * _f(x).AccumulatedScore[day][star].CompareTo(_f(y).AccumulatedScore[day][star]);
             if (comp != 0) return comp;
 
-            return x.Id.CompareTo(y.Id);
+            return x.UnixCompletionTime[day][star].CompareTo(y.UnixCompletionTime[day][star]);
+
         }
     }
-    internal class TobiiScoreComparer : IComparer<Player>
+
+    internal class TobiiScoreComparer : PlayerComparer
     {
-        public int Compare(Player x, Player y)
+        public override int ComparePosition(Player x, Player y)
         {
             if (ReferenceEquals(x, y)) return 0;
             if (ReferenceEquals(null, y)) return 1;
@@ -124,10 +153,23 @@ public class Player
             comp = x.TobiiScore.Score.CompareTo(y.TobiiScore.Score);
             if (comp != 0) return comp;
 
-            comp = x.LastStar.CompareTo(y.LastStar);
+            return x.LastStar.CompareTo(y.LastStar);
+        }
+
+        public override int ComparePosition(Player x, Player y, int day, int star)
+        {
+            if (ReferenceEquals(x, y)) return 0;
+            if (ReferenceEquals(null, y)) return 1;
+            if (ReferenceEquals(null, x)) return -1;
+
+
+            var comp = -1 * x.StarCount[day][star].CompareTo(y.StarCount[day][star]);
             if (comp != 0) return comp;
 
-            return x.Id.CompareTo(y.Id);
+            comp = x.TobiiScore.Score.CompareTo(y.TobiiScore.Score);
+            if (comp != 0) return comp;
+
+            return x.UnixCompletionTime[day][star].CompareTo(y.UnixCompletionTime[day][star]);
         }
     }
 }
