@@ -26,7 +26,7 @@ namespace RegenAoc
             var aocList = DeserializeAocJson(aocData.Item1);
             _logger.LogLine("Computing AoC Stats");
             var leaderBoard = ConvertList(aocList, boardConfig, aocData.LastModified);
-            
+
             var globalMgr = new GlobalManager(_logger);
             var globalScore = await globalMgr.GetGlobalScore(boardConfig, leaderBoard.HighestDay);
 
@@ -37,6 +37,7 @@ namespace RegenAoc
             DeriveMoreStats(leaderBoard, boardConfig);
 
             ComputeGlobalScores(leaderBoard, globalScore);
+            leaderBoard.ProcessTime = DateTime.UtcNow - leaderBoard.Generated;
             _logger.LogLine("Uploading results to public S3 bucket");
             await SaveToS3(leaderBoard, boardConfig);
         }
@@ -47,9 +48,9 @@ namespace RegenAoc
             {
                 for (var star = 0; star < 2; star++)
                 {
-                    var scores = globalScore.Days[day+1].Stars[star].Players.ToDictionary(p => p.Name);
+                    var scores = globalScore.Days[day + 1].Stars[star].Players.ToDictionary(p => p.Name);
 
-                foreach (var p in leaderBoard.Players)
+                    foreach (var p in leaderBoard.Players)
                     {
                         if (p.GlobalScore > 0)
                         {
@@ -299,10 +300,10 @@ namespace RegenAoc
 
                 for (int star = 0; star < 2; star++)
                 {
-                    CalculateAccumulatedPosition(leaderBoard, p => p.LocalScoreAll, day, star, 
-                        list=> list
+                    CalculateAccumulatedPosition(leaderBoard, p => p.LocalScoreAll, day, star,
+                        list => list
                             .OrderByDescending(p => p.LocalScoreAll.AccumulatedScore[day][star])
-                            .ThenBy(p=>p.LastStar),
+                            .ThenBy(p => p.LastStar),
                         localScoreComparer
                         );
                     CalculateAccumulatedPosition(leaderBoard, p => p.LocalScoreActive, day, star,
@@ -314,7 +315,7 @@ namespace RegenAoc
                     CalculateAccumulatedPosition(leaderBoard, p => p.TobiiScore, day, star,
                         list => list
                             .OrderByDescending(p => p.Stars)
-                            .ThenBy(p=>p.TobiiScore.AccumulatedScore[day][star])
+                            .ThenBy(p => p.TobiiScore.AccumulatedScore[day][star])
                             .ThenBy(p => p.LastStar),
                         tobiiScoreComparer
                     );
@@ -334,6 +335,8 @@ namespace RegenAoc
             {
                 if (!boardConfig.ExcludeDays.Contains(day))
                 {
+                    if (scoreRec.Score == -1)
+                        scoreRec.Score = 0;
                     scoreRec.Score += posToScore(player.PositionForStar[day][star]);
                 }
             }
@@ -357,19 +360,24 @@ namespace RegenAoc
         {
             var players = leaderBoard.Players
                 .Where(p => f(p).AccumulatedScore[day][star] != -1);
-                var orderedPlayers = orderFunc(players).ToList();
+            var orderedPlayers = orderFunc(players).ToList();
             foreach (var player in leaderBoard.Players)
             {
-                var index = orderedPlayers.IndexOf(player);
-                // handle ties
-                if (index > 0 && comparer.ComparePosition(player, orderedPlayers[index-1], day, star) == 0)
-                    f(player).AccumulatedPosition[day][star] = f(orderedPlayers[index - 1]).AccumulatedPosition[day][star];
-                else
-                    f(player).AccumulatedPosition[day][star] = index+1;
+                if (f(player).AccumulatedScore[day][star] != -1)
+                {
+                    var index = orderedPlayers.IndexOf(player);
+                    var pos = index + 1;
 
-                f(player).ScoreDiff[day][star] = 
-                    f(orderedPlayers.First()).AccumulatedScore[day][star]-
-                    f(player).AccumulatedScore[day][star];
+                    // handle ties
+                    if (index > 0 && comparer.ComparePosition(player, orderedPlayers[index - 1], day, star) == 0)
+                        pos = f(orderedPlayers[index - 1]).AccumulatedPosition[day][star];
+
+                    f(player).AccumulatedPosition[day][star] = pos;
+
+                    f(player).ScoreDiff[day][star] =
+                        f(orderedPlayers.First()).AccumulatedScore[day][star] -
+                        f(player).AccumulatedScore[day][star];
+                }
             }
         }
 
