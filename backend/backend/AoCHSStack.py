@@ -1,6 +1,7 @@
 from aws_cdk import (
     aws_dynamodb,
     aws_s3,
+    aws_cloudfront,
     aws_sqs,
     aws_iam,
     aws_apigateway,
@@ -44,20 +45,54 @@ class AoCHSStack(cdk.Stack):
             same_environment=True)
         regenerator.add_event_source(aws_lambda_event_sources.SqsEventSource(regenerateQ, batch_size=1))
 
+        routing_rules = []
+        error_responses = []
+        for error_code in ["403", "404"]:
+            routing_rules.append(
+                aws_s3.RoutingRule(
+                    condition=aws_s3.RoutingRuleCondition(
+                        http_error_code_returned_equals=error_code,
+                    ),
+                    replace_key=aws_s3.ReplaceKey.prefix_with("#!")
+                )
+            )
+            error_responses.append(aws_cloudfront.CfnDistribution.CustomErrorResponseProperty(
+                        error_code=int(error_code),
+                        response_page_path="/index.html",
+                        response_code=200))
+
         # S3 bucket for public pages + data-blobs
         website = aws.Bucket(
             self,
             "website",
             website_index_document="index.html",
-            website_error_document="error.html",
+            website_error_document="index.html",
             block_public_access=None,
             public_read_access=True,
+            website_routing_rules=routing_rules,
             cors=[aws_s3.CorsRule(
                 allowed_methods=[aws_s3.HttpMethods.GET],
                 allowed_headers=["*"],
                 allowed_origins=["*"])])
         website.grant_public_access()
         website.grant_read_write(regenerator)
+        core.CfnOutput(self, "S3WebUrl", value=website.bucket_website_url, )
+
+        distribution = aws_cloudfront.CloudFrontWebDistribution(
+            self,
+            "AocCdn",
+            comment="AoC Highscore CDN",
+            origin_configs=[aws_cloudfront.SourceConfiguration(
+                s3_origin_source=aws_cloudfront.S3OriginConfig(
+                    s3_bucket_source=website
+                ),
+                behaviors=[aws_cloudfront.Behavior(is_default_behavior=True)],
+            )
+            ],
+            error_configurations=error_responses
+        )
+        core.CfnOutput(self, "CDNUrl", value=distribution.distribution_domain_name)
+
 
         # S3 bucket with cached AOC-datablobs
         cache = aws.Bucket(self, "cache")
