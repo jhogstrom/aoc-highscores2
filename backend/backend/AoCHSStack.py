@@ -1,4 +1,5 @@
 from aws_cdk import (
+    aws_certificatemanager,
     aws_dynamodb,
     aws_s3,
     aws_cloudfront,
@@ -78,6 +79,12 @@ class AoCHSStack(cdk.Stack):
         website.grant_read_write(regenerator)
         core.CfnOutput(self, "S3WebUrl", value=website.bucket_website_url, )
 
+        aoc_certificate = aws_certificatemanager.Certificate.from_certificate_arn(
+            self,
+            "aoc_certificate",
+            "arn:aws:acm:us-east-1:253686873989:certificate/ea53b805-91a4-4d7e-8bb4-b6848f34b760"
+        )
+
         distribution = aws_cloudfront.CloudFrontWebDistribution(
             self,
             "AocCdn",
@@ -89,7 +96,10 @@ class AoCHSStack(cdk.Stack):
                 behaviors=[aws_cloudfront.Behavior(is_default_behavior=True)],
             )
             ],
-            error_configurations=error_responses
+            error_configurations=error_responses,
+            viewer_certificate=aws_cloudfront.ViewerCertificate.from_acm_certificate(
+                aoc_certificate,
+                aliases=["aoc.lillfiluren.se"])
         )
         core.CfnOutput(self, "CDNUrl", value=distribution.distribution_domain_name)
 
