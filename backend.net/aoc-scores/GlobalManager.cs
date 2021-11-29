@@ -150,6 +150,7 @@ namespace RegenAoc
 
         private async Task<GlobalScore> LoadFromDynamo(BoardConfig config)
         {
+            _logger.LogLine($"GlobalScore: Load from Dynamo");
             var res = new GlobalScore();
             using (var client = new AmazonDynamoDBClient(AwsHelpers.DynamoRegion))
             {
@@ -163,6 +164,7 @@ namespace RegenAoc
                     var json = x["data"].S;
                     var dayData = JsonConvert.DeserializeObject<GlobalDay>(json);
                     res.Days[day] = dayData;
+                    _logger.LogLine($"GlobalScore: Loaded day {day} from dynamo");
                 }
             }
             _logger.LogLine($"GlobalScore: Loaded {res.Days.Count} days from dynamo");

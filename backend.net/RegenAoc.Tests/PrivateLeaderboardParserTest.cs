@@ -31,7 +31,7 @@ internal class PrivateLeaderboardParserTest : TestBase
     {
         var boardConfig = await BoardConfigHelper.LoadFromDynamo(g, year, Logger);
         var res = await _sut.RefreshLeaderboardData(boardConfig, true);
-        _sut.MatchData(new List<Player>(), new Dictionary<int, LeaderboardPlayer>(), res, boardConfig);
+        _sut.MatchData(new List<Player>(), new Dictionary<int, LeaderboardPlayer>(), res);
 
         Assert.That(res, Is.Not.Null);
         Assert.That(res.Count, Is.GreaterThan(0));
@@ -43,7 +43,7 @@ internal class PrivateLeaderboardParserTest : TestBase
     {
         var boardConfig = await BoardConfigHelper.LoadFromDynamo(g, year, Logger);
         var res = await _sut.RefreshLeaderboardData(boardConfig, true);
-        _sut.MatchData(new List<Player>(), new Dictionary<int, LeaderboardPlayer>(), res, boardConfig);
+        _sut.MatchData(new List<Player>(), new Dictionary<int, LeaderboardPlayer>(), res);
 
         Assert.That(res, Is.Not.Null);
         Assert.That(res.Count, Is.GreaterThan(0));

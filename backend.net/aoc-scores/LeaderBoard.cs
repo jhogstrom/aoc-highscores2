@@ -26,6 +26,7 @@ public class LeaderBoard
         }
 
         RetrievedFromAoC = aocLastModified;
+        Generated = DateTime.UtcNow;
         Year = year;
         Name = name;
         ExcludedDays = new List<int>(excludeDays);
@@ -35,6 +36,8 @@ public class LeaderBoard
     public string Name { get; }
     public int Year { get; }
     public DateTime RetrievedFromAoC { get; set; }
+    public DateTime Generated { get; set; }
+    public TimeSpan ProcessTime { get; set; }
     public int HighestDay { get; }
     public List<int> ExcludedDays { get; }
     public List<string> ExcludedPlayers { get; }
