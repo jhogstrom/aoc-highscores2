@@ -68,10 +68,12 @@ export default {
                 for (let day = 1; day < this.data.HighestDay + 1; day++) {
                     const dataValue = p.GlobalScoreForDay[day-1]
                     const starPositions = p.PositionForStar[day-1]
+                    let globalValue = 99
+                    if (p.GlobalScoreForDay[day-1] > 0) { globalValue = 0}
                     player[`d_${day}_0`] = dataValue[0]
                     player[`d_${day}_1`] = dataValue[1]
-                    player[`s_${day}_0`] = starPositions[0]
-                    player[`s_${day}_1`] = starPositions[1]
+                    player[`s_${day}_0`] = starPositions[0] + globalValue
+                    player[`s_${day}_1`] = starPositions[1] + globalValue
                 }
                 res.push(player)
             }
