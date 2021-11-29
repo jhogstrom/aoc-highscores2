@@ -23,7 +23,9 @@
             :menuItems="otherPages"></menu-button>
           <year-menu></year-menu>
           <v-divider vertical></v-divider>
+          <about-button></about-button>
           <div class="right-align">
+
           <v-icon v-if="reloadingData">mdi-database-refresh</v-icon>
           </div>
         </template>
@@ -48,7 +50,7 @@
         ></v-checkbox>
     </v-navigation-drawer>
     <router-view/>
-    <footer-content class="footer"></footer-content>
+    <!-- <footer-content class="footer"></footer-content> -->
   </div>
 </template>
 
@@ -58,13 +60,15 @@ import MenuButton from './MenuButton.vue'
 import YearMenu from './YearMenu.vue'
 import { boards, charts, other } from '../router'
 import {fileUrl} from '../http.js'
+import AboutButton from './AboutButton.vue'
 const SECONDS = 1000
 const DELAY = 30
 
 export default {
     components: {
       FooterContent, MenuButton,
-        YearMenu },
+        YearMenu,
+        AboutButton },
     props: ["guid", "year"],
     data() { return {
         infoTitle: "AOC FTW",
@@ -74,7 +78,8 @@ export default {
         boardmap: boards,
         chartmap: charts,
         otherPages: other,
-        reloadingData: false
+        reloadingData: false,
+        reloadCount: 0
     }},
     mounted() {
       setTimeout(this.refreshData, DELAY * SECONDS)
@@ -119,6 +124,7 @@ export default {
         if (this.shouldReload())
         {
           this.reloadingData = true
+          this.reloadCount++
           console.log("reloading data again")
           fetch(fileUrl(this.$store.getters.year, this.$store.getters.guid))
             .then(response => {
@@ -138,11 +144,12 @@ export default {
               }
             })
           .then(() => {
-            setTimeout(this.refreshData, DELAY * SECONDS)
+            setTimeout(this.refreshData, (DELAY * SECONDS) * Math.min(1, this.reloadCount / 15))
             this.reloadingData = false
           })
         } else {
           // No fetch, so wait another DELAY seonds and try again
+          this.reloadCount = 0
           setTimeout(this.refreshData, DELAY * SECONDS)
         }
       }
