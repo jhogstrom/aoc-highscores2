@@ -13,7 +13,10 @@
                 {{p.LocalScoreAll.Position|rightAdjust(3)}})
                 {{p.LocalScoreAll.Score|rightAdjust(4)}}
                 <star-line :days="p.UnixCompletionTime"></star-line>
-                {{p.Name}}
+                &nbsp;
+                <span v-if="p.PublicProfile"><a :href="p.PublicProfile">{{p.Name}}</a></span>
+                <span v-else>{{p.Name}}</span>
+                <span class="aocyellow"> {{isSupporter(p)}}</span>
             </div>
         </div>
     </div>
@@ -27,6 +30,7 @@ export default {
     components: { StarLine,InfoBlock },
     data () { return {
         infoTitle: "Classic Aoc style board",
+        infotext: "",
         headers: [
             { text: 'Pos.', value: 'Position', width: 20 },
             { text: 'Points', value: 'Score', width: 20  },
@@ -48,7 +52,10 @@ export default {
         }
     },
     methods: {
-        key(i, k) { return i * k}
+        key(i, k) { return i * k},
+        isSupporter(player) {
+            return player.Supporter ? "(AoC++)" : ""
+        }
     }
 }
 </script>
@@ -73,6 +80,33 @@ export default {
 
 #greentext {
     color: rgb(00, 99, 00);;
+}
+
+.aocyellow {
+    color: yellow;
+}
+
+a:link {
+  color: rgb(00, 99, 00);
+  text-decoration: none;
+}
+
+/* visited link */
+a:visited {
+  color: green;
+  text-decoration: none;
+}
+
+/* mouse over link */
+a:hover {
+  color: rgb(99, 236, 81);
+  text-decoration: none;
+}
+
+/* selected link */
+a:active {
+  color: blue;
+  text-decoration: none;
 }
 
 </style>
