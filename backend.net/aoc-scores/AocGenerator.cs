@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,25 +22,34 @@ namespace RegenAoc
 
         public async Task Generate(BoardConfig boardConfig)
         {
-            _logger.LogLine("Loading AoC data from S3");
+            var sw = Stopwatch.StartNew();
+            _logger.LogLine($"{sw.ElapsedMilliseconds}: Loading AoC data from S3");
             var aocData = await GetAocDataFromS3(boardConfig);
+
             var aocList = DeserializeAocJson(aocData.Item1);
-            _logger.LogLine("Computing AoC Stats");
+            _logger.LogLine($"{sw.ElapsedMilliseconds}: Computing AoC Stats");
             var leaderBoard = ConvertList(aocList, boardConfig, aocData.LastModified);
 
+            _logger.LogLine($"{sw.ElapsedMilliseconds}: Aoc Json converted");
             var globalMgr = new GlobalManager(_logger);
             var globalScore = await globalMgr.GetGlobalScore(boardConfig, leaderBoard.HighestDay);
+            _logger.LogLine($"{sw.ElapsedMilliseconds}: Get GlobalScore Done...");
 
             var privateLeaderboardParser = new PrivateLeaderboardParser(_logger);
             await privateLeaderboardParser.UpdatePlayersFromPrivateLeaderboard(boardConfig, leaderBoard.Players);
+            _logger.LogLine($"{sw.ElapsedMilliseconds}: PrivateLeaderboard metadata Done...");
 
             HandlePlayerRenames(leaderBoard, boardConfig);
+            _logger.LogLine($"{sw.ElapsedMilliseconds}: Player Renames Done...");
             DeriveMoreStats(leaderBoard, boardConfig);
+            _logger.LogLine($"{sw.ElapsedMilliseconds}: DeriveMoreStats Done...");
 
             ComputeGlobalScores(leaderBoard, globalScore);
+            _logger.LogLine($"{sw.ElapsedMilliseconds}: ComputeGlobalScores Done...");
             leaderBoard.ProcessTime = DateTime.UtcNow - leaderBoard.Generated;
-            _logger.LogLine("Uploading results to public S3 bucket");
+            _logger.LogLine($"{sw.ElapsedMilliseconds}: Uploading results to public S3 bucket");
             await SaveToS3(leaderBoard, boardConfig);
+            _logger.LogLine($"{sw.ElapsedMilliseconds}: Upload complete");
         }
 
         private void ComputeGlobalScores(LeaderBoard leaderBoard, GlobalScore globalScore)

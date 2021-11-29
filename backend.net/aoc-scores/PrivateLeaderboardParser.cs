@@ -30,18 +30,16 @@ namespace RegenAoc
 
             var aocPlayers = await RefreshLeaderboardData(config, players.Count != dynamoPlayers.Count);
 
-            MatchData(players, dynamoPlayers, aocPlayers, config);
+            MatchData(players, dynamoPlayers, aocPlayers);
             await SaveToDynamo(config, dynamoPlayers.Values);
         }
 
         public void MatchData(List<Player> players, Dictionary<int, LeaderboardPlayer> dynamoPlayers,
-            Dictionary<string, LeaderboardPlayer> aocPlayers, BoardConfig config)
+            Dictionary<string, LeaderboardPlayer> aocPlayers)
         {
-
             foreach (var p in dynamoPlayers.Values)
                 p.Deleted = true;
 
-//            var updateDynamo = false;
             foreach (var p in players)
             {
                 LeaderboardPlayer aoc = null;
@@ -50,40 +48,41 @@ namespace RegenAoc
                 if (aoc == null)
                     aocPlayers.TryGetValue($"(anonymous user #{p.Id})", out aoc);
 
-                dynamoPlayers.TryGetValue(p.Id, out var dbPlayer);
+                dynamoPlayers.TryGetValue(p.Id, out var dynamoPlayer);
 
                 if (aoc != null)
                 {
-                    // fresh data available
-                    p.Supporter = aoc.Supporter;
-                    p.PublicProfile = aoc.PublicProfile;
-
-                    if (dbPlayer == null)
+                    if (dynamoPlayer == null)
                     {
-                        aoc.FirstSeen = DateTime.Now;
-                        aoc.AocId = p.Id;
-                        aoc.Updated = true;
+                        // new player from the private leaderboard, add to dynamo-list
+                        dynamoPlayer = aoc;
+                        dynamoPlayer.FirstSeen = DateTime.Now;
+                        dynamoPlayer.AocId = p.Id;
+                        dynamoPlayer.Updated = true;
                         dynamoPlayers[p.Id] = aoc;
                     }
                     else
                     {
-                        if (dbPlayer.Supporter != aoc.Supporter)
+                        // player exists in dynamo, update fields
+                        if (dynamoPlayer.Supporter != aoc.Supporter)
                         {
-                            dbPlayer.Supporter = aoc.Supporter;
-                            dbPlayer.Updated = true;
+                            dynamoPlayer.Supporter = aoc.Supporter;
+                            dynamoPlayer.Updated = true;
                         }
-                        if (dbPlayer.PublicProfile != aoc.PublicProfile)
+                        if (dynamoPlayer.PublicProfile != aoc.PublicProfile)
                         {
-                            dbPlayer.PublicProfile = aoc.PublicProfile;
-                            dbPlayer.Updated = true;
+                            dynamoPlayer.PublicProfile = aoc.PublicProfile;
+                            dynamoPlayer.Updated = true;
                         }
                     }
                 }
-                else if (dbPlayer != null)
+
+                if (dynamoPlayer != null)
                 {
-                    dbPlayer.Deleted = false;
-                    p.Supporter = dbPlayer.Supporter;
-                    p.PublicProfile = dbPlayer.PublicProfile;
+                    // copy data to real player object
+                    dynamoPlayer.Deleted = false;
+                    p.Supporter = dynamoPlayer.Supporter;
+                    p.PublicProfile = dynamoPlayer.PublicProfile;
                 }
             }
         }
@@ -97,25 +96,24 @@ namespace RegenAoc
             var l = await client.ListObjectsAsync(AwsHelpers.InternalBucket, key);
             if (l.S3Objects.Any() && DateTime.Now < l.S3Objects.First().LastModified.AddDays(1) && !forceReload)
             {
-                // _logger.LogLine($"Private Leaderboard: Refreshing from s3 ({key})");
-                // // load the data from S3 and parse
-                // var contents = await client.GetContentsFromS3(key, AwsHelpers.InternalBucket);
-                // var doc = new HtmlDocument();
-                // doc.LoadHtml(contents);
-                // return ParseHtml(doc);
-                return new Dictionary<string, LeaderboardPlayer>();
+                _logger.LogLine($"Private Leaderboard: Refreshing from s3 ({key})");
+                // load the data from S3 and parse
+                var contents = await client.GetContentsFromS3(key, AwsHelpers.InternalBucket);
+                var doc = new HtmlDocument();
+                doc.LoadHtml(contents);
+                return ParseHtml(doc);
             }
 
             var url = $"https://adventofcode.com/{config.Year}/leaderboard/private/view/{config.AocId}";
-            _logger.LogLine($"Private Leaderboard, downloding html from aoc ({url})");
+            _logger.LogLine($"Private Leaderboard, downloading html from aoc ({url})");
             var privateLeaderBoard = AocRefresher.DownloadFromURL(url, config.SessionCookie);
-            var doc = new HtmlDocument();
-            doc.LoadHtml(privateLeaderBoard);
+            var doc2 = new HtmlDocument();
+            doc2.LoadHtml(privateLeaderBoard);
 
-            var players = ParseHtml(doc);
+            var players = ParseHtml(doc2);
 
             // save it to S3 for future use
-            await client.WriteContentsToS3(AwsHelpers.InternalBucket, key, doc.Text);
+            await client.WriteContentsToS3(AwsHelpers.InternalBucket, key, doc2.Text);
 
             return players;
         }
@@ -142,7 +140,7 @@ namespace RegenAoc
 
                     if (profileLink != null)
                     {
-                        p.PublicProfile = profileLink.Attributes["href"].Value??"";
+                        p.PublicProfile = profileLink.Attributes["href"].Value;
                         p.Name = profileLink.InnerText;
                     }
                     else
@@ -154,6 +152,8 @@ namespace RegenAoc
                     }
                 }
 
+                if (p.PublicProfile == null)
+                    p.PublicProfile = "";
                 if (p.Name.StartsWith("(anonymous user #"))
                     p.AocId = int.Parse(p.Name.Split(new[] { '#', ')' })[1]);
                 res[p.Name] = p;
