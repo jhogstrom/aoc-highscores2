@@ -34,6 +34,7 @@ def save_timestamp(id: str, now, previous_timestamp=None):
     # indicate by returning false.
     try:
         TABLE.put_item(**params)
+        print(f"Timestamp updated for '{id}'")
         return True
     except dynamodb.meta.client.exceptions.ConditionalCheckFailedException:
         print("Someone managed to request a regeneration before us!")
@@ -53,6 +54,7 @@ def cooldown_expired(now, timestamp) -> bool:
     MINIMUM_COOL_DOWN = 20
     seconds_since_last_regeneration = now - timestamp
     if seconds_since_last_regeneration > MINIMUM_COOL_DOWN:
+        print(f"It's been more than {MINIMUM_COOL_DOWN} seconds since last generation. Let's do it again!")
         return True
 
     print(f"Hold your horses. Only {int(seconds_since_last_regeneration)} as passed (need to wait {MINIMUM_COOL_DOWN} seconds).")
@@ -65,6 +67,7 @@ def handle_payload(boardguid: str, year: int):
     now = Decimal(datetime.datetime.now().timestamp())
 
     if len(items) == 0:
+        print(f"No timestamp record found for board '{id}'.")
         save_timestamp(id, now)
         request_regeneration(boardguid, year)
         return
