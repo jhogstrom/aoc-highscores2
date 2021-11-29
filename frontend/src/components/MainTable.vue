@@ -50,12 +50,10 @@
         ></v-checkbox>
     </v-navigation-drawer>
     <router-view/>
-    <!-- <footer-content class="footer"></footer-content> -->
   </div>
 </template>
 
 <script>
-import FooterContent from './FooterContent.vue'
 import MenuButton from './MenuButton.vue'
 import YearMenu from './YearMenu.vue'
 import { boards, charts, other } from '../router'
@@ -66,7 +64,7 @@ const DELAY = 30
 
 export default {
     components: {
-      FooterContent, MenuButton,
+       MenuButton,
         YearMenu,
         AboutButton },
     props: ["guid", "year"],

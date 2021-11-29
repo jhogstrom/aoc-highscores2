@@ -8,7 +8,7 @@
             >
             <v-icon
                 class="iconpadding"
-                v-on="on">mdi-information</v-icon>
+                >mdi-information</v-icon>
 
             About
         </v-btn>
@@ -40,7 +40,6 @@
                     <v-icon class="iconpadding" color="white">mdi-github</v-icon>
                     </a>
                 </p>
-                  </p>
               </v-card-text>
 
               <v-card-actions class="aoc-color">
