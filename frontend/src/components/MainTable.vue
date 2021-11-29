@@ -1,5 +1,6 @@
 <template>
 <div>
+
   <v-card>
     <v-toolbar
       color="cyan"
@@ -13,16 +14,13 @@
         <template v-slot:extension>
           <menu-button class="menubutton"
             :caption="'Boards'"
-            :menuItems="boardmap"
-            @menuSelected="menuSelected"></menu-button>
+            :menuItems="boardmap"></menu-button>
           <menu-button
             :caption="'Charts'"
-            :menuItems="chartmap"
-            @menuSelected="menuSelected"></menu-button>
+            :menuItems="chartmap"></menu-button>
           <menu-button
             :caption="'Other'"
-            :menuItems="otherPages"
-            @menuSelected="menuSelected"></menu-button>
+            :menuItems="otherPages"></menu-button>
           <year-menu></year-menu>
           <v-divider vertical></v-divider>
           <div class="right-align">
@@ -31,7 +29,6 @@
         </template>
       </v-toolbar>
     </v-card>
-    <component v-bind:is="displayComponent" :infoTitle="infoTitle"></component>
     <v-navigation-drawer
         v-model="drawer"
         absolute
@@ -47,7 +44,7 @@
         ></v-checkbox>
       <v-checkbox
         v-model="autoRefresh"
-        :label="'Reload data every 20 seconds (if page is active)'"
+        :label="'Reload data every 30 seconds (if page is active)'"
         ></v-checkbox>
     </v-navigation-drawer>
     <router-view/>
@@ -71,7 +68,6 @@ export default {
     props: ["guid", "year"],
     data() { return {
         infoTitle: "AOC FTW",
-        displayComponent: null,
         drawer: false,
         tab: null,
         loadedOk: false,
@@ -116,10 +112,6 @@ export default {
         }
     },
     methods: {
-      menuSelected(item) {
-        this.infoTitle = item.title
-        this.displayComponent = item.component
-      },
       shouldReload() {
         return this.autoRefresh && !document.hidden
       },
