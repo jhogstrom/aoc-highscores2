@@ -12,6 +12,9 @@
         dense
         hide-default-footer
         single-select>
+        <template v-for="h in allheaders" v-slot:[`header.${h.value}`]="{ header }">
+            <span  v-on="on" v-html="header.text" :key="h.value"></span>
+        </template>
         <template v-slot:item.identity="{item}">
             <position-col :item="item"/>
         </template>
@@ -52,7 +55,7 @@ export default {
         dayheaders() {
             let res = []
             for (let day = 1; day < this.$store.getters.data.HighestDay + 1; day++) {
-                res.push({ text: `day ${day} *->**`, value: `d_${day}_0`, align: "end", width: 15 })
+                res.push({ text: `day ${day}<br>*->**`, value: `d_${day}_0`, align: "end", width: 15 })
             }
             return res
         },
