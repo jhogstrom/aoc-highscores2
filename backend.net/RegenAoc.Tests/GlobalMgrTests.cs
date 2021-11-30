@@ -10,7 +10,6 @@ namespace RegenAoc.Tests
     internal class GlobalMgrTests : TestBase
     {
         private GlobalManager _sut = null!;
-        private BoardConfig _boardConfig = null!;
 
 
         [SetUp]

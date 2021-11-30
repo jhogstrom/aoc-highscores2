@@ -196,7 +196,6 @@ namespace RegenAoc
 
                 var resp = await client.PutItemAsync(putItemRequest);
                 _logger.LogLine($"Saved day {day} data to dynamo: ({resp.HttpStatusCode})");
-
             }
         }
 
