@@ -2,11 +2,11 @@ export  function fixedColumns() {
     let res = [
         { text: 'Pos.', value: 'identity', width: 23 },
         { text: 'Name', value: 'name', width: 250 },
-        { text: 'L', value: 'score', align: "end", width: 15  },
-        { text: 'G', value: 'globalScore', align: "end", width: 15 },
-        { text: 'S', value: 'stars', align: "end", width: 15 },
-        { text: 'T', value: 'tobiiScore', align: "end", width: 15 },
-        { text: 'R', value: 'raffleTickets', align: "end", width: 15 },
+        { text: 'L', value: 'score', align: "end", width: 60  },
+        { text: 'G', value: 'globalScore', align: "end", width: 60 },
+        { text: 'S', value: 'stars', align: "end", width: 60 },
+        { text: 'T', value: 'tobiiScore', align: "end", width: 60 },
+        { text: 'R', value: 'raffleTickets', align: "end", width: 60 },
     ]
     return res
 }

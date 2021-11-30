@@ -10,6 +10,7 @@
         height="700"
         class="elevation-1"
         dense
+        mobile-breakpoint="1"
         hide-default-footer
         single-select>
         <template v-for="h in allheaders" v-slot:[`header.${h.value}`]="{ header }">
