@@ -36,7 +36,7 @@
 
                 <p class="aoc-color">
                     &copy;{{ copyrightYear }} — <strong>JHSoftService</strong>
-                    <a href="https://github.com/jhogstrom/aoc-highscores2">
+                    <a target="_blank" href="https://github.com/jhogstrom/aoc-highscores2">
                     <v-icon class="iconpadding" color="white">mdi-github</v-icon>
                     </a>
                 </p>
