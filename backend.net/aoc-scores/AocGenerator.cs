@@ -23,24 +23,45 @@ namespace RegenAoc
         public async Task Generate(BoardConfig boardConfig)
         {
             var sw = Stopwatch.StartNew();
-            _logger.LogLine($"{sw.ElapsedMilliseconds}: Loading AoC data from S3");
-            var aocData = await GetAocDataFromS3(boardConfig);
+            LeaderBoard leaderBoard = null;
+            int highestDay = -1;
+            if (boardConfig.AocId != null)
+            {
+                _logger.LogLine($"{sw.ElapsedMilliseconds}: Loading AoC data from S3");
+                var aocData = await GetAocDataFromS3(boardConfig);
 
-            var aocList = DeserializeAocJson(aocData.Item1);
-            _logger.LogLine($"{sw.ElapsedMilliseconds}: Computing AoC Stats");
-            var leaderBoard = ConvertList(aocList, boardConfig, aocData.LastModified);
+                var aocList = DeserializeAocJson(aocData.Item1);
+                _logger.LogLine($"{sw.ElapsedMilliseconds}: Computing AoC Stats");
+                leaderBoard = ConvertList(aocList, boardConfig, aocData.LastModified);
 
-            _logger.LogLine($"{sw.ElapsedMilliseconds}: Aoc Json converted");
+                _logger.LogLine($"{sw.ElapsedMilliseconds}: Aoc Json converted");
+                highestDay = leaderBoard.HighestDay;
+                var privateLeaderboardParser = new PrivateLeaderboardParser(_logger);
+                await privateLeaderboardParser.UpdatePlayersFromPrivateLeaderboard(boardConfig, leaderBoard.Players);
+                _logger.LogLine($"{sw.ElapsedMilliseconds}: PrivateLeaderboard metadata Done...");
+
+                HandlePlayerRenames(leaderBoard, boardConfig);
+                _logger.LogLine($"{sw.ElapsedMilliseconds}: Player Renames Done...");
+            }
+            else
+            {
+                if (boardConfig.Year < DateTime.Now.Year)
+                    highestDay = 25;
+                else if (DateTime.Now.Month < 12)
+                    highestDay = 0;
+                else
+                    highestDay = DateTime.Now.Day;
+            }
+
             var globalMgr = new GlobalManager(_logger);
-            var globalScore = await globalMgr.GetGlobalScore(boardConfig, leaderBoard.HighestDay);
+            var globalScore = await globalMgr.GetGlobalScore(boardConfig, highestDay);
             _logger.LogLine($"{sw.ElapsedMilliseconds}: Get GlobalScore Done...");
 
-            var privateLeaderboardParser = new PrivateLeaderboardParser(_logger);
-            await privateLeaderboardParser.UpdatePlayersFromPrivateLeaderboard(boardConfig, leaderBoard.Players);
-            _logger.LogLine($"{sw.ElapsedMilliseconds}: PrivateLeaderboard metadata Done...");
+            if (boardConfig.AocId == null)
+            {
+                leaderBoard = CreateLeaderboardFromGlobalScore(globalScore, boardConfig, highestDay);
+            }
 
-            HandlePlayerRenames(leaderBoard, boardConfig);
-            _logger.LogLine($"{sw.ElapsedMilliseconds}: Player Renames Done...");
             DeriveMoreStats(leaderBoard, boardConfig);
             _logger.LogLine($"{sw.ElapsedMilliseconds}: DeriveMoreStats Done...");
 
@@ -50,6 +71,45 @@ namespace RegenAoc
             _logger.LogLine($"{sw.ElapsedMilliseconds}: Uploading results to public S3 bucket");
             await SaveToS3(leaderBoard, boardConfig);
             _logger.LogLine($"{sw.ElapsedMilliseconds}: Upload complete");
+        }
+
+        private LeaderBoard CreateLeaderboardFromGlobalScore(GlobalScore globalScore, BoardConfig boardConfig, int highestDay)
+        {
+            
+
+            var players = new Dictionary<string, Player>();
+            foreach (var d in globalScore.Days.Keys)
+            {
+                var day = globalScore.Days[d];
+                var unixDateTimeOfPublish = new DateTime(boardConfig.Year, 12, d + 1, 5, 0, 0, DateTimeKind.Utc);
+                var unixTimeOfPublish = ((DateTimeOffset)unixDateTimeOfPublish).ToUnixTimeSeconds();
+
+                foreach (var star in day.Stars.Keys)
+                {
+                    var starinfo = day.Stars[star];
+                    foreach (var p in starinfo.Players)
+                    {
+                        if (!players.TryGetValue(p.Name, out var player))
+                        {
+                            player = new Player()
+                            {
+                                AoCName = p.Name,
+                                Name=p.Name,
+                                Id = -players.Count,
+                                Supporter = p.Supporter,
+                                Avatar = p.Avatar,
+                                PublicProfile = p.PublicProfile
+                            };
+                            players[p.Name ] = player;
+                        }
+
+                        player.UnixCompletionTime[d-1][star] = (int)p.SolveTime.TotalSeconds + unixTimeOfPublish;
+                        player.Stars++;
+                    }
+                }
+            }
+
+            return new LeaderBoard(players.Values.ToList(), highestDay, boardConfig.ExcludeDays, new List<string>(), DateTime.Now, boardConfig.Year, boardConfig.Name);
         }
 
         private void ComputeGlobalScores(LeaderBoard leaderBoard, GlobalScore globalScore)

@@ -5,13 +5,12 @@
     <v-data-table
         :headers="allheaders"
         :items="playerList"
-        :items-per-page="-1"
+        :items-per-page="50"
         fixed-header
         height="700"
         class="elevation-1"
         dense
         mobile-breakpoint="1"
-        hide-default-footer
         single-select>
         <template v-for="h in allheaders" v-slot:[`header.${h.value}`]="{ header }">
             <span  v-on="on" v-html="header.text" :key="h.value"></span>
