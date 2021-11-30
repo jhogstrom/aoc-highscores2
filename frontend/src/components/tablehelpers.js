@@ -1,12 +1,12 @@
 export  function fixedColumns() {
     let res = [
-        { text: 'Pos.', value: 'identity', width: 23 },
+        { text: 'Pos', value: 'identity', width: 50 },
         { text: 'Name', value: 'name', width: 250 },
-        { text: 'L', value: 'score', align: "end", width: 60  },
-        { text: 'G', value: 'globalScore', align: "end", width: 60 },
-        { text: 'S', value: 'stars', align: "end", width: 60 },
-        { text: 'T', value: 'tobiiScore', align: "end", width: 60 },
-        { text: 'R', value: 'raffleTickets', align: "end", width: 60 },
+        { text: 'L', value: 'score', align: "end", width: 35  },
+        { text: 'G', value: 'globalScore', align: "end", width: 35 },
+        { text: 'S', value: 'stars', align: "end", width: 35 },
+        { text: 'T', value: 'tobiiScore', align: "end", width: 35 },
+        { text: 'R', value: 'raffleTickets', align: "end", width: 35 },
     ]
     return res
 }
@@ -30,8 +30,9 @@ import store from '../store/index'
 export function dayColumns() {
     let res = []
     for (let day = 1; day < store.getters.data.HighestDay + 1; day++) {
-        res.push({ text: `day&nbsp;${day}<br>*`, value: `d_${day}_0`, align: "end", width: 15 });
-        res.push( { text: `day&nbsp;${day}<br>**`, value: `d_${day}_1`, align: "end", width: 15 });
+        res.push({ text: `<center>D${day}<br>*</center>`, value: `d_${day}_0`, align: "end", width: 15 });
+        res.push( { text: `<center>D${day}<br>**</center>`, value: `d_${day}_1`, align: "end", width: 15 });
+        res.push( { text: ``, value: `x_${day}`, align: "end", width: 1 });
     }
     if (store.getters.firstDayFirst) {
         return res
