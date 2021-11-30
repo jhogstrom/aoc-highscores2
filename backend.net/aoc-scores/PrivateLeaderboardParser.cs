@@ -56,7 +56,7 @@ namespace RegenAoc
                     {
                         // new player from the private leaderboard, add to dynamo-list
                         dynamoPlayer = aoc;
-                        dynamoPlayer.FirstSeen = DateTime.Now;
+                        dynamoPlayer.FirstSeen = DateTime.UtcNow;
                         dynamoPlayer.AocId = p.Id;
                         dynamoPlayer.Updated = true;
                         dynamoPlayers[p.Id] = aoc;
@@ -101,7 +101,7 @@ namespace RegenAoc
                 var contents = await client.GetContentsFromS3(key, AwsHelpers.InternalBucket);
                 var doc = new HtmlDocument();
                 doc.LoadHtml(contents);
-                return ParseHtml(doc);
+                return ParseHtml(doc, config.Year);
             }
 
             var url = $"https://adventofcode.com/{config.Year}/leaderboard/private/view/{config.AocId}";
@@ -110,7 +110,7 @@ namespace RegenAoc
             var doc2 = new HtmlDocument();
             doc2.LoadHtml(privateLeaderBoard);
 
-            var players = ParseHtml(doc2);
+            var players = ParseHtml(doc2, config.Year);
 
             // save it to S3 for future use
             await client.WriteContentsToS3(AwsHelpers.InternalBucket, key, doc2.Text);
@@ -119,7 +119,7 @@ namespace RegenAoc
         }
 
 
-        public Dictionary<string, LeaderboardPlayer> ParseHtml(HtmlDocument html)
+        public Dictionary<string, LeaderboardPlayer> ParseHtml(HtmlDocument html, int year)
         {
             var res = new Dictionary<string, LeaderboardPlayer>();
             var entries = html.DocumentNode.SelectNodes("//div[@class='privboard-row']");
@@ -156,6 +156,7 @@ namespace RegenAoc
                     p.PublicProfile = "";
                 if (p.Name.StartsWith("(anonymous user #"))
                     p.AocId = int.Parse(p.Name.Split(new[] { '#', ')' })[1]);
+                p.Year = year;
                 res[p.Name] = p;
             }
             return res;
@@ -181,6 +182,8 @@ namespace RegenAoc
                     var year = int.Parse(sk[0]);
                     var aocId = int.Parse(sk[1]);
 
+                    if (year != config.Year)
+                        continue; // should actually ad dthis to the sortkey in the query
                     var p = new LeaderboardPlayer()
                     {
                         Name = playerName,

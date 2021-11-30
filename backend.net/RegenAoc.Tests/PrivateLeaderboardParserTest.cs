@@ -39,6 +39,19 @@ internal class PrivateLeaderboardParserTest : TestBase
 
     [Test]
     [TestCase(TestData.Guid1, 2020)]
+    public async Task TestRefreshYearAndMatchAndSave(string g, int year)
+    {
+        var boardConfig = await BoardConfigHelper.LoadFromDynamo(g, year, Logger);
+        var players = new List<Player>();
+        await _sut.UpdatePlayersFromPrivateLeaderboard(boardConfig, players);
+        Assert.That(players, Is.Not.Null);
+    }
+
+
+
+
+    [Test]
+    [TestCase(TestData.Guid1, 2020)]
     public async Task TestRefreshYearAndMatchWithPlayerData(string g, int year)
     {
         var boardConfig = await BoardConfigHelper.LoadFromDynamo(g, year, Logger);
