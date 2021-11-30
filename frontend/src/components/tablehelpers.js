@@ -30,8 +30,8 @@ import store from '../store/index'
 export function dayColumns() {
     let res = []
     for (let day = 1; day < store.getters.data.HighestDay + 1; day++) {
-        res.push({ text: `day ${day} *`, value: `d_${day}_0`, align: "end", width: 15 })
-        res.push({ text: `day ${day} **`, value: `d_${day}_1`, align: "end", width: 15 })
+        res.push({ text: `day&nbsp;${day}<br>*`, value: `d_${day}_0`, align: "end", width: 15 });
+        res.push( { text: `day&nbsp;${day}<br>**`, value: `d_${day}_1`, align: "end", width: 15 });
     }
     if (store.getters.firstDayFirst) {
         return res
