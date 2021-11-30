@@ -20,7 +20,7 @@ Both Jonas and Jesper learned a lot writing this application and had a lot of fu
 # Request your own board
 
 This will be automated soon (probably after 2021 AoC). For now, send your
-* session cookie
+* aoc session cookie (for instructions, see https://github.com/wimglenn/advent-of-code-wim/issues/1)
 * board id
 * name of board
 
