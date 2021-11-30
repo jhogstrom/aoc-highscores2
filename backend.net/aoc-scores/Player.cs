@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-[DebuggerDisplay("{Name}: {LocalScoreAll.Score}")]
+[DebuggerDisplay("{Name}|id: {Id}|stars: {Stars}")]
 public class Player
 {
     public Player()

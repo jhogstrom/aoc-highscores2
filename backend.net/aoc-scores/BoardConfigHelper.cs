@@ -41,6 +41,16 @@ namespace RegenAoc
                 Year = year
             };
 
+            if (guid == Guid.Empty.ToString())
+            {
+                for (int y = 2016; y<DateTime.Now.Year; y++)
+                    conf.Years.Add(y);
+                if (DateTime.Now.Month == 12)
+                    conf.Years.Add(DateTime.Now.Year);
+                conf.Name = "Global scores";
+                return conf;
+            }
+
             using (var client = new AmazonDynamoDBClient(AwsHelpers.DynamoRegion))
             {
                 // sk keys: 
