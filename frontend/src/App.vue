@@ -36,7 +36,7 @@ export default {
         defaultYear = (now.getFullYear() - 1).toString();
       }
 
-      this.year = params.get("year") || this.$store.getters.year || defaultYear
+      this.year = params.get("year") || defaultYear
       this.guid = params.get("guid") || params.get("uuid") || this.$store.getters.guid || tobiilist;
     },
     async fetchData(year, guid) {
@@ -56,6 +56,16 @@ export default {
           if (this.loadedOk) {
             this.$store.dispatch('setParams', {year: this.year, guid: this.guid})
             this.$store.dispatch('setData', data)
+            let boards = JSON.parse(localStorage.getItem("knownBoards") || "[]")
+            boards = boards.filter(_ => _.guid != this.guid)
+            boards.push({
+                name: data.Name,
+                guid: this.guid
+              })
+            localStorage.setItem(
+              "knownBoards",
+              JSON.stringify(boards)
+            )
           } else {
             this.$store.dispatch('setParams', null)
             this.$store.dispatch('setData', {})
