@@ -36,5 +36,14 @@ namespace RegenAoc.Tests
 
             await _sut.Generate(config);
         }
+
+        [Test]
+        public async Task TestGenerateGlobal()
+        {
+            var config = await BoardConfigHelper.LoadFromDynamo(TestData.GuidG, 2020, Logger);
+
+            await _sut.Generate(config);
+        }
+
     }
 }
