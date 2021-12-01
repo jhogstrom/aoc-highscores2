@@ -36,6 +36,7 @@ namespace RegenAoc
 
                 _logger.LogLine($"{sw.ElapsedMilliseconds}: Aoc Json converted");
                 highestDay = leaderBoard.HighestDay;
+
                 var privateLeaderboardParser = new PrivateLeaderboardParser(_logger);
                 await privateLeaderboardParser.UpdatePlayersFromPrivateLeaderboard(boardConfig, leaderBoard.Players);
                 _logger.LogLine($"{sw.ElapsedMilliseconds}: PrivateLeaderboard metadata Done...");
@@ -75,8 +76,6 @@ namespace RegenAoc
 
         private LeaderBoard CreateLeaderboardFromGlobalScore(GlobalScore globalScore, BoardConfig boardConfig, int highestDay)
         {
-            
-
             var players = new Dictionary<string, Player>();
             foreach (var d in globalScore.Days.Keys)
             {
@@ -94,16 +93,16 @@ namespace RegenAoc
                             player = new Player()
                             {
                                 AoCName = p.Name,
-                                Name=p.Name,
+                                Name = p.Name,
                                 Id = -players.Count,
                                 Supporter = p.Supporter,
                                 Avatar = p.Avatar,
                                 PublicProfile = p.PublicProfile
                             };
-                            players[p.Name ] = player;
+                            players[p.Name] = player;
                         }
 
-                        player.UnixCompletionTime[d-1][star] = (int)p.SolveTime.TotalSeconds + unixTimeOfPublish;
+                        player.UnixCompletionTime[d - 1][star] = (int)p.SolveTime.TotalSeconds + unixTimeOfPublish;
                         player.Stars++;
                     }
                 }
@@ -459,16 +458,19 @@ namespace RegenAoc
         private async Task<(string, DateTime LastModified)> GetAocDataFromS3(BoardConfig boardConfig)
         {
             using var client = new AmazonS3Client();
-            var obj = await client.GetObjectAsync(AwsHelpers.InternalBucket, AwsHelpers.InternalBucketKey(boardConfig.Year, boardConfig.AocId));
+
+            var key = AwsHelpers.InternalBucketKey(boardConfig.Year, boardConfig.AocId);
+
             var metadataRequest = new GetObjectMetadataRequest();
             metadataRequest.BucketName = AwsHelpers.InternalBucket;
-            metadataRequest.Key = AwsHelpers.InternalBucketKey(boardConfig.Year, boardConfig.AocId);
-            var obj2 = await client.GetObjectMetadataAsync(metadataRequest);
+            metadataRequest.Key = key;
+            var metadata = await client.GetObjectMetadataAsync(metadataRequest);
 
+            var obj = await client.GetObjectAsync(AwsHelpers.InternalBucket, key);
 
             await using var s = obj.ResponseStream;
             var reader = new StreamReader(s);
-            return (await reader.ReadToEndAsync(), obj2.LastModified);
+            return (await reader.ReadToEndAsync(), metadata.LastModified);
         }
     }
 }
