@@ -3,13 +3,11 @@
         <div v-for="b, index in boards" :key="b.guid"
                 @mouseover="show = index"
                 @mouseleave="show = null">
-            <div class="boardentry"  >
-                <span @click="navigate(b)">
+            <div class="boardentry" @click="navigate(b)">
                 {{ b.name }}
-                </span>
                 <span v-if="show == index">
-                    <v-icon @click="navigate(b)">mdi-open-in-app</v-icon>
-                    <v-icon @click="remove(b)">mdi-delete-alert</v-icon>
+                    <v-icon>mdi-open-in-app</v-icon>
+                    <v-icon @click.stop="remove(b)">mdi-delete-alert</v-icon>
                 </span>
             </div>
         </div>
@@ -18,7 +16,6 @@
 </template>
 
 <script>
-// import { SET_GUID } from '@/store/mutation-types.js'
 export default {
     data() { return {
         show: null,
@@ -29,9 +26,6 @@ export default {
     }},
     methods: {
         async navigate(board) {
-
-            console.log("navigate", board.name, board.guid)
-            // this.$store.commit(SET_GUID, board.guid)
             await this.$store.dispatch('loadData', {year: this.$store.getters.year, guid: board.guid})
             this.$router.push("/")
         },

@@ -85,6 +85,8 @@ export default new Vuex.Store({
             commit(types.SET_AUTOREFRESH, autoRefresh)
         },
         async loadData({ commit, state }, payload) {
+            console.log("loading data for ", payload.year, payload.guid);
+
             fetch(fileUrl(payload.year, payload.guid))
                 .then(response => {
                     console.log("status:", response.status)

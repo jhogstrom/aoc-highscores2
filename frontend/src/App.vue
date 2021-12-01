@@ -8,11 +8,10 @@
 
 <script>
 import MainTable from './components/MainTable.vue'
-// import { HttpApi, fileUrl } from './http.js'
 
-// const tobiilist = "fbc7a3d8-c6f4-410f-9fff-a1b42993c1c1"
-const tobiilist = "00000000-0000-0000-0000-000000000000"
-// const smalllist = "7d3e8718-f15c-41ed-a561-fbba4f3fa37c"
+// const defaultList = "fbc7a3d8-c6f4-410f-9fff-a1b42993c1c1"
+const defaultList = "00000000-0000-0000-0000-000000000000"
+// const defaultList = "7d3e8718-f15c-41ed-a561-fbba4f3fa37c"
 
 export default {
   name: 'App',
@@ -38,46 +37,12 @@ export default {
       }
 
       this.year = params.get("year") || defaultYear
-      this.guid = params.get("guid") || params.get("uuid") || this.$store.getters.guid || tobiilist;
+      this.guid = params.get("guid") || params.get("uuid") || this.$store.getters.guid || defaultList;
     },
-    async fetchData(year, guid) {
-      console.log("loading data for ", guid, year);
+    async fetchData() {
       this.$store.dispatch('setParams', {year: this.year, guid: this.guid})
       this.$store.dispatch('loadData', {year: this.year, guid: this.guid})
-
-    //   fetch(fileUrl(year, guid))
-    //     .then(response => {
-    //       console.log("status:", response.status)
-    //       this.loadedOk = response.status === 200
-    //       if (this.loadedOk) {
-    //         return response.json()
-    //       } else {
-    //         return null
-    //       }
-    //     })
-    //     .then(data => {
-    //       if (this.loadedOk) {
-    //         this.$store.dispatch('setParams', {year: this.year, guid: this.guid})
-    //         this.$store.dispatch('setData', data)
-    //         let boards = JSON.parse(localStorage.getItem("knownBoards") || "[]")
-    //         boards = boards.filter(_ => _.guid != this.guid)
-    //         boards.push({
-    //             name: data.Name,
-    //             guid: this.guid
-    //           })
-    //         localStorage.setItem(
-    //           "knownBoards",
-    //           JSON.stringify(boards)
-    //         )
-    //       } else {
-    //         this.$store.dispatch('setParams', null)
-    //         this.$store.dispatch('setData', {})
-    //       }
-    //     })
-    //   HttpApi.get(`/refresh/${this.year}/${this.guid}`)
-    //     .then(res => console.log(res))
     }
-
   }
 }
 </script>
