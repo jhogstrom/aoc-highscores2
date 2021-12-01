@@ -1,12 +1,12 @@
 export  function fixedColumns() {
     let res = [
         { text: 'Pos', value: 'identity', width: 50 },
-        { text: 'Name', value: 'name', width: 250 },
-        { text: 'L', value: 'score', align: "end", width: 35  },
-        { text: 'G', value: 'globalScore', align: "end", width: 35 },
-        { text: 'S', value: 'stars', align: "end", width: 35 },
-        { text: 'T', value: 'tobiiScore', align: "end", width: 35 },
-        { text: 'R', value: 'raffleTickets', align: "end", width: 35 },
+        { text: 'Name', value: 'name', width: 250, },
+        { text: 'L', value: 'score', align: "end", width: 35, hint: "Local Score" },
+        { text: 'G', value: 'globalScore', align: "end", width: 35, hint: "Global Score" },
+        { text: 'S', value: 'stars', align: "end", width: 35, hint: "Stars collected" },
+        { text: 'T', value: 'tobiiScore', align: "end", width: 35, hint: "Tobii Score" },
+        { text: 'R', value: 'raffleTickets', align: "end", width: 35, hint: "Raffle Tickets" },
     ]
     return res
 }
@@ -34,7 +34,6 @@ export function dayColumns() {
         res.push( { text: `<center>D${day}<br>**</center>`, value: `d_${day}_1`, align: "end", width: 15 });
         // res.push( { text: ``, value: `x_${day}`, align: "end", width: 1 });
     }
-    console.log(res)
     if (store.getters.firstDayFirst) {
         return res
     }

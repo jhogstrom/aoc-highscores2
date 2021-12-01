@@ -11,7 +11,22 @@
         dense
         mobile-breakpoint="1"
         single-select>
-        <template v-for="h in allheaders" v-slot:[`header.${h.value}`]="{ header }">
+        <template v-slot:header.score="{ header }">
+            <tooltip-header :header="header"/>
+        </template>
+        <template v-slot:header.globalScore="{ header }">
+            <tooltip-header :header="header"/>
+        </template>
+        <template v-slot:header.stars="{ header }">
+            <tooltip-header :header="header"/>
+        </template>
+        <template v-slot:header.tobiiScore="{ header }">
+            <tooltip-header :header="header"/>
+        </template>
+        <template v-slot:header.raffleTickets="{ header }">
+            <tooltip-header :header="header"/>
+        </template>
+        <template v-for="h in dayheaders" v-slot:[`header.${h.value}`]="{ header }">
             <span v-html="header.text" :key="h.value"></span>
         </template>
         <template v-slot:item.identity="{item}">
@@ -37,9 +52,10 @@ import InfoBlock from './InfoBlock.vue'
 import PositionCol from './PositionCol.vue'
 import ValueCol from './ValueCol.vue'
 import { fixedColumns, fixedData, dayColumns } from './tablehelpers'
+import TooltipHeader from './TooltipHeader.vue'
 
 export default {
-    components: { InfoBlock, PositionCol, ValueCol },
+    components: { InfoBlock, PositionCol, ValueCol, TooltipHeader },
     data() { return {
         infoTitle: "Leaderboard",
         infotext: "This board shows the <h1>leaders</h1> and points per day."
@@ -53,8 +69,11 @@ export default {
         dayheaders() {
             return dayColumns()
         },
+        fixedColumns2() {
+            return fixedColumns()
+        },
         allheaders() {
-            return [...fixedColumns(), ...this.dayheaders]
+            return [...this.fixedColumns2, ...this.dayheaders]
         },
         players() {
             return this.$store.getters.filteredPlayers
