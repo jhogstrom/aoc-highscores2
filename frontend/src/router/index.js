@@ -14,6 +14,7 @@ import PositionChart from '../components/PositionChart.vue'
 // Other
 import RawData from '../components/RawData.vue'
 import AocHighscore from '../components/AocHighscore.vue'
+import BoardList from '../components/BoardList.vue'
 
 Vue.use(VueRouter)
 
@@ -83,6 +84,11 @@ export const other = [
     path: '/aoc',
     title: "Aoc Style",
     component: AocHighscore
+  },
+  {
+    path: '/boards',
+    title: "Your other boards",
+    component: BoardList
   },
 ]
 const routes = [...boards, ...charts, ...other]

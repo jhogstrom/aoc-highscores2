@@ -12,7 +12,7 @@
         hide-default-footer
         single-select>
         <template v-for="h in allheaders" v-slot:[`header.${h.value}`]="{ header }">
-            <span  v-on="on" v-html="header.text" :key="h.value"></span>
+            <span v-html="header.text" :key="h.value"></span>
         </template>
         <template v-slot:item.identity="{item}">
             <position-col :item="item"/>

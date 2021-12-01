@@ -32,8 +32,9 @@ export function dayColumns() {
     for (let day = 1; day < store.getters.data.HighestDay + 1; day++) {
         res.push({ text: `<center>D${day}<br>*</center>`, value: `d_${day}_0`, align: "end", width: 15 });
         res.push( { text: `<center>D${day}<br>**</center>`, value: `d_${day}_1`, align: "end", width: 15 });
-        res.push( { text: ``, value: `x_${day}`, align: "end", width: 1 });
+        // res.push( { text: ``, value: `x_${day}`, align: "end", width: 1 });
     }
+    console.log(res)
     if (store.getters.firstDayFirst) {
         return res
     }
@@ -44,7 +45,10 @@ const medals = {0: "goldMedal", 1: "silverMedal", 2: "bronzeMedal"}
 export function getMedalColor(item, key) {
     const posKey = "s" + key.slice(1)
     let daynum = parseInt(key.slice(2, -2)) - 1
-    const excluded = store.getters.data.ExcludedDays.includes(daynum) ? " excludedday" : ""
+    let excluded = ""
+    if (store.getters.data.ExcludedDays) {
+        excluded = store.getters.data.ExcludedDays.includes(daynum) ? " excludedday" : ""
+    }
     const medal = medals[item[posKey]] === undefined ? "" : medals[item[posKey]]
     return  medal + excluded
 }
@@ -53,23 +57,25 @@ const secondsInHour = 60 * 60
 const secondsInDay = secondsInHour * 24
 
 export function secondsToString(seconds) {
+    if (seconds === undefined) { return ""}
     if (seconds === 0) {
         return "WINNER"}
-    if (seconds === -1 || seconds === Number.MAX_SAFE_INTEGER) {
-        return ""}
-    if (seconds > secondsInDay) {
-        const days = Math.floor(seconds / secondsInDay)
-        if (days >= 365 * 2) { return `>${Math.floor(days/365)} years` }
-        if (days >= 365) { return `>${Math.floor(days/365)} year` }
-        if (days === 1) { return `>${days} day` }
-        return `>${days} days`
-    }
-    const res = new Date(seconds * 1000).toISOString().substr(11, 8)
+        if (seconds === -1 || seconds === Number.MAX_SAFE_INTEGER) {
+            return ""}
+            if (seconds > secondsInDay) {
+                const days = Math.floor(seconds / secondsInDay)
+                if (days >= 365 * 2) { return `>${Math.floor(days/365)} years` }
+                if (days >= 365) { return `>${Math.floor(days/365)} year` }
+                if (days === 1) { return `>${days} day` }
+                return `>${days} days`
+            }
+            const res = new Date(seconds * 1000).toISOString().substr(11, 8)
 
-    return res
-}
+            return res
+        }
 
 export function secondsToString2(seconds) {
+    if (seconds === undefined) { return ""}
     if (seconds === 0) {
         return "WINNER"
     }
