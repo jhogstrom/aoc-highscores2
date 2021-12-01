@@ -13,7 +13,7 @@
         </v-toolbar-title>
         <template v-slot:extension>
           <menu-button class="menubutton"
-            :caption="'Boards'"
+            :caption="'Tables'"
             :menuItems="boardmap"></menu-button>
           <menu-button
             :caption="'Charts'"
