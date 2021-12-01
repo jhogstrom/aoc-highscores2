@@ -117,21 +117,33 @@ namespace RegenAoc
             {
                 for (var star = 0; star < 2; star++)
                 {
-                    var scores = globalScore.Days[day + 1].Stars[star].Players.ToDictionary(p => p.Name);
+                    var globalStar = globalScore.Days[day + 1].Stars[star];
+                    var scores = new Dictionary<string, List<GlobalPlayer>>();
+                    foreach (var g in globalStar.Players)
+                    {
+                        var key = $"{g.Name}|{g.PublicProfile}";
+                        if (!scores.TryGetValue(key, out var list))
+                        {
+                            list = new List<GlobalPlayer>();
+                            scores[key] = list;
+                        }
+                        list.Add(g);
+                    }
 
                     foreach (var p in leaderBoard.Players)
                     {
-                        if (p.GlobalScore > 0)
+                        if (p.GlobalScore > 0 && scores.TryGetValue($"{p.AoCName}|{p.PublicProfile}", out var globalPlayerList))
                         {
                             GlobalPlayer globalPlayer = null;
-                            if (scores.ContainsKey(p.AoCName))
+                            foreach (var g in globalPlayerList)
                             {
-                                globalPlayer = scores[p.AoCName];
+                                // make sure to find the person with the correct solve time
+                                if ((long)g.SolveTime.TotalSeconds == p.TimeToComplete[day][star])
+                                {
+                                    globalPlayer = g;
+                                }
                             }
 
-                            // verify solvetime
-                            if (globalPlayer != null && (long)globalPlayer.SolveTime.TotalSeconds != p.TimeToComplete[day][star])
-                                globalPlayer = null;
                             if (globalPlayer != null)
                             {
                                 p.GlobalScoreForDay[day][star] = globalPlayer.Points;
@@ -140,7 +152,6 @@ namespace RegenAoc
                                 p.PublicProfile = globalPlayer.PublicProfile;
                             }
                         }
-
                     }
                 }
             }
