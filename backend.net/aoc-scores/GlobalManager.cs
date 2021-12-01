@@ -49,12 +49,14 @@ namespace RegenAoc
             using var client = new AmazonS3Client(AwsHelpers.S3Region);
 
             var key = $"global/{year}/{day}.html";
+            var availableOnS3 = false;
 
+            string html;
             var l = await client.ListObjectsAsync(AwsHelpers.InternalBucket, key);
             if (l.S3Objects.Any())
             {
                 _logger.LogLine($"GlobalScore: Refreshing day {day} from s3 ({key})");
-                // load the data from S3 and parse
+                // load the data from S3
                 var req = new GetObjectRequest()
                 {
                     BucketName = AwsHelpers.InternalBucket,
@@ -63,38 +65,34 @@ namespace RegenAoc
                 var resp = await client.GetObjectAsync(req);
                 await using var s = resp.ResponseStream;
                 var reader = new StreamReader(s);
-                var doc = new HtmlDocument();
-                doc.LoadHtml(await reader.ReadToEndAsync());
-                return ParseHtml(doc, day);
+                html = await reader.ReadToEndAsync();
+                availableOnS3 = true;
             }
             else
             {
                 var url = $"https://adventofcode.com/{year}/leaderboard/day/{day}";
                 _logger.LogLine($"GlobalScore: Refreshing day {day} from aoc ({url})");
-                var web = new HtmlWeb();
-                var doc = web.Load(url);
-
-                var globalDay = ParseHtml(doc, day);
-
-                var complete = globalDay.Stars[1].Players.Count == 100;
-                if (complete)
-                {
-                    // save it to S3 for future use
-                    var putObjectRequest = new PutObjectRequest
-                    {
-                        BucketName = AwsHelpers.InternalBucket,
-                        Key = key,
-                        ContentBody = doc.Text
-                    };
-                    await client.PutObjectAsync(putObjectRequest, CancellationToken.None);
-                }
-                else
-                {
-                    _logger.LogLine($"GlobalScore: data for day {day} not complete, skipping cache on S3");
-                }
-
-                return globalDay;
+                html = StreamHelper.DownloadFromURL(url);
             }
+
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            var globalDay = ParseHtml(doc, day);
+
+            var complete = globalDay.Stars[1].Players.Count == 100;
+            if (complete && !availableOnS3)
+            {
+                // save it to S3 for future use
+                var putObjectRequest = new PutObjectRequest
+                {
+                    BucketName = AwsHelpers.InternalBucket,
+                    Key = key,
+                    ContentBody = html
+                };
+                await client.PutObjectAsync(putObjectRequest, CancellationToken.None);
+                _logger.LogLine($"GlobalScore: caching data on S3 day {day}");
+            }
+            return globalDay;
         }
 
         public GlobalDay ParseHtml(HtmlDocument html, int day)
@@ -111,7 +109,7 @@ namespace RegenAoc
 
                 var posNode = entry.SelectSingleNode("span[@class='leaderboard-position']");
                 p.Position = int.Parse(posNode.InnerText.TrimEnd(')'));
-                p.Points = 100 - (p.Position-1);
+                p.Points = 100 - (p.Position - 1);
                 if (p.Position < lastPosition)
                 {
                     star = 0;

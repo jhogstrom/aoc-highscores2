@@ -21,7 +21,7 @@ export function fixedData(player) {
         raffleTickets: player.RaffleTickets,
         id: player.Id
     }
-    res["name"] = `${player.Name} (${player.Id})`
+    res["name"] = `${player.Name}`
     res["identity"] = res.position
     return res
 }
