@@ -166,14 +166,14 @@ export default new Vuex.Store({
             console.log("mutating autoRefresh", autoRefresh)
         },
         initialiseStore(state) {
-            if (localStorage.getItem('includeZeroes') == "true") {
-                state.includeZeroes = localStorage.getItem('includeZeroes');
+            if (localStorage.getItem('includeZeroes')) {
+                state.includeZeroes = localStorage.getItem('includeZeroes') == "true";
             }
-            if (localStorage.getItem('firstDayFirst') == "true") {
-                state.firstDayFirst = localStorage.getItem('firstDayFirst');
+            if (localStorage.getItem('firstDayFirst')) {
+                state.firstDayFirst = localStorage.getItem('firstDayFirst') == "true";
             }
-            if (localStorage.getItem('autoRefresh') == "true") {
-                state.autoRefresh = localStorage.getItem('autoRefresh');
+            if (localStorage.getItem('autoRefresh')) {
+                state.autoRefresh = localStorage.getItem('autoRefresh') == "true";
             }
 
             if (localStorage.getItem('year')) {
