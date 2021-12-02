@@ -1,14 +1,24 @@
 .goldMedal {
     background: linear-gradient(to bottom right, #ff9988 5%, #ffd700 55%, #ffffff 100%);
-    padding: 5px;
+    padding: 2px 5px;
+    border: 1px solid rgb(221, 182, 10);
+    border-radius: 3px;
+    box-shadow: 1px 1px silver ;
 }
 .silverMedal {
     background: linear-gradient(to bottom right, gray 5%, silver 55%, #ffffff 100%);
-    padding: 5px;
+    padding: 2px 5px;
+    border: 1px solid gray;
+    border-radius: 3px;
+    box-shadow: 1px 1px silver ;
 }
+
 .bronzeMedal {
     background: linear-gradient(to bottom right, GoldenRod 5%, DarkGoldenRod 55%, #ffffff 100%);
-    padding: 5px;
+    padding: 2px 5px;
+    border: 1px solid DarkGoldenRod;
+    border-radius: 3px;
+    box-shadow: 1px 1px silver ;
 }
 
 tbody tr:nth-of-type(odd) {
