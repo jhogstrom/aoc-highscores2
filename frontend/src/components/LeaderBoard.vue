@@ -62,7 +62,9 @@ export default {
     components: { InfoBlock, PositionCol, ValueCol, TooltipHeader, NameCol },
     data() { return {
         infoTitle: "Leaderboard",
-        infotext: "This board shows the <h1>leaders</h1> and points per day."
+        infotext: "This board shows the accummulated position of each player. <br>" +
+            "The ordering is based on the official AoC 'local score' where the winner each day receives the same number of points as players on the list, but only results up to that day/star is considered.<br>"+
+            "The 'medal color' shows the top three players for each day/star"
     }},
     methods: {
         getValue(item, key) {
@@ -90,9 +92,9 @@ export default {
             for (const p of this.players) {
                 let player = fixedData(p)
                 for (let day = 1; day < this.data.HighestDay + 1; day++) {
-                    let dataValue = p.LocalScoreActive.AccumulatedScore[day-1]
+                    let dataValue = p.LocalScoreActive.AccumulatedPosition[day-1]
                     if (this.$store.getters.includeZeroes) {
-                        dataValue = p.LocalScoreAll.AccumulatedScore[day-1]
+                        dataValue = p.LocalScoreAll.AccumulatedPosition[day-1]
                     }
                     const starPositions = p.PositionForStar[day-1]
                     player[`d_${day}_0`] = dataValue[0] > -1 ? dataValue[0] : ""
