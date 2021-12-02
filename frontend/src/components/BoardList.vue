@@ -7,6 +7,7 @@
                 {{ b.name }}
                 <span v-if="show == index">
                     <v-icon>mdi-open-in-app</v-icon>
+                    <v-icon @click.stop="copylink(b)">mdi-content-copy</v-icon>
                     <v-icon @click.stop="remove(b)">mdi-delete-alert</v-icon>
                 </span>
             </div>
@@ -33,6 +34,13 @@ export default {
             this.boards = this.boards.filter(_ => _.guid != board.guid)
             localStorage.setItem("knownBoards", JSON.stringify(this.boards))
             console.log("remove", board.name)
+            this.refresh()
+        },
+        copylink(board) {
+            // console.log(window.location)
+            var url = `${window.location.origin}?guid=${board.guid}`
+            navigator.clipboard.writeText(url)
+                .then(() => console.log("copied", url))
         },
         refresh() {
             const globalGuid = "00000000-0000-0000-0000-000000000000"
