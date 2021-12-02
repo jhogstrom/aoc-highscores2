@@ -1,6 +1,7 @@
 # Internally generated files
 backend/.layers.out/
 envvars.py
+deployenv.bat
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
