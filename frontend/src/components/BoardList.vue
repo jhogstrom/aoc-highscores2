@@ -35,8 +35,13 @@ export default {
             console.log("remove", board.name)
         },
         refresh() {
-            const boards = localStorage.getItem("knownBoards") || "[]"
+            const globalGuid = "00000000-0000-0000-0000-000000000000"
+            const globalBoard = {name: "Global Board", guid: globalGuid}
+            const boards = localStorage.getItem("knownBoards") || JSON.stringify([globalBoard])
             this.boards = JSON.parse(boards)
+            if (this.boards.filter(_ => _.guid == globalGuid).length == 0) {
+                this.boards.push(globalBoard)
+            }
         }
     },
     async mounted() {
