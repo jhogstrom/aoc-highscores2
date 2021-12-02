@@ -57,7 +57,7 @@
 import InfoBlock from './InfoBlock.vue'
 import PositionCol from './PositionCol.vue'
 import ValueCol from './ValueCol.vue'
-import { fixedColumns, fixedData, secondsToString } from './tablehelpers'
+import { fixedColumns, fixedData, secondsToString, decoratePlayerWithDayFields } from './tablehelpers'
 import TooltipHeader from './TooltipHeader.vue'
 import NameCol from './NameCol.vue'
 
@@ -65,7 +65,7 @@ export default {
     components: { InfoBlock, PositionCol, ValueCol, TooltipHeader, NameCol },
     data() { return {
         infoTitle: "Completion Time Star 2",
-        infotext: "This board shows the time to complete second star after completing the first."
+        infotext: "This board shows the time to complete second star after completing the first. The medal color is calculated by comparing the time from *1 to *2."
     }},
     methods: {
         getValue(item, key) {
@@ -97,6 +97,7 @@ export default {
                 for (let day = 1; day < this.data.HighestDay + 1; day++) {
                     const dataValue = p.TimeToCompleteStar2[day-1]
                     const starPositions = p.PositionStar2[day-1]
+                    decoratePlayerWithDayFields(player, p, day);
                     player[`d_${day}_0`] = dataValue !== -1 ? dataValue : Number.MAX_SAFE_INTEGER
                     player[`s_${day}_0`] = starPositions
                 }
