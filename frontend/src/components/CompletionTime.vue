@@ -33,6 +33,9 @@
         <template v-slot:item.identity="{item}">
             <position-col :item="item"/>
         </template>
+        <template v-slot:item.name="{item}">
+            <name-col :item="item"/>
+        </template>
         <template v-for="h in dayheaders" v-slot:[`item.${h.value}`]="{ item }">
             <value-col
                 :item="item"
@@ -55,9 +58,10 @@ import PositionCol from './PositionCol.vue'
 import ValueCol from './ValueCol.vue'
 import { fixedColumns, fixedData, dayColumns, secondsToString } from './tablehelpers'
 import TooltipHeader from './TooltipHeader.vue'
+import NameCol from './NameCol.vue'
 
 export default {
-    components: { InfoBlock, PositionCol, ValueCol, TooltipHeader },
+    components: { InfoBlock, PositionCol, ValueCol, TooltipHeader, NameCol },
     data() { return {
         infoTitle: "Completion Time",
         infotext: "This board shows the time to complete the tasks from their release (which is the same time for both tasks)."

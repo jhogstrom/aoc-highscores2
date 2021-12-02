@@ -32,6 +32,9 @@
         <template v-slot:item.identity="{item}">
             <position-col :item="item"/>
         </template>
+        <template v-slot:item.name="{item}">
+            <name-col :item="item"/>
+        </template>
         <template v-for="h in dayheaders" v-slot:[`item.${h.value}`]="{ item }">
             <value-col
                 :item="item"
@@ -54,9 +57,10 @@ import PositionCol from './PositionCol.vue'
 import ValueCol from './ValueCol.vue'
 import { fixedColumns, fixedData, dayColumns, secondsToString2 } from './tablehelpers'
 import TooltipHeader from './TooltipHeader.vue'
+import NameCol from './NameCol.vue'
 
 export default {
-    components: { InfoBlock, PositionCol, ValueCol, TooltipHeader },
+    components: { InfoBlock, PositionCol, ValueCol, TooltipHeader, NameCol },
     data() { return {
         infoTitle: "Total time used to solve the challenges",
         infotext: "This board shows the total time used to complete the task - counted from task release to completion!"

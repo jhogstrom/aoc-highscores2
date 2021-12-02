@@ -33,6 +33,9 @@
         <template v-slot:item.identity="{item}">
             <position-col :item="item"/>
         </template>
+        <template v-slot:item.name="{item}">
+            <name-col :item="item"/>
+        </template>
         <template v-for="h in dayheaders" v-slot:[`item.${h.value}`]="{ item }">
             <value-col-medal
                 :item="item"
@@ -55,9 +58,10 @@ import PositionCol from './PositionCol.vue'
 import ValueColMedal from './ValueColMedal.vue'
 import { fixedColumns, fixedData, dayColumns } from './tablehelpers'
 import TooltipHeader from './TooltipHeader.vue'
+import NameCol from './NameCol.vue'
 
 export default {
-    components: { InfoBlock, PositionCol, ValueColMedal, TooltipHeader },
+    components: { InfoBlock, PositionCol, ValueColMedal, TooltipHeader, NameCol },
     data() { return {
         infoTitle: "Position for star",
         infotext: "This board shows the position for each star."
