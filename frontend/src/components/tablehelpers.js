@@ -53,6 +53,21 @@ export function getMedalColor(item, key) {
     return  medal + excluded
 }
 
+export function getSolveTime(item, key, star) {
+    const posKey = "t_" + key.slice(2, -2)+"_"+star;
+    const res = secondsToString(item[posKey]);
+    return  res
+}
+
+export function decoratePlayerWithDayFields(player, p, day) {
+    player[`s_${day}_0`] = p.PositionForStar[day-1][0]
+    player[`s_${day}_1`] = p.PositionForStar[day-1][1]
+
+    player[`t_${day}_0`] = p.TimeToComplete[day-1][0]
+    player[`t_${day}_1`] = p.TimeToComplete[day-1][1]
+}
+
+
 const secondsInHour = 60 * 60
 const secondsInDay = secondsInHour * 24
 

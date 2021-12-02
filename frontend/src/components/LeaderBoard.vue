@@ -54,7 +54,7 @@
 import InfoBlock from './InfoBlock.vue'
 import PositionCol from './PositionCol.vue'
 import ValueCol from './ValueCol.vue'
-import { fixedColumns, fixedData, dayColumns } from './tablehelpers'
+import { fixedColumns, fixedData, dayColumns, decoratePlayerWithDayFields } from './tablehelpers'
 import TooltipHeader from './TooltipHeader.vue'
 import NameCol from './NameCol.vue'
 
@@ -96,11 +96,9 @@ export default {
                     if (this.$store.getters.includeZeroes) {
                         dataValue = p.LocalScoreAll.AccumulatedPosition[day-1]
                     }
-                    const starPositions = p.PositionForStar[day-1]
+                    decoratePlayerWithDayFields(player, p, day);
                     player[`d_${day}_0`] = dataValue[0] > -1 ? dataValue[0] : ""
                     player[`d_${day}_1`] = dataValue[1] > -1 ? dataValue[1] : ""
-                    player[`s_${day}_0`] = starPositions[0]
-                    player[`s_${day}_1`] = starPositions[1]
                 }
                 res.push(player)
             }

@@ -56,7 +56,7 @@
 import InfoBlock from './InfoBlock.vue'
 import PositionCol from './PositionCol.vue'
 import ValueCol from './ValueCol.vue'
-import { fixedColumns, fixedData, dayColumns } from './tablehelpers'
+import { fixedColumns, fixedData, dayColumns, decoratePlayerWithDayFields } from './tablehelpers'
 import TooltipHeader from './TooltipHeader.vue'
 import NameCol from './NameCol.vue'
 
@@ -93,6 +93,7 @@ export default {
                     const starPositions = p.PositionForStar[day-1]
                     let globalValue = 99
                     if (p.GlobalScoreForDay[day-1] > 0) { globalValue = 0}
+                    decoratePlayerWithDayFields(player, p, day);
                     player[`d_${day}_0`] = dataValue[0] == 0 ? "" : dataValue[0]
                     player[`d_${day}_1`] = dataValue[1] == 0 ? "" : dataValue[1]
                     player[`s_${day}_0`] = starPositions[0] + globalValue

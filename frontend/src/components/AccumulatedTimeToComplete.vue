@@ -55,7 +55,7 @@
 import InfoBlock from './InfoBlock.vue'
 import PositionCol from './PositionCol.vue'
 import ValueCol from './ValueCol.vue'
-import { fixedColumns, fixedData, dayColumns, secondsToString2 } from './tablehelpers'
+import { fixedColumns, fixedData, dayColumns, secondsToString2, decoratePlayerWithDayFields } from './tablehelpers'
 import TooltipHeader from './TooltipHeader.vue'
 import NameCol from './NameCol.vue'
 
@@ -91,11 +91,9 @@ export default {
                 let player = fixedData(p)
                 for (let day = 1; day < this.data.HighestDay + 1; day++) {
                     const dataValue = p.AccumulatedTimeToComplete[day-1]
-                    const starPositions = p.PositionForStar[day-1]
+                    decoratePlayerWithDayFields(player, p, day);
                     player[`d_${day}_0`] = dataValue[0] ? dataValue[0] : ""
                     player[`d_${day}_1`] = dataValue[1] ? dataValue[1] : ""
-                    player[`s_${day}_0`] = starPositions[0]
-                    player[`s_${day}_1`] = starPositions[1]
                 }
                 res.push(player)
             }
