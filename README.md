@@ -26,10 +26,17 @@ This will be automated soon (probably after 2021 AoC). For now, send your
 
 to jonas.hogstrom at tobii.com.
 # Contribute
-(tbd)
+Feel free to fork the repo, and submit pull requests. Common sense and best practises applies.
 
 # Set up your own frontend and backend
-(tbd)
+It should be possible to simply run  `cdk deploy` to spin up the backend. You may want to tweak the CloudFront
+creation, as it relies on a certificate that will not do what you want (it allows your CloudFront distribution
+to handle requests for aoc.lillfiluren.se).
+
+For local testing you can spin up `uvicorn` to test the backend API. It ought to be possible to run some local aws
+emulator to avoid hitting your backend. That may or may not require some tweaks or parametrization. Please share how you did that.
+
+The frontend can be run locally by `npm run serve`. The current deployment is manual; drag the contents of the `dist` directory to your bucket root. If you have CloudFront helping you out, then invalidate the cache. Yes, scripts should be written for this! (https://github.com/jhogstrom/aoc-highscores2/issues/32)
 
 # Data design
 (tbd)
