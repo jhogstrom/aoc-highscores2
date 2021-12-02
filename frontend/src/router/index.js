@@ -15,6 +15,7 @@ import PositionChart from '../components/PositionChart.vue'
 import RawData from '../components/RawData.vue'
 import AocHighscore from '../components/AocHighscore.vue'
 import BoardList from '../components/BoardList.vue'
+import HelpPage from '../components/HelpPage.vue'
 
 Vue.use(VueRouter)
 
@@ -89,6 +90,11 @@ export const other = [
     path: '/boards',
     title: "Your other boards",
     component: BoardList
+  },
+  {
+    path: '/help',
+    title: "Help",
+    component: HelpPage
   },
 ]
 const routes = [...boards, ...charts, ...other]

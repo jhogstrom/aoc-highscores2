@@ -26,6 +26,14 @@
           <about-button></about-button>
           <div class="right-align">
 
+          <v-btn
+            class="menubutton"
+            color="cyan darken-2"
+            dark
+            @click="$router.push('/help')">
+            <v-icon>mdi-help-circle</v-icon>
+            Help
+          </v-btn>
           <v-icon v-if="reloadingData">mdi-database-refresh</v-icon>
           </div>
         </template>
