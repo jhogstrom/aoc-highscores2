@@ -14,7 +14,11 @@ export default {
     props: ["item", "header", "getValue"],
     methods: {
         medalColor(item) {
-            return getMedalColor(item, this.header)
+            const posKey = "s" + this.header.slice(1)
+            if (item[posKey] !== -1)
+                return getMedalColor(item, this.header)
+            console.log("incomplete")
+            return "incompleteStar"
         },
         solveTime(item, star) {
             return getSolveTime(item, this.header, star)
@@ -24,4 +28,10 @@ export default {
 </script>
 
 <style>
+
+.incompleteStar {
+    color: rgb(204, 208, 212);
+    padding-left: 5px;
+    padding-right: 5px;
+}
 </style>

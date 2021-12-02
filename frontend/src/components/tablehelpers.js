@@ -49,7 +49,7 @@ export function getMedalColor(item, key) {
     if (store.getters.data.ExcludedDays) {
         excluded = store.getters.data.ExcludedDays.includes(daynum) ? " excludedday" : ""
     }
-    const medal = medals[item[posKey]] === undefined ? "" : medals[item[posKey]]
+    const medal = medals[item[posKey]] || ""
     return  medal + excluded
 }
 
