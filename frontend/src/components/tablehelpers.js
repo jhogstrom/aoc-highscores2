@@ -19,7 +19,8 @@ export function fixedData(player) {
         stars: player.Stars,
         tobiiScore: player.TobiiScore.Score,
         raffleTickets: player.RaffleTickets,
-        id: player.Id
+        id: player.Id,
+        supporter: player.Supporter
     }
     res["name"] = `${player.Name}`
     res["identity"] = res.position
