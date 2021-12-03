@@ -17,7 +17,6 @@ export default {
             const posKey = "s" + this.header.slice(1)
             if (item[posKey] !== -1)
                 return getMedalColor(item, this.header)
-            console.log("incomplete")
             return "incompleteStar"
         },
         solveTime(item, star) {

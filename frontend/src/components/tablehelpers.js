@@ -18,9 +18,11 @@ export function fixedData(player) {
         globalScore: player.GlobalScore,
         stars: player.Stars,
         tobiiScore: player.TobiiScore.Score,
+        tobiiScorePos: player.TobiiScore.Position,
         raffleTickets: player.RaffleTickets,
         id: player.Id,
-        supporter: player.Supporter
+        supporter: player.Supporter,
+        accumulatedTime: player.AccumulatedTimeToComplete
     }
     res["name"] = `${player.Name}`
     res["identity"] = res.position
