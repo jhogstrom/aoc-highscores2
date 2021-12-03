@@ -80,7 +80,7 @@ namespace RegenAoc
             foreach (var d in globalScore.Days.Keys)
             {
                 var day = globalScore.Days[d];
-                var unixDateTimeOfPublish = new DateTime(boardConfig.Year, 12, d + 1, 5, 0, 0, DateTimeKind.Utc);
+                var unixDateTimeOfPublish = new DateTime(boardConfig.Year, 12, d, 5, 0, 0, DateTimeKind.Utc);
                 var unixTimeOfPublish = ((DateTimeOffset)unixDateTimeOfPublish).ToUnixTimeSeconds();
 
                 foreach (var star in day.Stars.Keys)
@@ -294,7 +294,11 @@ namespace RegenAoc
                             // get the accumulated time to solve previous days
                             var accumulatedTime = day == 0 ? 0 : player.AccumulatedTimeToComplete[day - 1][1];
                             if (accumulatedTime != -1)
+                            {
                                 player.AccumulatedTimeToComplete[day][star] = accumulatedTime + timeToSolve;
+                                player.AccumulatedTime = accumulatedTime + timeToSolve;
+                            }
+
                             if (bestTime[day][star] == 0 || timeToSolve < bestTime[day][star])
                                 bestTime[day][star] = timeToSolve;
 
@@ -313,13 +317,12 @@ namespace RegenAoc
                         }
                     }
 
-                    if (player.UnixCompletionTime[day][1] != -1)
+                    if (player.UnixCompletionTime[day][1] != -1 && player.UnixCompletionTime[day][0] != -1)
                     {
                         player.TimeToCompleteStar2[day] = player.TimeToComplete[day][1] - player.TimeToComplete[day][0];
-                        // punish anyone who solves star 2 in < 10 seconds (except for xmas day where it is actually possible
+                        // flag possible fraud for anyone who solves star 2 in < 10 seconds (except for xmas day where it is actually possible
                         if (player.TimeToCompleteStar2[day] < 10 && day != 24)
                         {
-                            player.TimeToCompleteStar2[day] = 60 * 60 * 24;
                             player.Fraud.Add(day);
                         }
                     }

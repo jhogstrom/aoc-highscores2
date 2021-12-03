@@ -58,6 +58,7 @@ import ValueCol from './ValueCol.vue'
 import { fixedColumns, fixedData, dayColumns, secondsToString2, decoratePlayerWithDayFields } from './tablehelpers'
 import TooltipHeader from './TooltipHeader.vue'
 import NameCol from './NameCol.vue'
+var _ = require('lodash')
 
 export default {
     components: { InfoBlock, PositionCol, ValueCol, TooltipHeader, NameCol },
@@ -97,7 +98,7 @@ export default {
                 }
                 res.push(player)
             }
-            return res
+            return _.orderBy(res, ["stars", "accumulatedTime"], ["desc", "desc"])
         }
     },
 }
