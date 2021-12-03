@@ -50,6 +50,7 @@ public class Player
     public int Stars { get; set; }
     public int GlobalScore { get; set; }
     public int AoCLocalScore { get; set; }
+    public int AccumulatedTime { get; set; }
     public string Avatar { get; set; }
     public bool Supporter { get; set; }
     public string PublicProfile { get; set; }
@@ -70,7 +71,7 @@ public class Player
     public int[] TimeToCompleteStar2 { get; set; }
     public int[] PositionStar2 { get; set; }
     public int[][] StarCount { get; set; }
-
+    
     public class ScoreRec
     {
         public ScoreRec(int days)

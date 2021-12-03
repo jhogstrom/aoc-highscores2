@@ -294,7 +294,11 @@ namespace RegenAoc
                             // get the accumulated time to solve previous days
                             var accumulatedTime = day == 0 ? 0 : player.AccumulatedTimeToComplete[day - 1][1];
                             if (accumulatedTime != -1)
+                            {
                                 player.AccumulatedTimeToComplete[day][star] = accumulatedTime + timeToSolve;
+                                player.AccumulatedTime = accumulatedTime + timeToSolve;
+                            }
+
                             if (bestTime[day][star] == 0 || timeToSolve < bestTime[day][star])
                                 bestTime[day][star] = timeToSolve;
 
