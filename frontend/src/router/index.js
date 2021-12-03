@@ -16,6 +16,7 @@ import RawData from '../components/RawData.vue'
 import AocHighscore from '../components/AocHighscore.vue'
 import BoardList from '../components/BoardList.vue'
 import HelpPage from '../components/HelpPage.vue'
+import RequestNewList from '../components/RequestNewList.vue'
 
 Vue.use(VueRouter)
 
@@ -77,11 +78,6 @@ export const charts = [
 
 export const other = [
   {
-    path: '/raw',
-    title: "Raw data",
-    component: RawData
-  },
-  {
     path: '/aoc',
     title: "Aoc Style",
     component: AocHighscore
@@ -92,9 +88,19 @@ export const other = [
     component: BoardList
   },
   {
+    path: '/newlist',
+    title: "Add a leader board",
+    component: RequestNewList
+  },
+  {
     path: '/help',
     title: "Help",
     component: HelpPage
+  },
+  {
+    path: '/raw',
+    title: "Raw data",
+    component: RawData
   },
 ]
 const routes = [...boards, ...charts, ...other]

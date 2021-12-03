@@ -27,7 +27,11 @@ export default {
     }},
     methods: {
         async navigate(board) {
-            await this.$store.dispatch('loadData', {year: this.$store.getters.year, guid: board.guid})
+            let year = new Date().getFullYear()
+            if (new Date().getMonth < 11) {
+                year--
+            }
+            await this.$store.dispatch('loadData', {year: year, guid: board.guid})
             this.$router.push("/")
         },
         remove(board) {
