@@ -69,6 +69,9 @@ export default {
     methods: {
         getValue(item, key) {
             const res = item[key]
+            if (res === -1) {
+                return ""
+            }
             if (res === 0) {
                 return "#1"
             }
