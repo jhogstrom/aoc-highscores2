@@ -39,7 +39,37 @@ emulator to avoid hitting your backend. That may or may not require some tweaks 
 The frontend can be run locally by `npm run serve`. The current deployment is manual; drag the contents of the `dist` directory to your bucket root. If you have CloudFront helping you out, then invalidate the cache. Yes, scripts should be written for this! (https://github.com/jhogstrom/aoc-highscores2/issues/32)
 
 # Data design
-(tbd)
+
+Data resides in DynamoDB tables.
+
+## boardsconfig
+* Partition key: id - string
+* Sort key: sk - string
+
+Partition key is typically a board guid.
+### Board definition
+`BOARDINFO|<aoc_id>`
+
+* Column `name` contains the name of the board
+
+### Session cookie
+`SESSION|<cookie>`
+
+* Column `added` cotains the date the cookie was added in the format YYYY-MM-DD
+
+### Year
+`YEAR|<year>`
+
+* No additional columns
+
+### Excluded player
+`EXCLUDEPLAYER|<year>|<aocid>`
+
+### Name remapping
+`NAMEMAP|<playerid>`
+
+* Column `to_name` contains the replacement string
+
 
 # What remains to do
 

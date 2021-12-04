@@ -1,3 +1,4 @@
+from boto3 import session
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
@@ -6,14 +7,22 @@ import sys
 import os
 import boto3
 import json
+import uuid
+import datetime
+import hashlib
+
+from model import BoardSpecification
 try:
     import envvars
 except:
     pass
 
+CONFIGDB_NAME = os.environ.get("CONFIGDB", envvars.CONFIGDB)
+dynamodb = boto3.resource('dynamodb')
+TABLE = dynamodb.Table(CONFIGDB_NAME)
+
+
 REFRESHQ_URL = os.environ.get("REFRESHQ", envvars.REFRESHQ)
-# x = os.environ.get("AWS_PROFILE")
-# print(x)
 sqs = boto3.resource('sqs')
 REFRESHQ = sqs.Queue(REFRESHQ_URL)
 
@@ -79,6 +88,38 @@ def request_refresh(year: int, boardguid: str):
     return {"message": "Request refresh sent for the board"}
 
 
+@app.post("/createboard")
+def create_board(board: BoardSpecification):
+    password = f"AoCRules{board.password}Yehaa"
+    password = hashlib.md5(password.encode()).hexdigest()
+    boardguid = str(uuid.uuid4())
+    item = {
+        'id': boardguid,
+        'sk': f"BOARDINFO|{board.boardid}",
+        'name': board.boardname,
+        'password': password,
+        'ownerid': board.ownerid,
+    }
+    TABLE.put_item(Item=item)
+    item = {
+        'id': boardguid,
+        'sk': f"SESSION|{board.session_cookie}",
+        'added': datetime.datetime.now().strftime("%Y-%m-%d")
+    }
+    TABLE.put_item(Item=item)
+    year = datetime.datetime.now().year
+    if datetime.datetime.now().month < 12:
+        year -= 1
+    request_refresh(year, boardguid)
+    return {
+        "message": f"Created board {board.boardname}/{board.boardid}",
+        "guid": boardguid
+    }
+
+
 if __name__ == "__main__":
-    request_refresh("abc", 2000)
-    print("foo")
+    x = create_board(BoardSpecification(
+        boardid=34481,
+        boardname="XXXDELETE",
+        session_cookie="53616c7465645f5fda698469a336952935bdeeccf99602fe8b841a3a35120a51cb37edc129db7f70afcb9759c945cf65"))
+    print(x)

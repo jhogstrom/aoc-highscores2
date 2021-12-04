@@ -156,6 +156,8 @@ class AoCHSStack(cdk.Stack):
             handler=public_api_handler)
         refreshQ.grant_send_messages(public_api_handler)
         public_api_handler.add_environment("REFRESHQ", refreshQ.queue_url)
+        boardconfig.grant_read_write_data(public_api_handler)
+        public_api_handler.add_environment("CONFIGDB", boardconfig.table_name)
 
         # API GW + handler for private API
         admin_api_handler = aws.Function(
