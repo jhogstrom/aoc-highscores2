@@ -4,11 +4,12 @@
   <v-card>
     <v-toolbar
       color="cyan"
-      dark
       flat
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>{{boardTitle}}
+        <v-toolbar-title>
+          <v-icon @click="refreshData" color="white">mdi-refresh-circle</v-icon>
+          {{boardTitle}}
           <p class="fetchtime">Fetched from AoC {{updateTime}}</p>
         </v-toolbar-title>
         <template v-slot:extension>
@@ -126,8 +127,8 @@ export default {
       shouldReload() {
         return this.autoRefresh && !document.hidden
       },
-      refreshData() {
-        if (this.shouldReload())
+      refreshData(force) {
+        if (force || this.shouldReload())
         {
           this.reloadingData = true
           this.reloadCount++
