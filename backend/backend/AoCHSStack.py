@@ -10,20 +10,30 @@ from aws_cdk import (
     aws_lambda_event_sources,
     core as cdk
 )
-from aws_cdk.aws_iam import PolicyStatement
+from aws_cdk.aws_iam import Effect, PolicyStatement
 import aws
+import os
 
 # For consistency with other languages, `cdk` is the preferred import name for
 # the CDK's core module.  The following line also imports it as `core` for use
 # with examples from the CDK Developer's Guide, which are in the process of
 # being updated to use `cdk`.  You may delete this import if you don't need it.
 from aws_cdk import core
+from dotenv import dotenv_values
 
+curdir = os.path.dirname(os.path.abspath(__file__))
+envfile = f'{curdir}/.env'
+
+config = {
+    **dotenv_values(envfile),  # load shared development variables
+    # **os.environ,  # override loaded values with environment variables
+}
 
 class AoCHSStack(cdk.Stack):
 
     def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        SES_REGION = cdk.Stack.of(self).region
 
         # Queue with refresh requests
         refreshQ = aws.Queue(self, "aoc_refreshQ")
@@ -156,6 +166,18 @@ class AoCHSStack(cdk.Stack):
             handler=public_api_handler)
         refreshQ.grant_send_messages(public_api_handler)
         public_api_handler.add_environment("REFRESHQ", refreshQ.queue_url)
+        boardconfig.grant_read_write_data(public_api_handler)
+        public_api_handler.add_environment("CONFIGDB", boardconfig.table_name)
+        public_api_handler.add_to_role_policy(PolicyStatement(
+            actions=[
+                'ses:SendEmail',
+                'ses:SendRawEmail',
+                'ses:SendTemplatedEmail'
+            ],
+            effect=Effect.ALLOW,
+            resources=[f"arn:aws:ses:{SES_REGION}:{cdk.Stack.of(self).account}:identity/{config['SES_EMAIL_FROM']}"]
+
+        ))
 
         # API GW + handler for private API
         admin_api_handler = aws.Function(
