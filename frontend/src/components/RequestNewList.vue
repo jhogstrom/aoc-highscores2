@@ -27,29 +27,16 @@
                 outlined
                 dense/>
             <v-text-field class="textfield"
-                v-model="ownerid"
-                label="Owner name"
-                placeholder="User id"
+                v-model="email"
+                label="Email"
+                placeholder="Email"
                 clearable
                 outlined
                 dense/>
-            <v-text-field class="textfield"
-                v-model="password"
-                label="Password"
-                placeholder="Password"
-                clearable
-                outlined
-                dense/>
-
             <p>
                 In the future we might add more configuration options for your board.
-                To ensure only you can manipulate it, add a user name and password.
-                A suggestion is to use your aoc id or name as user name and some throw-away password.
-                The password is stored as a salted MD5 hash on the server side, but it is not handled by
-                an industry strength identity manager at this point.
-            </p>
-            <p>
-                As we do not have your email address, we can't really reset the password either...
+                To ensure only you can manipulate it, add your email. The current plan is to send one time
+                passwords or something along thoe lines once the configuration options are implemented.
             </p>
           </v-card-text>
           <v-card-actions class="text-right">
@@ -68,8 +55,17 @@
           </v-card-title>
           The board '{{boardName}}'' has been created!
           <br>
-          The guid for the board is <b>{{guid}}</b>. You can find the url in <span class="fakelink" @click="navigate">Your Other Boards</span>,
-          but it will not be available to view for another few seconds.
+          The guid for the board is <b>{{guid}}</b>. You can find the url in
+          <span class="fakelink" @click="navigate('/boards')">Your Other Boards</span>,
+          but the board itself will not be available to view for another few seconds.
+          <v-card-actions class="text-right">
+            <div >
+                <v-btn
+                    @click="navigate('/')">
+                    OK
+                </v-btn>
+            </div>
+          </v-card-actions>
       </v-card>
 
   </div>
@@ -82,8 +78,7 @@ export default {
         boardId: "",
         boardName: "",
         sessionCookie: "",
-        password: "",
-        ownerid: "",
+        email: "",
         boardSaved: false,
         guid: ""
     }},
@@ -92,7 +87,7 @@ export default {
             return this.boardId
                 && this.boardName.length > 5
                 && this.sessionCookie.length > 10
-                && this.ownerid
+                && (!this.email || this.email.includes("@"))
                 && /^\d+$/.test(this.boardId)
         }
     },
@@ -108,24 +103,37 @@ export default {
                 JSON.stringify(boards)
             )
         },
-        navigate() {
-            this.$router.push("/boards")
+        navigate(target) {
+            this.$router.push(target)
         },
         async requestList() {
-            const response = await HttpApi.post("/createboard", {
+            let body = {
                 boardid: this.boardId,
                 boardname: this.boardName,
                 session_cookie: this.sessionCookie,
-                password: this.password,
-                ownerid: this.ownerid
-            })
-            console.log(response)
+            }
+            if (this.email) {
+                body.email = this.email
+            }
+            console.log(body)
+            const response = await HttpApi.post("/createboard", body)
+            console.log(response.status)
             if (response.guid) {
                 this.boardSaved = true
                 this.saveBoard(this.boardName, response.guid)
                 this.guid = response.guid
             } else {
-                alert("Not great")
+                console.log(response)
+                if (response.detail) {
+                    let msg = ""
+                    for (const detail of response.detail) {
+                        msg += `${detail.msg}\n`
+                    }
+                    alert(msg)
+                } else {
+                    alert(response.message)
+                }
+
             }
         }
     }

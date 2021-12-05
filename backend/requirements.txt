@@ -3,3 +3,4 @@
 -r backend/api_requirements.txt
 flake8
 rope
+python-dotenv
