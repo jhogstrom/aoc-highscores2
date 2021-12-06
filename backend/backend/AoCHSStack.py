@@ -166,6 +166,7 @@ class AoCHSStack(cdk.Stack):
             handler=public_api_handler)
         refreshQ.grant_send_messages(public_api_handler)
         public_api_handler.add_environment("REFRESHQ", refreshQ.queue_url)
+        public_api_handler.add_environment("SES_EMAIL_FROM", config['SES_EMAIL_FROM'])
         boardconfig.grant_read_write_data(public_api_handler)
         public_api_handler.add_environment("CONFIGDB", boardconfig.table_name)
         public_api_handler.add_to_role_policy(PolicyStatement(

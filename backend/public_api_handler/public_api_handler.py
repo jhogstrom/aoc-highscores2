@@ -18,7 +18,7 @@ try:
 except:
     pass
 
-SES_BAN_LIFTED = False
+SES_BAN_LIFTED = True
 
 CONFIGDB_NAME = os.environ.get("CONFIGDB", envvars.CONFIGDB)
 dynamodb = boto3.resource('dynamodb')
@@ -26,6 +26,7 @@ TABLE = dynamodb.Table(CONFIGDB_NAME)
 
 
 REFRESHQ_URL = os.environ.get("REFRESHQ", envvars.REFRESHQ)
+SES_EMAIL_FROM = os.environ.get("SES_EMAIL_FROM", envvars.SES_EMAIL_FROM)
 sqs = boto3.resource('sqs')
 REFRESHQ = sqs.Queue(REFRESHQ_URL)
 
@@ -112,15 +113,15 @@ def validate_board(boardid, session_cookie):
 
 def send_email(*, to_address, subject, html_content):
     resp = MAILER.send_email(
-        Source=SENDER_EMAIL,
+        Source=SES_EMAIL_FROM,
         Destination={
             "ToAddresses": [to_address],
-            "BccAddresses": [SENDER_EMAIL]},
+            "BccAddresses": [SES_EMAIL_FROM]},
         Message={
             "Subject": { "Data": subject },
             "Body": { "Html": {"Data": html_content } },
         },
-        ReplyToAddresses=[SENDER_EMAIL],
+        ReplyToAddresses=[SES_EMAIL_FROM],
     )
     print(f"Message sent to {to_address} ({resp['MessageId']}).")
 
@@ -191,6 +192,9 @@ def create_board(board: BoardSpecification, response: Response):
             to_address=board.email,
             subject="Your enhanced AOC leader board has been created",
             html_content=board_generated_content(board_name=board.boardname, guid=boardguid))
+    elif not board.email:
+        logger.debug("Cannot send email - no email provided")
+
     return {
         "message": f"Created board {board.boardname}/{board.boardid}",
         "guid": boardguid
@@ -200,17 +204,17 @@ def create_board(board: BoardSpecification, response: Response):
 if __name__ == "__main__":
     boardid = envvars.BOARDID
     session = envvars.SESSION_COOKIE
-    x = create_board(BoardSpecification(
-        boardid=boardid,
-        boardname="XXXDELETE",
-        session_cookie=envvars.SESSION_COOKIE,
-        email=""),
-        Response())
+    # x = create_board(BoardSpecification(
+    #     boardid=boardid,
+    #     boardname="XXXDELETE",
+    #     session_cookie=envvars.SESSION_COOKIE,
+    #     email=""),
+    #     Response())
     # print(x)
     # x = validate_board(boardid, session)
     # print(f"Board {boardid} valid: {x}")
-    # send_email(
-    #     to_address=envvars.TEST_RECEIVER,
-    #     subject="Your enhanced AOC leader board has been created",
-    #     html_content=board_generated_content("Jesper's test board", "some_random_guid")
-    # )
+    send_email(
+        to_address=envvars.TEST_RECEIVER,
+        subject="Your enhanced AOC leader board has been created",
+        html_content=board_generated_content("Jesper's test board", "some_random_guid")
+    )
