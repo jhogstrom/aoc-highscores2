@@ -109,7 +109,19 @@ namespace RegenAoc
                         break;
                     case "NAMEMAP":
                         if (int.TryParse(parts[1], out var userid))
+                        {
                             conf.NameMap[userid] = r["to_name"].S;
+                            if (r.TryGetValue("dupeids", out var value) && !string.IsNullOrEmpty(value.S))
+                            {
+                                conf.DupePlayers[userid] = new List<int>();
+                                var dupes = value.S.Split();
+                                foreach (var id in dupes)
+                                {
+                                    conf.DupePlayers[userid].Add(int.Parse(id));
+                                }
+                            }
+                        }
+
                         break;
                     case "EXCLUDEPLAYER":
                         if (parts.Length == 3 &&

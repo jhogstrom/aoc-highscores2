@@ -39,7 +39,7 @@ namespace RegenAoc
 
                 var privateLeaderboardParser = new PrivateLeaderboardParser(_logger);
                 await privateLeaderboardParser.UpdatePlayersFromPrivateLeaderboard(boardConfig, leaderBoard.Players);
-                _logger.LogLine($"{sw.ElapsedMilliseconds}: PrivateLeaderboard metadata Done...");
+                _logger.LogLine($"{sw.ElapsedMilliseconds}: Private Leaderboard metadata Done...");
 
                 HandlePlayerRenames(leaderBoard, boardConfig);
                 _logger.LogLine($"{sw.ElapsedMilliseconds}: Player Renames Done...");
@@ -62,6 +62,8 @@ namespace RegenAoc
             {
                 leaderBoard = CreateLeaderboardFromGlobalScore(globalScore, boardConfig, highestDay);
             }
+
+            MergeDuplicateAccounts(boardConfig, leaderBoard, highestDay);
 
             DeriveMoreStats(leaderBoard, boardConfig);
             _logger.LogLine($"{sw.ElapsedMilliseconds}: DeriveMoreStats Done...");
@@ -229,6 +231,61 @@ namespace RegenAoc
             }
 
             return new LeaderBoard(players, highestDay, boardConfig.ExcludeDays, excludedPlayers, aocLastModified, boardConfig.Year, boardConfig.Name);
+        }
+
+        private static void MergeDuplicateAccounts(BoardConfig boardConfig, LeaderBoard leaderboard, int highestDay)
+        {
+            // handle duplicate accounts
+            foreach (var targetId in boardConfig.DupePlayers.Keys)
+            {
+                var targetPlayer = leaderboard.Players.FirstOrDefault(p => p.Id == targetId);
+                if (targetPlayer != null)
+                {
+                    foreach (var dupeId in boardConfig.DupePlayers[targetId])
+                    {
+                        var dupePlayer = leaderboard.Players.FirstOrDefault(p => p.Id == dupeId);
+                        if (dupePlayer != null)
+                        {
+                            // assume the same player doesn't have global scores for one day on more than one account...
+                            targetPlayer.GlobalScore += dupePlayer.GlobalScore;
+
+                            targetPlayer.Supporter = targetPlayer.Supporter || dupePlayer.Supporter;
+                            var starCount = 0;
+
+                            for (int d = 0; d < highestDay; d++)
+                            {
+                                for (int star = 0; star < 2; star++)
+                                {
+                                    // merge completiontime
+                                    var time = targetPlayer.UnixCompletionTime[d][star];
+                                    var dupeTime = dupePlayer.UnixCompletionTime[d][star];
+                                    if (time == -1)
+                                        targetPlayer.UnixCompletionTime[d][star] = dupeTime;
+                                    else if (dupeTime != -1)
+                                        targetPlayer.UnixCompletionTime[d][star] = Math.Min(time, dupeTime);
+
+                                    // merge GlobalScore per day
+                                    var globalDay = targetPlayer.GlobalScoreForDay[d][star];
+                                    var dupeGlobalDay = dupePlayer.GlobalScoreForDay[d][star];
+                                    if (globalDay == 0)
+                                        targetPlayer.GlobalScoreForDay[d][star] = dupeGlobalDay;
+                                    else if (dupeGlobalDay != 0)
+                                        targetPlayer.GlobalScoreForDay[d][star] = Math.Min(globalDay, dupeGlobalDay);
+
+                                    if (targetPlayer.UnixCompletionTime[d][star] != -1)
+                                        starCount++;
+
+                                }
+                            }
+
+                            targetPlayer.Stars = starCount;
+                            leaderboard.Players.Remove(dupePlayer);
+
+                        }
+                    }
+
+                }
+            }
         }
 
         private void DeriveMoreStats(LeaderBoard leaderBoard, BoardConfig boardConfig)

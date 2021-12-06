@@ -80,7 +80,6 @@ namespace RegenAoc
         private async Task<BoardConfig> GetBoardConfig(string guid, int year, ILambdaLogger logger)
         {
             return await BoardConfigHelper.LoadFromDynamo(guid, year, logger);
-            //            return BoardConfigHelper.LoadFromFile();
         }
 
 
@@ -99,6 +98,7 @@ namespace RegenAoc
         public Dictionary<int, string> NameMap { get; } = new Dictionary<int, string>();
         public Dictionary<int, int> ExcludePlayers { get; } = new Dictionary<int, int>();
         public int Year { get; set; }
+        public Dictionary<int, List<int>> DupePlayers { get; } = new Dictionary<int, List<int>>();
     }
 
     internal class RegenQueueBody
