@@ -1,8 +1,3 @@
-from json.decoder import JSONDecodeError
-from boto3 import session
-from fastapi import FastAPI, Request, Response, status
-from fastapi.middleware.cors import CORSMiddleware
-from mangum import Mangum
 import logging
 import sys
 import os
@@ -11,6 +6,12 @@ import json
 import uuid
 import datetime
 import requests
+from json.decoder import JSONDecodeError
+from boto3 import session
+from fastapi import FastAPI, Request, Response, status
+from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
+from boto3.dynamodb.conditions import Key
 
 from model import BoardSpecification
 try:
@@ -80,8 +81,18 @@ async def log_invocation(request: Request, call_next):
     # response.headers["X-Process-Time"] = str(process_time)
     return response
 
+
+def board_defined(boardguid: str) -> bool:
+    resp = TABLE.query(
+        KeyConditionExpression=Key("id").eq(boardguid) & Key("sk").begins_with("BOARDINFO|")
+    )
+    return len(resp["Items"]) > 0
+
 @app.get("/refresh/{year}/{boardguid}")
 def request_refresh(year: int, boardguid: str):
+    if not board_defined(boardguid):
+        logger.debug(f"Board ({boardguid}) not defined. Not requesting refresh")
+        return {"message": f"Board ({boardguid}) not defined."}
     try:
         REFRESHQ.send_message(
             MessageBody=json.dumps({
@@ -204,6 +215,9 @@ def create_board(board: BoardSpecification, response: Response):
 if __name__ == "__main__":
     boardid = envvars.BOARDID
     session = envvars.SESSION_COOKIE
+    boardguid = envvars.BOARDGUID
+    print(board_defined(boardguid))
+    exit()
     # x = create_board(BoardSpecification(
     #     boardid=boardid,
     #     boardname="XXXDELETE",
