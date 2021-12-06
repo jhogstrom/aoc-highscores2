@@ -36,7 +36,7 @@
             <p>
                 In the future we might add more configuration options for your board.
                 To ensure only you can manipulate it, add your email. The current plan is to send one time
-                passwords or something along thoe lines once the configuration options are implemented.
+                passwords or something along those lines once the configuration options are implemented.
             </p>
           </v-card-text>
           <v-card-actions class="text-right">
@@ -49,11 +49,11 @@
             </div>
           </v-card-actions>
       </v-card>
-      <v-card v-else>
+      <v-card v-else class="narrowbody">
           <v-card-title>
-              Request a new board
+              Board created
           </v-card-title>
-          The board '{{boardName}}'' has been created!
+          The board '{{boardName}}' has been created!
           <br>
           The guid for the board is <b>{{guid}}</b>. You can find the url in
           <span class="fakelink" @click="navigate('/boards')">Your Other Boards</span>,
