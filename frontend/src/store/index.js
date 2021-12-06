@@ -46,6 +46,7 @@ export default new Vuex.Store({
         includeZeroes: state => state.includeZeroes,
         autoRefresh: state => state.autoRefresh,
         isLoaded: state => state.isLoaded,
+        maxStars: state => state.data.HighestDay * 2,
         players: state => _.sortBy(state.data.Players, ["LocalScoreAll.Position"]).slice(),
         filteredPlayers: state => {
             console.log("getting players")
