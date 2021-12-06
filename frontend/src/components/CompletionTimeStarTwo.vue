@@ -76,7 +76,7 @@ export default {
         dayheaders() {
             let res = []
             for (let day = 1; day < this.$store.getters.data.HighestDay + 1; day++) {
-                res.push({ text: `day ${day}<br>*->**`, value: `d_${day}_0`, align: "end", width: 15 })
+                res.push({ text: `D${day}<br>*->**`, value: `d_${day}_0`, align: "end", width: 15 })
             }
             if (!this.$store.getters.firstDayFirst) {
                 return res.reverse()
