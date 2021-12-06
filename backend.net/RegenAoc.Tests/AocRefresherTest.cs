@@ -19,8 +19,8 @@ namespace RegenAoc.Tests
         [Test]
         public async Task TestRefresh()
         {
-            var year = 2018;
-            _boardConfig = await BoardConfigHelper.LoadFromDynamo(TestData.Guid4, year, Logger);
+            var year = 2017;
+            _boardConfig = await BoardConfigHelper.LoadFromDynamo(TestData.Guid1, year, Logger);
             await _sut.EnsureFresh(_boardConfig);
         }
     }

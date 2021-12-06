@@ -30,6 +30,7 @@ namespace RegenAoc.Tests
         [TestCase(TestData.Guid4, 2018)]
         [TestCase(TestData.Guid1, 2020)]
         [TestCase(TestData.Guid1, 2017)]
+        [TestCase(TestData.Guid1, 2015)]
         [TestCase(TestData.Guid2, 2020)]
         [TestCase(TestData.Guid1, 2021)]
         public async Task TestGenerate(string id, int year)
