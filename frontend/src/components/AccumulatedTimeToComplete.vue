@@ -35,6 +35,9 @@
         <template v-slot:item.name="{item}">
             <name-col :item="item"/>
         </template>
+        <template v-slot:item.stars="{item}">
+            <star-col :item="item"/>
+        </template>
         <template v-for="h in dayheaders" v-slot:[`item.${h.value}`]="{ item }">
             <value-col
                 :item="item"
@@ -58,10 +61,11 @@ import ValueCol from './ValueCol.vue'
 import { fixedColumns, fixedData, dayColumns, secondsToString2, decoratePlayerWithDayFields } from './tablehelpers'
 import TooltipHeader from './TooltipHeader.vue'
 import NameCol from './NameCol.vue'
+import StarCol from './StarCol.vue'
 var _ = require('lodash')
 
 export default {
-    components: { InfoBlock, PositionCol, ValueCol, TooltipHeader, NameCol },
+    components: { InfoBlock, PositionCol, ValueCol, TooltipHeader, NameCol, StarCol },
     data() { return {
         infoTitle: "Total time used to solve the challenges",
         infotext: "This board shows the total time used to complete the task - counted from task release to completion!"
