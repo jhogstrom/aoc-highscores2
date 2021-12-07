@@ -1,8 +1,11 @@
 <template>
-<div>
-    <span>{{item.name}}</span>
-    <span v-if="item.supporter"> (AoC++)</span>
-</div>
+      <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+                <span v-bind="attrs" v-on="on">{{item.name}}</span>
+                <span v-if="item.supporter"> (AoC++)</span>
+            </template>
+            <span>AoC id {{item.id}}</span>
+        </v-tooltip>
 </template>
 
 <script>
