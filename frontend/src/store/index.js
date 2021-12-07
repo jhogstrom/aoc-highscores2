@@ -44,7 +44,7 @@ export default new Vuex.Store({
         data: state => state.data,
         updateTime: state => state.data.RetrievedFromAoC,
         includeZeroes: state => state.includeZeroes,
-        autoRefresh: state => state.autoRefresh,
+        autoRefresh: state => false && state.autoRefresh,
         isLoaded: state => state.isLoaded,
         maxStars: state => state.data.HighestDay * 2,
         players: state => _.sortBy(state.data.Players, ["LocalScoreAll.Position"]).slice(),
@@ -120,11 +120,10 @@ export default new Vuex.Store({
                         commit(types.SET_DATA, {})
                     }
                     })
-            if (state.year && state.guid) {
-                HttpApi.get(`/refresh/${payload.year}/${payload.guid}`)
+                .then(() => {
+                    HttpApi.get(`/refresh/${payload.year}/${payload.guid}`)
                     .then(res => console.log(res))
-            }
-
+                })
         }
     },
     mutations: {

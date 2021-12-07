@@ -53,10 +53,10 @@
         v-model="firstDayFirst"
         :label="'Start columns from first day'"
         ></v-checkbox>
-      <v-checkbox
+      <!-- <v-checkbox
         v-model="autoRefresh"
         :label="'Reload data every 30 seconds (if page is active)'"
-        ></v-checkbox>
+        ></v-checkbox> -->
     </v-navigation-drawer>
     <router-view/>
   </div>
@@ -66,7 +66,6 @@
 import MenuButton from './MenuButton.vue'
 import YearMenu from './YearMenu.vue'
 import { boards, charts, other } from '../router'
-import {fileUrl} from '../http.js'
 import AboutButton from './AboutButton.vue'
 const SECONDS = 1000
 const DELAY = 30
@@ -133,23 +132,9 @@ export default {
           this.reloadingData = true
           this.reloadCount++
           console.log("reloading data again")
-          fetch(fileUrl(this.$store.getters.year, this.$store.getters.guid))
-            .then(response => {
-              console.log("status:", response.status)
-              this.loadedOk = response.status === 200
-              if (this.loadedOk) {
-                return response.json()
-              } else {
-                return null
-              }
-            })
-            .then(data => {
-              if (this.loadedOk) {
-                this.$store.dispatch('setData', data)
-              } else {
-                this.$store.dispatch('setData', {})
-              }
-            })
+          this.$store.dispatch('loadData', {
+            year: this.$store.getters.year,
+            guid: this.$store.getters.guid})
           .then(() => {
             setTimeout(this.refreshData, (DELAY * SECONDS) * Math.min(1, this.reloadCount / 15))
             this.reloadingData = false
