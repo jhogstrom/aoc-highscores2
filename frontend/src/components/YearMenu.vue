@@ -37,7 +37,7 @@ export default {
         menuItems() {
 
             let res = []
-            for (let year = 2016; year <= new Date().getFullYear(); year++) {
+            for (let year = 2015; year <= new Date().getFullYear(); year++) {
                 res.push({ year: year, url: `/?year=${year}`})
             }
             return res
