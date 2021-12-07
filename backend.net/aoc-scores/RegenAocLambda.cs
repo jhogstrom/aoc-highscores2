@@ -60,7 +60,16 @@ namespace RegenAoc
         {
             foreach (var message in evnt.Records)
             {
-                await ProcessMessageAsync(message, context);
+                try
+                {
+                    await ProcessMessageAsync(message, context);
+                }
+                catch (Exception e)
+                {
+                    context.Logger.LogLine("Failed to process message: " + message.Body);
+                    context.Logger.LogLine("Error: " + e.Message);
+                    context.Logger.LogLine("Stack: " + e.StackTrace);
+                }
             }
         }
 
