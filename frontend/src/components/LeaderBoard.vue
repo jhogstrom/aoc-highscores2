@@ -26,6 +26,15 @@
         <template v-slot:header.raffleTickets="{ header }">
             <tooltip-header :header="header"/>
         </template>
+        <template v-slot:header.goldMedals="{ header }">
+            <tooltip-header :header="header"/>
+        </template>
+        <template v-slot:header.silverMedals="{ header }">
+            <tooltip-header :header="header"/>
+        </template>
+        <template v-slot:header.bronzeMedals="{ header }">
+            <tooltip-header :header="header"/>
+        </template>
         <template v-for="h in dayheaders" v-slot:[`header.${h.value}`]="{ header }">
             <span v-html="header.text" :key="h.value"></span>
         </template>

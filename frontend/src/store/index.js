@@ -38,9 +38,11 @@ export default new Vuex.Store({
         firstDayFirst: true,
         year: null,
         guid: null,
-        isLoaded: false
+        isLoaded: false,
+        includeMedals: false
     },
     getters: {
+        includeMedals: state => state.includeMedals,
         data: state => state.data,
         updateTime: state => state.data.RetrievedFromAoC,
         includeZeroes: state => state.includeZeroes,
@@ -76,6 +78,10 @@ export default new Vuex.Store({
         async setIncludeZeroes({ commit }, includeZeroes) {
             console.log("Setting", includeZeroes)
             commit(types.SET_INCLUDEZEROES, includeZeroes)
+        },
+        async setIncludeMedals({ commit }, includeMedals) {
+            console.log("Setting", includeMedals)
+            commit(types.SET_INCLUDEMEDALS, includeMedals)
         },
         async setFirstDayFirst({ commit }, firstDayFirst) {
             console.log("Setting", firstDayFirst)
@@ -150,6 +156,11 @@ export default new Vuex.Store({
                 localStorage.removeItem('year')
             }
         },
+        SET_INCLUDEMEDALS(state, includeMedals) {
+            state.includeMedals = includeMedals
+            localStorage.setItem('includeMedals', includeMedals)
+            console.log("mutating includeMedals", includeMedals)
+        },
         SET_INCLUDEZEROES(state, includeZeroes) {
             state.includeZeroes = includeZeroes
             localStorage.setItem('includeZeroes', includeZeroes)
@@ -168,6 +179,9 @@ export default new Vuex.Store({
         initialiseStore(state) {
             if (localStorage.getItem('includeZeroes')) {
                 state.includeZeroes = localStorage.getItem('includeZeroes') == "true";
+            }
+            if (localStorage.getItem('includeMedals')) {
+                state.includeMedals = localStorage.getItem('includeMedals') == "true";
             }
             if (localStorage.getItem('firstDayFirst')) {
                 state.firstDayFirst = localStorage.getItem('firstDayFirst') == "true";
