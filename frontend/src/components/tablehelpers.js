@@ -8,6 +8,11 @@ export  function fixedColumns() {
         { text: 'T', value: 'tobiiScore', align: "end", width: 35, hint: "Tobii Score" },
         { text: 'R', value: 'raffleTickets', align: "end", width: 35, hint: "Raffle Tickets" },
     ]
+    if (store.getters.includeMedals) {
+        res.push({ text: '#1', value: 'goldMedals', align: "end", width: 25, hint: "Gold Medals" })
+        res.push({ text: '#2', value: 'silverMedals', align: "end", width: 25, hint: "Silver Medals" })
+        res.push({ text: '#3', value: 'bronzeMedals', align: "end", width: 25, hint: "Bronze Medals" })
+    }
     return res
 }
 
@@ -22,7 +27,10 @@ export function fixedData(player) {
         raffleTickets: player.RaffleTickets,
         id: player.Id,
         supporter: player.Supporter,
-        accumulatedTime: player.AccumulatedTimeToComplete
+        accumulatedTime: player.AccumulatedTimeToComplete,
+        goldMedals: player.Medals[0],
+        silverMedals: player.Medals[1],
+        bronzeMedals: player.Medals[2],
     }
     res["name"] = `${player.Name}`
     res["identity"] = res.position

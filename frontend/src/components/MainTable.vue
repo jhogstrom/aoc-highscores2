@@ -50,6 +50,10 @@
         :label="'Include null achievers'"
         ></v-checkbox>
       <v-checkbox
+        v-model="includeMedals"
+        :label="'Include Columns for medals'"
+        ></v-checkbox>
+      <v-checkbox
         v-model="firstDayFirst"
         :label="'Start columns from first day'"
         ></v-checkbox>
@@ -103,6 +107,14 @@ export default {
           },
           set: function() {
             this.$store.dispatch('setIncludeZeroes', !this.includeZeroes)
+          }
+        },
+        includeMedals: {
+          get: function() {
+            return this.$store.getters.includeMedals
+          },
+          set: function() {
+            this.$store.dispatch('setIncludeMedals', !this.includeMedals)
           }
         },
         firstDayFirst: {
