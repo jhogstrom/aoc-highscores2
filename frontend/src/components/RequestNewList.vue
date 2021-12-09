@@ -152,9 +152,4 @@ export default {
     margin: 10px;
     padding: 10px;
 }
-
-.fakelink {
-    text-decoration: underline;
-    cursor: pointer;
-}
 </style>

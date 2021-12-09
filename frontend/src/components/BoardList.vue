@@ -1,15 +1,39 @@
 <template>
     <div>
-        <div v-for="b, index in boards" :key="b.guid"
+        <div v-for="b, index in sortedBoards" :key="b.guid"
                 @mouseover="show = index"
                 @mouseleave="show = null">
             <div class="boardentry" @click="navigate(b)">
-                {{ b.name }}
-                <span v-if="show == index">
-                    <v-icon>mdi-open-in-app</v-icon>
-                    <v-icon @click.stop="copylink(b)">mdi-content-copy</v-icon>
-                    <v-icon @click.stop="remove(b)">mdi-delete-alert</v-icon>
-                </span>
+                <v-container>
+                    <v-row>
+                        <v-col></v-col> <!-- empty col for padding -->
+                        <v-col>
+                            <span class="fakelink">{{ b.name }}</span>
+                        </v-col>
+                        <v-col>
+                            <span v-if="show == index">
+                                <v-tooltip top>
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon v-on="on" class="extrapadding" @click.stop="navigate(b)">mdi-open-in-app</v-icon>
+                                    </template>
+                                    <span>Open board</span>
+                                </v-tooltip>
+                                <v-tooltip top>
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon v-on="on" class="extrapadding" @click.stop="copylink(b)">mdi-content-copy</v-icon>
+                                    </template>
+                                    <span>Copy link</span>
+                                </v-tooltip>
+                                <v-tooltip top>
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon v-on="on" class="extrapadding" @click.stop="remove(b)">mdi-delete-alert</v-icon>
+                                    </template>
+                                    <span>Remove board from your boards list</span>
+                                </v-tooltip>
+                            </span>
+                        </v-col>
+                    </v-row>
+                </v-container>
             </div>
         </div>
         <v-btn @click="refresh">Refresh</v-btn>
@@ -17,6 +41,7 @@
 </template>
 
 <script>
+var _ = require('lodash')
 export default {
     data() { return {
         show: null,
@@ -25,6 +50,11 @@ export default {
             {name: "leica", guid: "foobar"},
             ]
     }},
+    computed: {
+        sortedBoards() {
+            return _.sortBy(this.boards, b => b.name.toUpperCase())
+        }
+    },
     methods: {
         async navigate(board) {
             let year = new Date().getFullYear()
@@ -65,8 +95,16 @@ export default {
 </script>
 
 <style>
-.boardentry {
+.centertext {
     text-align: center;
+}
+.halign {
+    text-align: right;
+}
+.extrapadding {
+    padding-left: 10px;
+}
+.boardentry {
     border: 2px solid black;
     background-color: blanchedalmond;
     /* color: blanchedalmond; */

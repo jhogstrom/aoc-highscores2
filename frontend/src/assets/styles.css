@@ -45,3 +45,8 @@ table > thead > tr > th:nth-child(1) {
  .v-data-table th {
     padding: 4px !important;
 }
+
+.fakelink {
+    text-decoration: underline;
+    cursor: pointer;
+}
