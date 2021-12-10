@@ -4,12 +4,12 @@
                 <v-icon v-if="isMedal(item)" v-bind="attrs" v-on="on" :color="iconColor(item)">{{getIcon(item)}}</v-icon>
                 <span v-else v-bind="attrs" v-on="on" v-bind:class="medalColor(item)">{{ getValue(item, header) }}</span>
             </template>
-            <span>{{item.name}}</span>
+            <span>{{item.name}}<br>*1: {{ solveTime(item, 0) }}<br>*2: {{ solveTime(item, 1) }}</span>
         </v-tooltip>
 </template>
 
 <script>
-import { getMedalColor } from './tablehelpers'
+import { getMedalColor, getSolveTime } from './tablehelpers'
 
 const icons = {
     0: {value: "gold", color: "#ffd700"},
@@ -37,7 +37,10 @@ export default {
         getIcon(item) {
             const icon = icons[this.getPosition(item)].value
             return `mdi-podium-${icon}`
-        }
+        },
+        solveTime(item, star) {
+            return getSolveTime(item, this.header, star)
+        },
     }
 }
 </script>

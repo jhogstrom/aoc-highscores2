@@ -78,12 +78,23 @@ namespace RegenAoc
             context.Logger.LogLine($"Processing message {message.Body}");
             var msg = JsonConvert.DeserializeObject<RegenQueueBody>(message.Body);
             context.Logger.LogLine($"List ID: {msg.BoardGuid} - year {msg.Year}");
-            var refresher = new AocRefresher(context.Logger, AwsHelpers.InternalBucket);
+            
             var boardConfig = await GetBoardConfig(msg.BoardGuid, msg.Year, context.Logger);
-            await refresher.EnsureFresh(boardConfig);
+            context.Logger.LogLine($"Board config loaded for: {boardConfig.Name} ({boardConfig.AocId})");
 
-            var gen = new AocGenerator(context.Logger);
-            await gen.Generate(boardConfig);
+            var refresher = new AocRefresher(context.Logger, AwsHelpers.InternalBucket);
+            var res = await refresher.EnsureFresh(boardConfig);
+
+            if (res)
+            {
+                context.Logger.LogLine($"Generating new leaderboard: {boardConfig.Name} ({boardConfig.AocId})");
+                var gen = new AocGenerator(context.Logger);
+                await gen.Generate(boardConfig);
+            }
+            else
+            {
+                context.Logger.LogLine("Problems downloading data, no board generated");
+            }
         }
 
         private async Task<BoardConfig> GetBoardConfig(string guid, int year, ILambdaLogger logger)
