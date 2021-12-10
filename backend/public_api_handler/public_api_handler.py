@@ -145,7 +145,7 @@ def board_generated_content(board_name: str, guid: str):
 
     <p>
     You can access your board by visiting
-    <a href="https://aoc.lillfiluren.se/guid={guid}">https://aoc.lillfiluren.se/guid={guid}</a>.
+    <a href="https://aoc.lillfiluren.se/?guid={guid}">https://aoc.lillfiluren.se/?guid={guid}</a>.
     </p>
 
     <p>
