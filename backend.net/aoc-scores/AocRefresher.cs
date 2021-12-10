@@ -40,8 +40,7 @@ namespace RegenAoc
                         return false;
                     }
                 }
-                await DownloadLatestAocData(boardConfig, client, key);
-                return true;
+                return await DownloadLatestAocData(boardConfig, client, key);
             }
         }
 
@@ -50,14 +49,17 @@ namespace RegenAoc
             var aocData = DownloadAocData(boardConfig);
             // compare aocData with stored data in S3, abort if identical?
             if (string.IsNullOrEmpty(aocData))
+            {
                 return false;
+            }
             var putObjectRequest = new PutObjectRequest
             {
                 BucketName = S3BucketName,
                 Key = key,
                 ContentBody = aocData
             };
-            await client.PutObjectAsync(putObjectRequest, CancellationToken.None);
+            var res = await client.PutObjectAsync(putObjectRequest, CancellationToken.None);
+            _logger.LogLine("Stored data to S3, result: "+res.HttpStatusCode);
             return true;
         }
 
