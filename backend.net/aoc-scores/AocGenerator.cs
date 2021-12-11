@@ -46,12 +46,7 @@ namespace RegenAoc
             }
             else
             {
-                if (boardConfig.Year < DateTime.Now.Year)
-                    highestDay = 25;
-                else if (DateTime.Now.Month < 12)
-                    highestDay = 0;
-                else
-                    highestDay = DateTime.Now.Day;
+                highestDay = GetHighestDayNow(boardConfig.Year);
             }
 
             var globalMgr = new GlobalManager(_logger);
@@ -195,7 +190,6 @@ namespace RegenAoc
 
         private LeaderBoard ConvertList(AocList aocList, BoardConfig boardConfig, DateTime aocLastModified)
         {
-            var highestDay = 0;
             var players = new List<Player>();
             var excludedPlayers = new List<string>();
             foreach (var member in aocList.Members.Values)
@@ -219,18 +213,32 @@ namespace RegenAoc
 
                 foreach (var dayNumber in member.completion_day_level.Keys)
                 {
-                    highestDay = Math.Max(highestDay, dayNumber);
                     var dayInfo = member.completion_day_level[dayNumber];
                     foreach (var star in dayInfo.Keys)
                     {
                         player.UnixCompletionTime[dayNumber - 1][star - 1] = dayInfo[star].get_star_ts;
                     }
                 }
-
+                
                 players.Add(player);
             }
-
+            var highestDay = GetHighestDayNow(boardConfig.Year);
             return new LeaderBoard(players, highestDay, boardConfig.ExcludeDays, excludedPlayers, aocLastModified, boardConfig.Year, boardConfig.Name);
+        }
+
+        private static int GetHighestDayNow(int year)
+        {
+            var highestDay = 0;
+
+            var unixDateTimeOfFirstStar = new DateTime(year, 12, 1, 5, 0, 0, DateTimeKind.Utc);
+            if (DateTime.UtcNow > unixDateTimeOfFirstStar)
+            {
+                var elapsed = DateTime.UtcNow - unixDateTimeOfFirstStar;
+                highestDay = ((int)elapsed.TotalDays) + 1;
+                highestDay = Math.Min(25, highestDay);
+            }
+
+            return highestDay;
         }
 
         private static void MergeDuplicateAccounts(BoardConfig boardConfig, LeaderBoard leaderboard, int highestDay)
