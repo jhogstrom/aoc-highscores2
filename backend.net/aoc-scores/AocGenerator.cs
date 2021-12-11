@@ -101,6 +101,9 @@ namespace RegenAoc
 
                         player.UnixCompletionTime[d - 1][star] = (int)p.SolveTime.TotalSeconds + unixTimeOfPublish;
                         player.Stars++;
+                        var score = 101 - p.Position;
+                        player.GlobalScoreForDay[d - 1][star] = score;
+                        player.GlobalScore += score;
                     }
                 }
             }
