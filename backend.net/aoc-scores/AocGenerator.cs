@@ -391,7 +391,8 @@ namespace RegenAoc
                         // flag possible fraud for anyone who solves star 2 in < 10 seconds (except for xmas day where it is actually possible
                         if (player.TimeToCompleteStar2[day] < 10 && day != 24)
                         {
-                            player.Fraud.Add(day);
+                            if (!(boardConfig.Year == 2021 && day == 12)) // this day was easy to solve *2
+                                player.Fraud.Add(day);
                         }
                     }
                 }
