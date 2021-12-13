@@ -28,55 +28,26 @@ export default {
         data() {
             return this.$store.getters.data
         },
+        // https://developers.google.com/chart/interactive/docs/gallery/linechart#configuration-options
         chartOptions() {
             return {
-                height: 800,
+                height: 1200,
                 chart: {
                     title: 'Day/star',
                 },
                 vAxis: {
                     title: 'ScoreDiff',
                     // textPosition: "none",
-                    // minValue: 5,
-                    // direction: -1,
+                    //minValue: -10,
+                    direction: -1,
                     logScale: true,
-                    ticks: this.tickMarks,
+                    //ticks: this.tickMarks,
                     viewWindow: {
                         // max: 1000,
                         min: 0,
                     },
                 }
             }
-        },
-        tickMarks() {
-            const playerCount = this.maxYvalue
-            let tickInterval = 25 // for 100+ players in list
-            if (playerCount < 51) {
-                tickInterval = 5
-            } else if (playerCount < 101) {
-                tickInterval = 10
-            }
-            const maxTick = Math.floor(playerCount/tickInterval) * tickInterval + tickInterval
-            const res = []
-            for (let i = tickInterval; i <= maxTick; i += tickInterval) {
-                res.push(i)
-            }
-            console.log(res)
-            return res
-        },
-        maxYvalue() {
-            let maxScore = 0
-            for (let day = 0; day < this.data.HighestDay; day++) {
-                const excluded = this.$store.getters.data.ExcludedDays.includes(day)
-                if (!excluded) {
-                    for (let star = 0; star < 2; star++ ) {
-                        for (const p of this.players) {
-                            const score = p.LocalScoreAll.ScoreDiff[day][star]
-                            maxScore = Math.max(maxScore, score)                        }
-                    }
-                }
-            }
-            return maxScore
         },
         playerList() {
             let headers = ["Player"]
@@ -92,7 +63,6 @@ export default {
                         let pdata = [`${day+1}-${star+1}`]
                         for (const p of this.players) {
                             pdata.push(p.LocalScoreAll.ScoreDiff[day][star]);
-
                         }
                         res.push(pdata);          
                     }
