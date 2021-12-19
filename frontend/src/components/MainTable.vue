@@ -35,7 +35,7 @@
             <v-icon>mdi-help-circle</v-icon>
             Help
           </v-btn>
-          <v-icon v-if="reloadingData">mdi-database-refresh</v-icon>
+          <v-icon v-if="loadingInProgress">mdi-database-refresh</v-icon>
           </div>
         </template>
       </v-toolbar>
@@ -71,8 +71,6 @@ import MenuButton from './MenuButton.vue'
 import YearMenu from './YearMenu.vue'
 import { boards, charts, other } from '../router'
 import AboutButton from './AboutButton.vue'
-const SECONDS = 1000
-const DELAY = 30
 
 export default {
     components: {
@@ -88,15 +86,13 @@ export default {
         boardmap: boards,
         chartmap: charts,
         otherPages: other,
-        reloadingData: false,
-        reloadCount: 0
     }},
-    mounted() {
-      setTimeout(this.refreshData, DELAY * SECONDS)
-    },
     computed: {
         boardTitle() {
           return `AOC -> ${this.$store.getters.boardName} - ${this.$store.getters.boardYear}`
+        },
+        loadingInProgress() {
+          return this.$store.getters.loadingInProgress
         },
         updateTime() {
             return this.$store.getters.updateTime
@@ -138,24 +134,8 @@ export default {
       shouldReload() {
         return this.autoRefresh && !document.hidden
       },
-      refreshData(force) {
-        if (force || this.shouldReload())
-        {
-          this.reloadingData = true
-          this.reloadCount++
-          console.log("reloading data again")
-          this.$store.dispatch('loadData', {
-            year: this.$store.getters.year,
-            guid: this.$store.getters.guid})
-          .then(() => {
-            setTimeout(this.refreshData, (DELAY * SECONDS) * Math.min(1, this.reloadCount / 15))
-            this.reloadingData = false
-          })
-        } else {
-          // No fetch, so wait another DELAY seonds and try again
-          this.reloadCount = 0
-          setTimeout(this.refreshData, DELAY * SECONDS)
-        }
+      refreshData() {
+        this.$store.dispatch("requestRefresh")
       }
     },
 }

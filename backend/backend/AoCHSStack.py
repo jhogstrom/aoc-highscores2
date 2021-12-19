@@ -1,3 +1,4 @@
+from logging import StringTemplateStyle
 from aws_cdk import (
     aws_certificatemanager,
     aws_dynamodb,
@@ -8,6 +9,8 @@ from aws_cdk import (
     aws_apigateway,
     aws_lambda,
     aws_lambda_event_sources,
+    aws_apigatewayv2,
+    aws_apigatewayv2_integrations,
     core as cdk
 )
 from aws_cdk.aws_iam import Effect, PolicyStatement
@@ -193,3 +196,59 @@ class AoCHSStack(cdk.Stack):
             handler=admin_api_handler)
         admin_api_handler.add_environment("CONFIGDB", boardconfig.table_name)
         boardconfig.grant_read_write_data(admin_api_handler)
+
+        connection_table = aws.Table(
+            self,
+            "clientregistry",
+            sort_key=aws_dynamodb.Attribute(
+                name='sk',
+                type=aws_dynamodb.AttributeType.STRING
+            ),
+            time_to_live_attribute="ttl",
+            removal_policy=cdk.RemovalPolicy.DESTROY)
+
+        code = aws_lambda.Code.from_asset("websockets")
+
+        websocket_handler = aws.Function(self, "socket_handler", code=code, layers=layers.layers)
+        notifier = aws.Function(self, "notifier", code=code, layers=layers.layers)
+        wsIntegration = aws_apigatewayv2.WebSocketRouteOptions(
+                integration=aws_apigatewayv2_integrations.LambdaWebSocketIntegration(
+                    handler=websocket_handler))
+        websocketApi = aws_apigatewayv2.WebSocketApi(
+            self,
+            "websocketApi",
+            api_name="websocketApi",
+            connect_route_options=wsIntegration,
+            disconnect_route_options=wsIntegration,
+            default_route_options=wsIntegration
+        )
+
+        stagename = self.node.try_get_context('stage') or 'dev'
+        apiStage = aws_apigatewayv2.WebSocketStage(
+            self,
+            'stage',
+            web_socket_api=websocketApi,
+            stage_name=stagename,
+            auto_deploy=True)
+        connection_table.grant_read_write_data(websocket_handler)
+        connection_table.grant_read_write_data(notifier)
+        websocket_handler.add_environment("CONNECTION_TABLE", connection_table.table_name)
+        websocket_handler.add_environment("WEBSOCKET_API_ENDPOINT", apiStage.callback_url)
+        notifier.add_environment("CONNECTION_TABLE", connection_table.table_name)
+        notifier.add_environment("WEBSOCKET_API_ENDPOINT", apiStage.callback_url)
+        cdk.CfnOutput(self, "WebsocketUrl", value=apiStage.url)
+        notifier.add_event_source(aws_lambda_event_sources.S3EventSource(
+            website,
+            events=[aws_s3.EventType.OBJECT_CREATED],
+            filters=[aws_s3.NotificationKeyFilter(prefix="20", suffix=".json")]))
+
+        connectionsArn = self.format_arn(
+            service="execute-api",
+            resource_name=f"{apiStage.stage_name}/POST/*",
+            resource=websocketApi.api_id)
+        post_to_ws_policy = aws_iam.PolicyStatement(
+            actions=['execute-api:ManageConnections'],
+            resources=[connectionsArn]
+        )
+        notifier.add_to_role_policy(post_to_ws_policy)
+        websocket_handler.add_to_role_policy(post_to_ws_policy)

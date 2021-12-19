@@ -61,7 +61,9 @@ export default {
             if (new Date().getMonth < 11) {
                 year--
             }
-            await this.$store.dispatch('loadData', {year: year, guid: board.guid})
+            await this.$store.dispatch('setParams', {year: year, guid: board.guid})
+            await this.$store.dispatch('loadData')
+            this.$store.dispatch('requestRefresh', {year: year, guid: board.guid})
             this.$router.push("/")
         },
         remove(board) {

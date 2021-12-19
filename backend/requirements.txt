@@ -4,3 +4,6 @@
 flake8
 rope
 python-dotenv
+aws_cdk.aws_apigatewayv2
+aws_cdk.aws_apigatewayv2_integrations
+aws-cdk-core
