@@ -32,7 +32,7 @@
                 During the month of <a href="http://www.adventofcode.com">AdventofCode</a> we try to keep it as up to date as possible
                 without putting too much stress on the AoC servers.<br>
                 If you find any bugs, have any questions or if you are interested in having these stats for your own
-                private leaderboard, please reach out... jonas.hogstrom at tobii.com.
+                private leaderboard, please reach out... aoc at lillfiluren.se.
 
                 <p class="aoc-color">
                     &copy;{{ copyrightYear }} — <strong>JHSoftService</strong>
