@@ -8,6 +8,7 @@
 
 <script>
 import MainTable from './components/MainTable.vue'
+import { sockets } from './store/sockets.js'
 
 // const defaultList = "fbc7a3d8-c6f4-410f-9fff-a1b42993c1c1"
 const defaultList = "00000000-0000-0000-0000-000000000000"
@@ -21,13 +22,31 @@ export default {
   },
   data() { return {
     guid: "",
-    year: 0
+    year: 0,
+    socket: sockets
   }},
   created() {
+    sockets.emitter.on('Payload', this.onPayload)
     this.handleParams()
-    this.fetchData(this.year, this.guid)
+    this.fetchData()
+    this.$store.dispatch("requestRefresh")
   },
+  mounted() {
+    },
   methods: {
+    async onPayload(payload) {
+      console.log("Websocket incoming", payload.event || payload)
+      if (payload.event == "update") {
+        console.log("WS-Request: ", JSON.stringify(payload))
+        if (this.$store.getters.year == payload.year &&
+          this.$store.getters.guid == payload.boardguid) {
+            console.log("Reloading...")
+          await this.$store.dispatch('loadData')
+        } else {
+          console.log("Received unexpected request for", JSON.stringify(payload))
+        }
+      }
+    },
     handleParams() {
       const params = new URLSearchParams(window.location.search)
       const now = new Date();
@@ -38,10 +57,10 @@ export default {
 
       this.year = params.get("year") || defaultYear
       this.guid = params.get("guid") || params.get("uuid") || this.$store.getters.guid || defaultList;
+      this.$store.dispatch('setParams', {year: this.year, guid: this.guid})
     },
     async fetchData() {
-      this.$store.dispatch('setParams', {year: this.year, guid: this.guid})
-      this.$store.dispatch('loadData', {year: this.year, guid: this.guid})
+      this.$store.dispatch('loadData')
     }
   }
 }

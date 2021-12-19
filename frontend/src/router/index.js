@@ -10,8 +10,8 @@ import GlobalScoreForDay from '../components/GlobalScoreForDay.vue'
 import TobiiScore from '../components/TobiiScore.vue'
 import PositionForStar from '../components/PositionForStar.vue'
 // Charts
-import PositionChart from '../components/PositionChart.vue'
-import ScoreChart from '../components/ScoreChart.vue'
+// import PositionChart from '../components/PositionChart.vue'
+// import ScoreChart from '../components/ScoreChart.vue'
 // Other
 import RawData from '../components/RawData.vue'
 import AocHighscore from '../components/AocHighscore.vue'
@@ -73,12 +73,14 @@ export const charts = [
   {
     path: '/positionchart',
     title: "PositionChart",
-    component: PositionChart
+    component: () => import(/* webpackChunkName: "charts" */ '@/components/PositionChart.vue')
+    // component: PositionChart
   },
   {
     path: '/scorechart',
     title: "ScoreChart",
-    component: ScoreChart
+    component: () => import(/* webpackChunkName: "charts" */ '@/components/ScoreChart.vue')
+    // component: ScoreChart
   },
 ]
 

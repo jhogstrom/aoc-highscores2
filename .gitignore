@@ -2,6 +2,9 @@
 backend/.layers.out/
 envvars.py
 deployenv.bat
+node_modules/
+temp/
+^/package.json
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
