@@ -8,8 +8,19 @@
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         <v-toolbar-title>
-          <v-icon @click="refreshData" color="white">mdi-refresh-circle</v-icon>
+          <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-icon v-on="on" @click="refreshData" color="white">mdi-refresh-circle</v-icon>
+              </template>
+              <span>Request refresh of data</span>
+          </v-tooltip>
           {{boardTitle}}
+          <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                  <v-icon v-on="on" @click="copylink">mdi-content-copy</v-icon>
+              </template>
+              <span>Copy link</span>
+          </v-tooltip>
           <p class="fetchtime">Fetched from AoC {{updateTime}}</p>
         </v-toolbar-title>
         <template v-slot:extension>
@@ -131,6 +142,12 @@ export default {
         }
     },
     methods: {
+      copylink() {
+        var url = `${window.location.origin}?guid=${this.$store.getters.guid}`
+        navigator.clipboard.writeText(url)
+      },
+
+
       shouldReload() {
         return this.autoRefresh && !document.hidden
       },
