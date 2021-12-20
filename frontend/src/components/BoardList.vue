@@ -14,19 +14,19 @@
                             <span v-if="show == index">
                                 <v-tooltip top>
                                     <template v-slot:activator="{ on }">
-                                        <v-icon v-on="on" class="extrapadding" @click.stop="navigate(b)">mdi-open-in-app</v-icon>
+                                        <v-icon v-on="on" class="iconstyle" @click.stop="navigate(b)">mdi-open-in-app</v-icon>
                                     </template>
                                     <span>Open board</span>
                                 </v-tooltip>
                                 <v-tooltip top>
                                     <template v-slot:activator="{ on }">
-                                        <v-icon v-on="on" class="extrapadding" @click.stop="copylink(b)">mdi-content-copy</v-icon>
+                                        <v-icon v-on="on" class="iconstyle" @click.stop="copylink(b)">mdi-content-copy</v-icon>
                                     </template>
                                     <span>Copy link</span>
                                 </v-tooltip>
                                 <v-tooltip top>
                                     <template v-slot:activator="{ on }">
-                                        <v-icon v-on="on" class="extrapadding" @click.stop="remove(b)">mdi-delete-alert</v-icon>
+                                        <v-icon v-on="on" class="iconstyle" @click.stop="remove(b)">mdi-delete-alert</v-icon>
                                     </template>
                                     <span>Remove board from your boards list</span>
                                 </v-tooltip>
@@ -103,8 +103,9 @@ export default {
 .halign {
     text-align: right;
 }
-.extrapadding {
+.iconstyle {
     padding-left: 10px;
+    height: 18px;
 }
 .boardentry {
     border: 2px solid black;
