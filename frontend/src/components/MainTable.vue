@@ -21,6 +21,7 @@
               </template>
               <span>Copy link</span>
           </v-tooltip>
+          <span class="hintDisplay" v-if="displayHint">{{hint}}</span>
           <p class="fetchtime">Fetched from AoC {{updateTime}}</p>
         </v-toolbar-title>
         <template v-slot:extension>
@@ -97,6 +98,8 @@ export default {
         boardmap: boards,
         chartmap: charts,
         otherPages: other,
+        displayHint: false,
+        hint: ""
     }},
     computed: {
         boardTitle() {
@@ -142,9 +145,18 @@ export default {
         }
     },
     methods: {
+      showHint(msg)
+      {
+        this.hint = msg
+        this.displayHint = true
+        const DELAY = 5 * 1000
+        setTimeout(() => this.displayHint = false, DELAY)
+
+      },
       copylink() {
         var url = `${window.location.origin}?guid=${this.$store.getters.guid}`
         navigator.clipboard.writeText(url)
+        this.showHint("Link copied")
       },
 
 
@@ -152,6 +164,7 @@ export default {
         return this.autoRefresh && !document.hidden
       },
       refreshData() {
+        this.showHint("Request sent")
         this.$store.dispatch("requestRefresh")
       }
     },
@@ -160,8 +173,9 @@ export default {
 
 <style scoped>
 .fetchtime {
-  text-align: right;
+  text-align: left;
   font-size: 0.6rem !important;
+  padding-left: 50px;
 }
 .v-toolbar__title {
   font-size: 1.5rem !important;
@@ -177,5 +191,14 @@ export default {
 .right-align {
   align-content: right;
   text-align: right;
+}
+
+.hintDisplay {
+  color: antiquewhite;
+  background-color: cornflowerblue;
+  border: 2px solid black;
+  font-size: 0.8rem;
+  padding: 3px 15px;
+  border-radius: 3px;
 }
 </style>
