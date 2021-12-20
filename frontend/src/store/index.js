@@ -102,8 +102,14 @@ export default new Vuex.Store({
             commit(types.SET_AUTOREFRESH, autoRefresh)
         },
         async requestRefresh() {
-            console.log("requesting data for ", this.getters.year, this.getters.guid);
-            HttpApi.get(`/refresh/${this.getters.year}/${this.getters.guid}`)
+            const payload = {
+                command: "register",
+                guid: this.getters.guid,
+                year: this.getters.year,
+            }
+            console.log("requesting data for ", payload.year, payload.guid);
+            sockets.ensureConnectionAndRegistration(payload)
+            HttpApi.get(`/refresh/${payload.year}/${payload.guid}`)
                 .then(res => console.log(res))
         },
         async loadData({ commit, state }) {
