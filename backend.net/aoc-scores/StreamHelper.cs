@@ -45,7 +45,7 @@ namespace RegenAoc
             webRequest.Method = "GET";
             webRequest.Accept = "*/*";
             webRequest.AllowAutoRedirect = false;
-            webRequest.UserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; .NET CLR 1.0.3705)";
+            webRequest.UserAgent = "github.com/jhogstrom/aoc-highscores2 by jonas.hogstrom@tobii.com (AOC #139489)";
 
             // Grab the response from the server for the current WebRequest
             using (var webResponse = webRequest.GetResponse())
