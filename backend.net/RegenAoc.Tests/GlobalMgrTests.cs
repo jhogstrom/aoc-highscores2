@@ -21,8 +21,8 @@ namespace RegenAoc.Tests
         [Test]
         public async Task TestRefreshYear()
         {
-            var year = 2020;
-            var highestDay = 25;
+            var year = 2022;
+            var highestDay = 1;
             var boardConfig = await BoardConfigHelper.LoadFromDynamo(TestData.Guid1, year, Logger);
             var res = await _sut.GetGlobalScore(boardConfig, highestDay);
             Assert.That(res, Is.Not.Null);
@@ -33,8 +33,8 @@ namespace RegenAoc.Tests
         [Test]
         public async Task TestRefreshDay()
         {
-            var year = 2018;
-            var res = await _sut.RefreshGlobalData(year, 20);
+            var year = 2022;
+            var res = await _sut.RefreshGlobalData(year, 1);
         }
 
         [Test]

@@ -1,3 +1,6 @@
+# setup
+* install AWS toolkit for Visual Studio, restart VS
+
 # Template for sample files:
 
 ```

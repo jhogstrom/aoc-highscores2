@@ -42,7 +42,7 @@ namespace RegenAoc.Tests
 
         [Test]
         [TestCase(2017)]
-        [TestCase(2021)]
+        [TestCase(2022)]
         public async Task TestGenerateGlobal(int year)
         {
             var config = await BoardConfigHelper.LoadFromDynamo(TestData.GuidG, year, Logger);

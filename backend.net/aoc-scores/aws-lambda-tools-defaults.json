@@ -9,8 +9,8 @@
     "profile"     : "default",
     "region"      : "us-east-2",
     "configuration" : "Release",
-    "framework"     : "netcoreapp3.1",
-    "function-runtime" : "dotnetcore3.1",
+    "framework"     : "net6.0",
+    "function-runtime" : "dotnet6",
     "function-memory-size" : 128,
     "function-timeout"     : 300,
     "function-handler"     : "RegenAoc::RegenAoc.RegenAocLambda::ReceiveEvent",
@@ -21,5 +21,7 @@
     "function-architecture" : "x86_64",
     "tracing-mode"          : "PassThrough",
     "environment-variables" : "",
-    "image-tag"             : ""
+    "image-tag"             : "",
+    "function-subnets"      : "",
+    "function-security-groups" : ""
 }
